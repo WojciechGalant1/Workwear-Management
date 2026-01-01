@@ -4,7 +4,6 @@
  * Configuration for JavaScript modules required by each page
  */
 return array(
-    'dodaj_ubranie.php' => '',
     'add_employee.php' => 'AlertManager',
     'issue_clothing.php' => 'ClothingManager,AlertManager,WorkerSuggestions,ModalIssueClothing,ChangeStatus',
     'employee_list.php' => 'AlertManager,ModalEditEmployee',

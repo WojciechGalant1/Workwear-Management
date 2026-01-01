@@ -63,9 +63,10 @@ class CsrfHelper {
         
         $maxAge = 3600; // 1 hour
         if ((time() - $sessionTimestamp) > $maxAge) {
-            self::regenerateToken();
             return false;
         }
+
+        //$_SESSION[self::SESSION_KEY]['timestamp'] = time();
         
         return true;
     }

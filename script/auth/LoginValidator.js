@@ -38,7 +38,7 @@ export const LoginValidator = (function () {
         $.ajax({
             type: 'POST',
             url: baseUrl + '/app/handlers/auth/validateLogin.php',
-            data: { kodID: kodID, csrf: getCsrfToken() },
+            data: { kodID: kodID, csrf_token: getCsrfToken() },
             success: (data) => {
                 if (data.status === 'success') {
                     alertManager.createAlert(Translations.translate('login_success'), 'success');

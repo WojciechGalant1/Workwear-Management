@@ -1,6 +1,6 @@
 <?php
 /**
- * Polish translations for the clothing management system
+ * Polish translations 
  */
 return array(
     // General

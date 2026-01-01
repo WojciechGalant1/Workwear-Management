@@ -1,6 +1,6 @@
 <?php
 /**
- * English translations for the clothing management system
+ * English translations 
  */
 return array(
 

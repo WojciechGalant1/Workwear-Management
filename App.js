@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async (event) => {
-	// Import Translations early so it's available for error messages
 	const { Translations } = await import('./script/translations.js');
 	
 	const modulesAttr = document.body.getAttribute('data-modules') || '';

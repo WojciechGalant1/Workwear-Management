@@ -14,10 +14,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// CSRF basic check 
+// CSRF validation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['csrf']) && isset($_SESSION['csrf']) && $_POST['csrf'] !== $_SESSION['csrf']) {
-        echo json_encode(array('status' => 'error', 'message' => LocalizationHelper::translate('error_csrf')));
+    if (!CsrfHelper::validateToken()) {
+        http_response_code(403);
+        echo json_encode(CsrfHelper::getErrorResponse());
         exit;
     }
 }

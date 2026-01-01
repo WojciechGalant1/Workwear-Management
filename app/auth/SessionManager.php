@@ -7,24 +7,18 @@ class SessionManager {
             session_start();
         }
         
-        // Initialize CSRF token using the new helper
         if (!isset($_SESSION['csrf_token'])) {
             CsrfHelper::generateToken();
-        }
-        
-        // Keep backward compatibility with old CSRF implementation
-        if (!isset($_SESSION['csrf'])) {
-            $_SESSION['csrf'] = CsrfHelper::getToken();
         }
     }
 
     public function login($userId, $status) {
+        session_regenerate_id(true); //fixation attack
+        
         $_SESSION['user_id'] = $userId;
         $_SESSION['user_status'] = $status;
         
-        // Regenerate CSRF token on login for security
         CsrfHelper::regenerateToken();
-        $_SESSION['csrf'] = CsrfHelper::getToken();
     }
 
     public function logout() {

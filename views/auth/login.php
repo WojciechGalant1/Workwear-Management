@@ -4,15 +4,14 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../../app/helpers/UrlHelper.php';
+require_once __DIR__ . '/../../app/helpers/CsrfHelper.php';
 require_once __DIR__ . '/../../app/helpers/LocalizationHelper.php';
 require_once __DIR__ . '/../../app/helpers/LanguageSwitcher.php';
 
-// Initialize language system (compatible with routing)
 $currentLanguage = LanguageSwitcher::initializeWithRouting();
 
 $baseUrl = UrlHelper::getBaseUrl();
 
-// Translation helper function for templates
 function __($key, $params = array())
 {
     // Ensure we're using the current language from the session/cookie/URL
@@ -29,9 +28,13 @@ function __($key, $params = array())
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="base-url" content="<?php echo $baseUrl; ?>">
     <meta name="current-language" content="<?php echo $currentLanguage; ?>">
-    <?php if (isset($_SESSION['csrf'])): ?>
-        <meta name="csrf-token" content="<?php echo htmlspecialchars($_SESSION['csrf']); ?>">
-    <?php endif; ?>
+    <?php
+    $csrfToken = CsrfHelper::getToken();
+    if (!$csrfToken) {
+        $csrfToken = CsrfHelper::generateToken();
+    }
+    ?>
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
     <title><?php echo __('login_title'); ?></title>
     <link rel="icon" href="<?php echo $baseUrl; ?>/img/protectve-equipment.png" type="image/png">
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>/styl/css/custom.css">
@@ -108,7 +111,7 @@ function __($key, $params = array())
                         <div class="text-center mt-4">
                             <p class="text-muted small"><?php echo __('copyright', array('year' => date('Y'))); ?></p>
 
-                            <!-- Simple language switcher for login page -->
+
                             <div class="mt-3">
                                 <?php
                                 $availableLanguages = LocalizationHelper::getAvailableLanguages();
