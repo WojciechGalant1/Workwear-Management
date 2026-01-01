@@ -15,7 +15,7 @@
     <br />
     <a href="https://company-clothing-management-system.ct.ws/log/logowanie.php?">Zobacz Demo</a>
     &middot;
-    <a href="https://github.com/WojciechGalant1/Company-Workwear-Management-System/blob/master/README.md">Wersja angielska</a>
+    <a href="https://workwear.infinityfreeapp.com/workwear/login" target="_blank">Wersja angielska</a>
   </p>
 </div>
 
@@ -123,4 +123,5 @@ project/
 - Budowa systemu logowania i ról użytkowników
 - Współpraca z pracownikami firmy nad przebiegiem procesów
 - Testowanie i wdrożenie systemu do codziennego użytku
+
 
