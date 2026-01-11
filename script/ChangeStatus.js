@@ -109,7 +109,7 @@ export const ChangeStatus = (function () {
     //     try {
     //         const requestData = addCsrfToObject({ id: selectedId, currentStatus: 1 });
             
-    //         const response = await fetch(`${baseUrl}/app/handlers/changeStatus.php`, {
+    //         const response = await fetch(`${baseUrl}/app/http/handlers/changeStatus.php`, {
     //             method: 'POST',
     //             headers: {
     //                 'Content-Type': 'application/json',

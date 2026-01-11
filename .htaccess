@@ -18,8 +18,8 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Don't rewrite requests to handlers, script, app/forms, or other resource directories
-RewriteRule ^(handlers|script|styl|img|app/forms) - [L]
+# Don't rewrite requests to handlers, script, app/http/forms, app/http/handlers, or other resource directories
+RewriteRule ^(handlers|script|styl|img|app/http/forms|app/http/handlers) - [L]
 
 # Rewrite everything else to index.php
 RewriteRule ^ index.php [L]

@@ -3,15 +3,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include_once __DIR__ . '/../services/ServiceContainer.php';
-include_once __DIR__ . '/../helpers/CsrfHelper.php';
-include_once __DIR__ . '/../helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
-include_once __DIR__ . '/../models/OrderHistory.php';
-include_once __DIR__ . '/../models/OrderDetails.php';
-include_once __DIR__ . '/../models/Clothing.php';
-include_once __DIR__ . '/../models/Size.php';
-include_once __DIR__ . '/../models/Code.php';
+include_once __DIR__ . '/../../services/ServiceContainer.php';
+include_once __DIR__ . '/../../helpers/CsrfHelper.php';
+include_once __DIR__ . '/../../helpers/LocalizationHelper.php';
+include_once __DIR__ . '/../../helpers/LanguageSwitcher.php';
+include_once __DIR__ . '/../../models/OrderHistory.php';
+include_once __DIR__ . '/../../models/OrderDetails.php';
+include_once __DIR__ . '/../../models/Clothing.php';
+include_once __DIR__ . '/../../models/Size.php';
+include_once __DIR__ . '/../../models/Code.php';
 
 $currentLanguage = LanguageSwitcher::initializeWithRouting();
 

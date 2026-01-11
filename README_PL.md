@@ -10,119 +10,121 @@
 
 <br />
 <div align="center">
-  <h1 align="center">System Zarządzania Odzieżą Roboczą</h3>
+  <h1 align="center">Company Workwear Management System</h3>
   <p align="center">
     <br />
-    <a href="https://company-clothing-management-system.ct.ws/log/logowanie.php?">Zobacz Demo</a>
+    <a href="https://workwear.infinityfreeapp.com/workwear/" target="_blank">View Demo</a>
     &middot;
-    <a href="https://workwear.infinityfreeapp.com/workwear/login" target="_blank">Wersja angielska</a>
+    <a href="https://github.com/WojciechGalant1/Company-Workwear-Management-System/blob/master/README_PL.md">Polish version</a>
   </p>
 </div>
 
-## Spis Treści
-- [Opis](#opis)
-- [Kluczowe Funkcje](#kluczowe-funkcje)
-- [Stos Technologiczny](#stos-technologiczny)
-- [Struktura Projektu (uproszczona)](#struktura-projektu-uproszczona)
-- [Moduły Systemu](#moduły-systemu)
-- [Moja Rola i Odpowiedzialność](#moja-rola-i-odpowiedzialność)
-- [Możliwe Ulepszenia i Rozwój](#możliwe-ulepszenia-i-rozwój)
+## Table of Contents
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Technology Stack](#technology-stack)
+- [Project Structure (Simplified)](#project-structure-simplified)
+- [System Modules](#system-modules)
+- [My Role & Responsibilities](#my-role--responsibilities)
+- [Potential Enhancements & Future Development](#potential-enhancements--future-development)
 
-## Opis
 
-Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie — od przyjęcia na magazyn, przez wydawanie pracownikom, aż po wymiany i raportowanie. Zbudowany od podstaw w ramach stażu w firmie produkcyjnej w odpowiedzi na rzeczywiste potrzeby.
+##  Overview
 
-## Kluczowe Funkcje
+A full-featured web platform designed to manage corporate workwear distribution throughout its entire lifecycle. Built from scratch during an internship to solve real-world problems for a manufacturing company — from inventory tracking to employee assignment and expiration-based replenishment.
 
-- **Zarządzanie magazynem** — rejestrowanie ubrań z podziałem na rozmiar, ilość i kod kreskowy
-- **Profile pracowników** — historia wydań, przypisane ubrania i dane kontaktowe
-- **Zarządzanie dostępem** — logowanie i uprawnienia zależne od roli użytkownika
-- **Panel główny** — szybki podgląd stanów magazynowych, zaawansowane wyszukiwanie i sortowanie
-- **Powiadomienia** — automatyczne alerty o niskim stanie lub konieczności wymiany
-- **Raportowanie** — generowanie raportów zużycia, wydań i zapotrzebowania
-- **Obsługa kodów kreskowych** — szybkie dodawanie i edycja ubrań przez skaner
-- **Wsparcie wielojęzyczne** — pełne wsparcie języka polskiego i angielskiego z dynamicznym przełączaniem
-- **Ochrona CSRF** — kompleksowa implementacja bezpieczeństwa we wszystkich formularzach i żądaniach AJAX
-- **Design responsywny** — interfejs przyjazny dla urządzeń mobilnych, zoptymalizowany dla środowisk magazynowych
-> **Uwaga**
-> Czytniki kodów kreskowych muszą być skonfigurowane tak, aby po skanowaniu automatycznie dodawały znak "Enter".
+###  Key Features
 
-## Stos Technologiczny
+- **Inventory Management** - Track clothing items with detailed size, quantity, and barcode information
+- **Employee Profiles** - Maintain comprehensive employee records with clothing assignment history
+- **Role-based Security** - Role-based login and permission control for different user responsibilities
+- **Real-time Dashboard** - Monitor inventory levels and advanced search/sorting
+- **Smart Notifications** - Automatic alerts for low stock items and expiration-based reporting
+- **Barcode integration** - Items added/edited via scanner input with auto-form submission
+- **Multilingual Support** - Full English and Polish language support with dynamic switching
+- **CSRF Protection** - Comprehensive security implementation across all forms and AJAX requests
+- **Centralized API Management** - All API endpoints centralized in JavaScript with URL builder utility
+- **Responsive Design** - Mobile-friendly interface optimized for warehouse environments
+> **Warning:**
+> Barcode scanners must be configured to automatically append an "Enter" keystroke after each scan for proper form submission and system interaction.
 
-|Warstwa|Technologia|
+##  Technology Stack
+
+|Layer|Tech|
 |:-|:-|
-|Backend|PHP (własny MVC), REST-owe punkty końcowe, wzorzec Repository|
+|Backend|PHP (custom MVC), REST-style endpoints, Repository pattern|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
-|Baza danych|MySQL (relacyjna, zoptymalizowane zapytania)|
-|Bezpieczeństwo|Ochrona CSRF, zapobieganie XSS, kontrola dostępu oparta na rolach|
-|Lokalizacja|Własny system i18n (polski/angielski)|
-|Wydajność|Dostosowany do środowisk o niskich zasobach|
-|Architektura|Wzorzec Repository dla dostępu do danych, Service Container dla dependency injection|
+|Database|MySQL (relational, optimized queries)|
+|Security|CSRF protection, XSS prevention, role-based access|
+|Localization|Custom i18n system (English/Polish)|
+|Performance|Designed for low-resource deployment|
+|Architecture|Repository pattern for data access, Service Container for dependency injection, HTTP layer separation|
+> **Note:**
+> Optimized for performance in PHP 5.6 environments. The project uses Repository pattern for data access layer, separating business logic from database operations. HTTP layer (forms/handlers) is separated from business logic, with centralized API endpoint management in JavaScript.
 
-> **Notatka**
-> Optymalizowany pod PHP 5.6. Projekt wykorzystuje wzorzec Repository dla warstwy dostępu do danych, oddzielając logikę biznesową od operacji na bazie danych.
 
-## Struktura Projektu (uproszczona)
+##  Project Structure (Simplified)
 
 ```
 project/
-├── app/                    # Logika aplikacji
-│   ├── auth/               # Autoryzacja i zarządzanie sesjami
-│   ├── repositories/        # Warstwa dostępu do danych (wzorzec Repository)
-│   ├── models/             # Modele danych
-│   ├── config/             # Pliki konfiguracyjne
-│   │   └── translations/   # Wsparcie wielojęzyczne (PL/EN)
-│   ├── services/           # Połączenie z bazą danych i kontener usług
-│   ├── forms/              # Obsługa formularzy (kontrolery żądań)
-│   ├── handlers/           # Obsługa żądań AJAX (kontrolery żądań)
-│   └── helpers/            # Funkcje pomocnicze (CSRF, i18n, itp.)
-├── views/                  # Szablony widoków
-├── img/                    # Zasoby graficzne
-├── layout/                 # Układ strony
-├── script/                 # Moduły JS
-├── styl/                   # Arkusze CSS
-├── .htaccess               # Konfiguracja Apache
-├── App.js                  # Główny plik JavaScript
-└── index.php               # Punkt wejścia aplikacji
+├── app/                    # Application core
+│   ├── auth/               # Authorization and session management
+│   ├── repositories/       # Data access layer (Repository pattern)
+│   ├── models/             # Data models
+│   ├── config/             # Configuration files
+│   │   └── translations/   # Multilingual support (EN/PL)
+│   ├── services/           # Database connection and service container
+│   ├── Http/               # HTTP layer (request handling)
+│   │   ├── forms/          # Form processing handlers (POST requests)
+│   │   └── handlers/       # AJAX request handlers
+│   │       └── auth/       # Authentication handlers
+│   ├── helpers/            # Utility functions (CSRF, i18n, etc.)
+│   └── Router.php          # Routing system
+├── views/                  # View templates
+├── img/                    # Image assets
+├── layout/                 # Layout templates (header, footer, navigation)
+├── script/                 # JavaScript modules (ES6 modules)
+├── styl/                   # CSS stylesheets
+├── .htaccess               # Apache configuration
+├── App.js                  # Main application JavaScript
+└── index.php               # Application entry point
 ```
 
-## Moduły Systemu
+##  System Modules
 
-|Obszar|Opis|
+|Area|Description|
 |:-|:-|
-|Zamówienia|Dodawanie ubrań (ręcznie lub przez kod kreskowy) z metadanymi|
-|Wydania|Przypisywanie ubrań pracownikom, historia wydań, zwroty i uszkodzenia|
-|Magazyn|Wyszukiwanie, sortowanie, aktualizacja stanu i alerty|
-|Pracownicy|Zarządzanie danymi pracowników i powiązaniami z ubraniami|
-|Raporty wygasania|Śledzenie terminów wymiany i automatyzacja|
-|Uprawnienia|Role administracyjne i pracownicze z różnymi poziomami dostępu|
+|Orders|Add clothing items (manually or via barcode) with metadata|
+|Distributions|Assign gear to employees with full history + returns/damage logging|
+|Inventory|Search, sort, update, and receive alerts on low stock|
+|Employee Mgmt|View/update employee info with distribution linkages|
+|Expiration Reports|Track upcoming renewals and automate replacements|
+|Access Control|Define admin/staff roles with granular permission levels|
 
-## Możliwe Ulepszenia i Rozwój
-
-- **Modernizacja kodu** – aktualizacja do PHP 8+, użycie Composer, wprowadzenie namespace'ów
-- **Responsywność** – optymalizacja pod tablety i urządzenia mobilne
-- **Integracja z API** – możliwość połączenia z systemami zewnętrznymi (np. ERP, HR)
-- **Przetwarzanie wsadowe** – import i eksport danych w formacie CSV
-- **Usprawnienie MVC** – implementacja prawdziwych kontrolerów MVC (obecnie forms/handlers pełnią rolę kontrolerów), dalsza separacja odpowiedzialności między obsługą żądań a logiką biznesową
-- **Obsługa błędów** – globalny handler błędów i kontrola wyjątków
-- **Dodatkowe zabezpieczenia**:
-  - Limity prób logowania (brute-force)
-  - Throttling żądań do API
-  - Ulepszone hashowanie haseł (upgrade z crypt() do password_hash())
-- **Optymalizacje wydajności**:
-  - Optymalizacja zapytań do bazy danych i cachowanie
-  - Minifikacja i kompresja zasobów
-  - Integracja z CDN dla zasobów statycznych
-- **Testy automatyczne** – zestaw testów jednostkowych i integracyjnych
-
-## Moja Rola i Odpowiedzialność
-
-- Zaprojektowanie i implementacja własnego frameworka MVC
-- Projektowanie bazy danych i optymalizacja zapytań SQL
-- Tworzenie interfejsów CRUD z responsywnym layoutem
-- Integracja skanowania kodów kreskowych
-- Budowa systemu logowania i ról użytkowników
-- Współpraca z pracownikami firmy nad przebiegiem procesów
-- Testowanie i wdrożenie systemu do codziennego użytku
+## Potential Enhancements & Future Development
+- **Codebase Modernization** – Upgrade PHP version and refactor legacy components for modern standards (e.g., PHP 8+, namespaces, Composer)
+- **Mobile Optimization** – Enhance touch interactions and responsive views for tablet/handheld use in warehouse environments
+- **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
+- **Batch Processing** – Enable bulk import/export of inventory data via CSV 
+- **MVC Architecture Improvements** – Implement true MVC controllers (currently Http/forms and Http/handlers act as request controllers), further separate concerns between request handling and business logic
+- **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack
+- **Additional Security Enhancements**:
+  - Rate limiting to prevent brute-force form submissions
+  - API request throttling to mitigate abuse and maintain performance
+- **Performance Optimizations**:
+  - Database query optimization and caching
+  - Asset minification and compression
+  - CDN integration for static resources
+- Implementation of automated test suites to improve future maintainability and reduce regression risk
 
 
+## My Role & Responsibilities
+
+- Designing and implementing a custom MVC framework
+- Architecting the database schema and writing optimized SQL queries
+- Building full CRUD interfaces with responsive design
+- Integrating barcode scanning into workflows
+- Developing a role-based authentication system
+- Collaborating with company staff to shape system workflows
+- Conducted testing and validation in collaboration with company staff
+- Deployed and documented the system for long-term internal use

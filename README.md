@@ -43,6 +43,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **Barcode integration** - Items added/edited via scanner input with auto-form submission
 - **Multilingual Support** - Full English and Polish language support with dynamic switching
 - **CSRF Protection** - Comprehensive security implementation across all forms and AJAX requests
+- **Centralized API Management** - All API endpoints centralized in JavaScript with URL builder utility
 - **Responsive Design** - Mobile-friendly interface optimized for warehouse environments
 > **Warning:**
 > Barcode scanners must be configured to automatically append an "Enter" keystroke after each scan for proper form submission and system interaction.
@@ -57,9 +58,9 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Security|CSRF protection, XSS prevention, role-based access|
 |Localization|Custom i18n system (English/Polish)|
 |Performance|Designed for low-resource deployment|
-|Architecture|Repository pattern for data access, Service Container for dependency injection|
+|Architecture|Repository pattern for data access, Service Container for dependency injection, HTTP layer separation|
 > **Note:**
-> Optimized for performance in PHP 5.6 environments. The project uses Repository pattern for data access layer, separating business logic from database operations.
+> Optimized for performance in PHP 5.6 environments. The project uses Repository pattern for data access layer, separating business logic from database operations. HTTP layer (forms/handlers) is separated from business logic, with centralized API endpoint management in JavaScript.
 
 
 ##  Project Structure (Simplified)
@@ -73,13 +74,16 @@ project/
 │   ├── config/             # Configuration files
 │   │   └── translations/   # Multilingual support (EN/PL)
 │   ├── services/           # Database connection and service container
-│   ├── forms/              # Form processing handlers 
-│   ├── handlers/           # AJAX request handlers 
-│   └── helpers/            # Utility functions (CSRF, i18n, etc.)
+│   ├── Http/               # HTTP layer (request handling)
+│   │   ├── forms/          # Form processing handlers (POST requests)
+│   │   └── handlers/       # AJAX request handlers
+│   │       └── auth/       # Authentication handlers
+│   ├── helpers/            # Utility functions (CSRF, i18n, etc.)
+│   └── Router.php          # Routing system
 ├── views/                  # View templates
 ├── img/                    # Image assets
-├── layout/                 # Layout templates
-├── script/                 # JavaScript modules
+├── layout/                 # Layout templates (header, footer, navigation)
+├── script/                 # JavaScript modules (ES6 modules)
 ├── styl/                   # CSS stylesheets
 ├── .htaccess               # Apache configuration
 ├── App.js                  # Main application JavaScript
@@ -102,7 +106,7 @@ project/
 - **Mobile Optimization** – Enhance touch interactions and responsive views for tablet/handheld use in warehouse environments
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
-- **MVC Architecture Improvements** – Implement true MVC controllers (currently forms/handlers act as controllers), further separate concerns between request handling and business logic
+- **MVC Architecture Improvements** – Implement true MVC controllers (currently Http/forms and Http/handlers act as request controllers), further separate concerns between request handling and business logic
 - **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack
 - **Additional Security Enhancements**:
   - Rate limiting to prevent brute-force form submissions

@@ -9,7 +9,7 @@ checkAccess(2);
 
 <h2 class="mb-4"><?php echo __('order_add_title'); ?></h2>
 
-<form id="zamowienieForm" action="<?php echo $baseUrl; ?>/app/forms/add_order.php" method="post" class="needs-validation" autocomplete="off">
+<form id="zamowienieForm" action="<?php echo $baseUrl; ?>/app/http/forms/add_order.php" method="post" class="needs-validation" autocomplete="off">
     <?php echo CsrfHelper::getTokenField(); ?>
     <div class="mb-3 p-3" id="ubraniaContainer">
         <div class="row ubranieRow mt-3 mb-3 border border-2 p-3 bg-body rounded">

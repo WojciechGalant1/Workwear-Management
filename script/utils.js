@@ -47,25 +47,25 @@ export const getCsrfHeaders = () => {
  */
 export const API_ENDPOINTS = {
     // Employee endpoints
-    WORKERS: '/app/handlers/fetchWorkers.php',
+    WORKERS: '/app/http/handlers/fetchWorkers.php',
     
     // Clothing endpoints
-    GET_CLOTHING_BY_CODE: '/app/handlers/getClothingByCode.php',
-    CHECK_CLOTHING_EXISTS: '/app/handlers/checkClothingExists.php',
-    GET_SIZES: '/app/handlers/getSizes.php',
-    UPDATE_CLOTHING: '/app/handlers/updateClothing.php',
-    DESTROY_CLOTHING: '/app/handlers/destroyClothing.php',
+    GET_CLOTHING_BY_CODE: '/app/http/handlers/getClothingByCode.php',
+    CHECK_CLOTHING_EXISTS: '/app/http/handlers/checkClothingExists.php',
+    GET_SIZES: '/app/http/handlers/getSizes.php',
+    UPDATE_CLOTHING: '/app/http/handlers/updateClothing.php',
+    DESTROY_CLOTHING: '/app/http/handlers/destroyClothing.php',
     
     // Product suggestions
-    FETCH_PRODUCT_NAMES: '/app/handlers/fetchProductNames.php',
-    FETCH_SIZES_NAMES: '/app/handlers/fetchSizesNames.php',
+    FETCH_PRODUCT_NAMES: '/app/http/handlers/fetchProductNames.php',
+    FETCH_SIZES_NAMES: '/app/http/handlers/fetchSizesNames.php',
     
     // Issue endpoints
-    CANCEL_ISSUE: '/app/handlers/cancelIssue.php',
-    CHANGE_STATUS: '/app/handlers/changeStatus.php',
+    CANCEL_ISSUE: '/app/http/handlers/cancelIssue.php',
+    CHANGE_STATUS: '/app/http/handlers/changeStatus.php',
     
     // Auth endpoints
-    VALIDATE_LOGIN: '/app/handlers/auth/validateLogin.php'
+    VALIDATE_LOGIN: '/app/http/handlers/auth/validateLogin.php'
 };
 
 /**

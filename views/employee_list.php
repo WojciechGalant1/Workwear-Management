@@ -53,7 +53,7 @@ $pracownicy = $pracownikRepo->getAll();
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo __('close'); ?>"></button>
             </div>
             <div class="modal-body">
-                <form id="edycjaPracownikaForm" action="<?php echo $baseUrl; ?>/app/forms/employee_list.php" method="post" class="needs-validation" novalidate>
+                <form id="edycjaPracownikaForm" action="<?php echo $baseUrl; ?>/app/http/forms/employee_list.php" method="post" class="needs-validation" novalidate>
                     <?php echo CsrfHelper::getTokenField(); ?>
                     <input type="hidden" id="pracownik_id" name="id">
                     <div class="mb-3 mt-2">

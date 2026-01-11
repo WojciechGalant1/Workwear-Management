@@ -56,7 +56,7 @@ if ($fromRaport) {
     </div>
 </div>
 
-<form id="wydajUbranieForm" action="<?php echo $baseUrl; ?>/app/forms/issue_clothing.php" method="post" autocomplete="off">
+<form id="wydajUbranieForm" action="<?php echo $baseUrl; ?>/app/http/forms/issue_clothing.php" method="post" autocomplete="off">
     <?php echo CsrfHelper::getTokenField(); ?>
     <div class="mb-3 col-md-6">
         <div class="d-flex justify-content-between">
