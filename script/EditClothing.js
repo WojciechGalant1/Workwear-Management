@@ -1,4 +1,4 @@
-import { getBaseUrl } from './utils.js';
+import { getBaseUrl, buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const EditClothing = (() => {
@@ -7,7 +7,6 @@ export const EditClothing = (() => {
 
     const initialize = (manager) => {
         alertManager = manager;
-        const baseUrl = getBaseUrl();
 
         $('#example').on('click', '.open-modal-btn', (event) => {
             const clickedBtn = event.currentTarget;
@@ -38,9 +37,10 @@ export const EditClothing = (() => {
 
             const form = $('#edycjaUbraniaForm');
             const formData = form.serialize();
+            const url = buildApiUrl(API_ENDPOINTS.UPDATE_CLOTHING);
 
             $.ajax({
-                url: `${baseUrl}/app/handlers/updateClothing.php`,
+                url: url,
                 type: 'POST',
                 data: formData,
                 xhrFields: {

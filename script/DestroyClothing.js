@@ -1,4 +1,4 @@
-import { getBaseUrl, addCsrfToObject } from './utils.js';
+import { addCsrfToObject, buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const DestroyClothing = (function () {
@@ -6,12 +6,11 @@ export const DestroyClothing = (function () {
     let selectedButton = null;
 
     const destroy = async () => {
-        const baseUrl = getBaseUrl();
-
         try {
             const requestData = addCsrfToObject({ id: ubranieId });
+            const url = buildApiUrl(API_ENDPOINTS.DESTROY_CLOTHING);
             
-            const response = await fetch(`${baseUrl}/app/handlers/destroyClothing.php`, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

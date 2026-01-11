@@ -1,5 +1,5 @@
 import { ClothingCode } from './ClothingCode.js';
-import { getBaseUrl } from './utils.js';
+import { getBaseUrl, buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const ClothingManager = (() => {
@@ -156,12 +156,12 @@ export const ClothingManager = (() => {
 
             const selectedUbranieId = event.target.value;
             const rozmiarSelect = event.target.closest('.ubranieRow').querySelector('.rozmiar-select');
-            const baseUrl = getBaseUrl();
 
             if (selectedUbranieId) {
                 rozmiarSelect.disabled = false;
                 try {
-                    const response = await fetch(`${baseUrl}/app/handlers/getSizes.php?ubranie_id=${selectedUbranieId}`);
+                    const url = buildApiUrl(API_ENDPOINTS.GET_SIZES, { ubranie_id: selectedUbranieId });
+                    const response = await fetch(url);
                     const data = await response.json();
 
                     rozmiarSelect.innerHTML = `<option value="">${Translations.translate('select_size_name')}</option>`;

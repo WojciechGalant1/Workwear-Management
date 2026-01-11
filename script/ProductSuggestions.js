@@ -1,5 +1,4 @@
-import { getBaseUrl } from './utils.js';
-import { debounce } from './utils.js';
+import { getBaseUrl, debounce, buildApiUrl, API_ENDPOINTS } from './utils.js';
 
 export const ProductSuggestions = (function () {
     const cache = {};
@@ -18,14 +17,13 @@ export const ProductSuggestions = (function () {
             return;
         }
 
-        const baseUrl = getBaseUrl();
-
         try {
             if (currentController) {
                 currentController.abort();
             }
             currentController = new AbortController();
-            const response = await fetch(`${baseUrl}/app/handlers/${endpoint}?query=${encodeURIComponent(query)}`, { signal: currentController.signal });
+            const url = buildApiUrl(endpoint, { query });
+            const response = await fetch(url, { signal: currentController.signal });
             const data = await response.json();
             cache[cacheKey] = data;
             showSuggestions(data, suggestionsList, inputField);
@@ -84,7 +82,7 @@ export const ProductSuggestions = (function () {
         productNameInputs.forEach(input => {
             const suggestionsList = input.closest('.ubranieRow').querySelector('.productSuggestions');
             if (suggestionsList) {
-                attachSuggestionsToInput(input, suggestionsList, 'fetchProductNames.php', 200);
+                attachSuggestionsToInput(input, suggestionsList, API_ENDPOINTS.FETCH_PRODUCT_NAMES, 200);
             }
         });
 
@@ -92,7 +90,7 @@ export const ProductSuggestions = (function () {
         sizeInputs.forEach(input => {
             const suggestionsList = input.closest('.ubranieRow').querySelector('.sizeSuggestions');
             if (suggestionsList) {
-                attachSuggestionsToInput(input, suggestionsList, 'fetchSizesNames.php', 300);
+                attachSuggestionsToInput(input, suggestionsList, API_ENDPOINTS.FETCH_SIZES_NAMES, 300);
             }
         });
     };

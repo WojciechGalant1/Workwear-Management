@@ -1,5 +1,4 @@
-import { getBaseUrl } from './utils.js';
-import { debounce } from './utils.js';
+import { getBaseUrl, debounce, buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const WorkerSuggestions = (() => {
@@ -48,7 +47,8 @@ export const WorkerSuggestions = (() => {
                 currentController.abort();
             }
             currentController = new AbortController();
-            const response = await fetch(`${baseUrl}/app/handlers/fetchWorkers.php?query=${encodeURIComponent(query)}`, { signal: currentController.signal });
+            const url = buildApiUrl(API_ENDPOINTS.WORKERS, { query });
+            const response = await fetch(url, { signal: currentController.signal });
             if (!response.ok) throw new Error('Network response was not ok');
             
             const data = await response.json();

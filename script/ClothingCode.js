@@ -1,10 +1,8 @@
-import { getBaseUrl } from './utils.js';
+import { buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const ClothingCode = (() => {
     const initializeKodInput = (inputElement, alertManager) => {
-        const baseUrl = getBaseUrl();
-
         inputElement.addEventListener('keydown', async (event) => {
             if (event.key !== 'Enter') return;
 
@@ -22,7 +20,8 @@ export const ClothingCode = (() => {
             }
 
             try {
-                const response = await fetch(`${baseUrl}/app/handlers/getClothingByCode.php?kod=${encodeURIComponent(kod)}`);
+                const url = buildApiUrl(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
+                const response = await fetch(url);
                 const data = await response.json();
 
                 if (data && !data.error) {

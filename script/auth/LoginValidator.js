@@ -1,5 +1,6 @@
 import { AlertManager } from '../AlertManager.js';
 import { Translations } from '../translations.js';
+import { getBaseUrl, getCsrfToken, buildApiUrl, API_ENDPOINTS } from '../utils.js';
 
 export const LoginValidator = (function () {
     let kodInput = '';
@@ -33,11 +34,12 @@ export const LoginValidator = (function () {
 
         this.showSpinner();
 
-        const baseUrl = document.querySelector('meta[name="base-url"]').getAttribute('content') || '';
+        const baseUrl = getBaseUrl();
+        const url = buildApiUrl(API_ENDPOINTS.VALIDATE_LOGIN);
 
         $.ajax({
             type: 'POST',
-            url: baseUrl + '/app/handlers/auth/validateLogin.php',
+            url: url,
             data: { kodID: kodID, csrf_token: getCsrfToken() },
             success: (data) => {
                 if (data.status === 'success') {
@@ -57,11 +59,6 @@ export const LoginValidator = (function () {
             },
         });
     };
-
-    function getCsrfToken() {
-        const el = document.querySelector('meta[name="csrf-token"]');
-        return el ? el.getAttribute('content') : '';
-    }
 
     return { kodValidator };
 })();

@@ -1,8 +1,7 @@
-import { getBaseUrl } from './utils.js';
+import { buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const CheckClothing = (() => {
-    const baseUrl = getBaseUrl();
 
     const toggleIloscMinField = (field, show) => {
         field.style.display = show ? 'block' : 'none';
@@ -45,7 +44,8 @@ export const CheckClothing = (() => {
             if (!kod) return;
 
             try {
-                const response = await fetch(`${baseUrl}/app/handlers/getClothingByCode.php?kod=${encodeURIComponent(kod)}`);
+                const url = buildApiUrl(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
+                const response = await fetch(url);
                 const data = await response.json();
 
                 if (data && !data.error) {
@@ -81,7 +81,8 @@ export const CheckClothing = (() => {
             if (!productName || !sizeName) return;
 
             try {
-                const response = await fetch(`${baseUrl}/app/handlers/checkClothingExists.php?nazwa=${encodeURIComponent(productName)}&rozmiar=${encodeURIComponent(sizeName)}`);
+                const url = buildApiUrl(API_ENDPOINTS.CHECK_CLOTHING_EXISTS, { nazwa: productName, rozmiar: sizeName });
+                const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.exists) {

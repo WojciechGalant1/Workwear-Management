@@ -1,4 +1,4 @@
-import { getBaseUrl, addCsrfToObject } from './utils.js';
+import { addCsrfToObject, buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const CancelIssue = (function () {
@@ -28,12 +28,11 @@ export const CancelIssue = (function () {
     
 
     const cancel = async () => {
-        const baseUrl = getBaseUrl();
-        
         try { 
             const requestData = addCsrfToObject({ id: ubranieId });
+            const url = buildApiUrl(API_ENDPOINTS.CANCEL_ISSUE);
             
-            const response = await fetch(`${baseUrl}/app/handlers/cancelIssue.php`, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -78,7 +78,7 @@ return array(
     'clothing_size' => 'Rozmiar',
     'clothing_quantity' => 'Ilość',
     'clothing_min_quantity' => 'Ilość minimalna',
-    'clothing_code' => 'Kod',
+    'clothing_code' => 'Kod kreskowy',
     'clothing_company' => 'Firma',
     'clothing_expiry_date' => 'Data ważności',
     'clothing_status' => 'Status',

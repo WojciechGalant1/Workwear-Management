@@ -1,4 +1,4 @@
-import { getBaseUrl, addCsrfToObject } from './utils.js';
+import { getBaseUrl, addCsrfToObject, buildApiUrl, API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const ChangeStatus = (function () {
@@ -35,8 +35,9 @@ export const ChangeStatus = (function () {
             selectedButton.textContent = Translations.translate('processing');
 
             const requestData = addCsrfToObject({ id: selectedId, currentStatus });
+            const url = buildApiUrl(API_ENDPOINTS.CHANGE_STATUS);
             
-            const response = await fetch(`${baseUrl}/app/handlers/changeStatus.php`, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,8 +73,9 @@ export const ChangeStatus = (function () {
             selectedButton.textContent = Translations.translate('processing');
 
             const requestData = addCsrfToObject({ id: selectedId, currentStatus: 1 });
+            const url = buildApiUrl(API_ENDPOINTS.CHANGE_STATUS);
             
-            const response = await fetch(`${baseUrl}/app/handlers/changeStatus.php`, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
