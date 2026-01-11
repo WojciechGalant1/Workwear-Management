@@ -54,7 +54,6 @@ class LanguageSwitcher {
             setcookie(self::COOKIE_KEY, $language, time() + self::COOKIE_EXPIRE, '/');
         }
         
-        // Initialize localization with the new language
         LocalizationHelper::setLanguage($language);
     }
     

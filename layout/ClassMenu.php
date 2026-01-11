@@ -12,8 +12,8 @@ class ClassMenu {
         $userStatus = $sessionManager->getUserStatus(); 
 
         $serviceContainer = ServiceContainer::getInstance();
-        $stanMagazynuC = $serviceContainer->getController('WarehouseController');
-        $hasShortages = $stanMagazynuC->checkIlosc();
+        $stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
+        $hasShortages = $stanMagazynuRepo->checkIlosc();
 
         $baseUrl = UrlHelper::getBaseUrl();
         $activeUri = UrlHelper::getCleanUrl($currentPage);

@@ -15,7 +15,6 @@ header('Content-Type: application/json; charset=utf-8');
 try {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    // Validate CSRF token
     if (!CsrfHelper::validateTokenFromJson($data)) {
         http_response_code(403);
         echo json_encode(CsrfHelper::getErrorResponse());
@@ -29,11 +28,11 @@ try {
     $ubranieId = $data['id'];
 
     $serviceContainer = ServiceContainer::getInstance();
-    $wydaneUbraniaC = $serviceContainer->getController('IssuedClothingController');
-    $stanMagazynuC = $serviceContainer->getController('WarehouseController');
-    $wydaniaC = $serviceContainer->getController('IssueController');
+    $wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
+    $stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
+    $wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
 
-    $wydaneUbranie = $wydaneUbraniaC->getUbraniaById($ubranieId);
+    $wydaneUbranie = $wydaneUbraniaRepo->getUbraniaById($ubranieId);
     if (!$wydaneUbranie) {
         throw new Exception(LocalizationHelper::translate('clothing_issued_not_found'));
     }
@@ -43,8 +42,8 @@ try {
     $idUbrania = $wydaneUbranie['id_ubrania'];
     $idRozmiaru = $wydaneUbranie['id_rozmiaru'];
 
-    if ($wydaneUbraniaC->deleteWydaneUbranieStatus($ubranieId)) {
-        $stanMagazynuC->updateIlosc($idUbrania, $idRozmiaru, $ilosc, true);
+    if ($wydaneUbraniaRepo->deleteWydaneUbranieStatus($ubranieId)) {
+        $stanMagazynuRepo->updateIlosc($idUbrania, $idRozmiaru, $ilosc, true);
         /* 
         $pozostaleUbrania = $wydaneUbraniaC->getUbraniaByWydanieId($idWydania);
         if (empty($pozostaleUbrania)) {

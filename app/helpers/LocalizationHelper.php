@@ -57,7 +57,6 @@ class LocalizationHelper {
         
         $translation = isset(self::$translations[$key]) ? self::$translations[$key] : $key;
         
-        // Replace parameters in the translation
         if (!empty($params)) {
             foreach ($params as $param => $value) {
                 $translation = str_replace(':' . $param, $value, $translation);

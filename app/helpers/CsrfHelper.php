@@ -11,11 +11,7 @@ class CsrfHelper {
         }
         
         $token = bin2hex(random_bytes(self::TOKEN_LENGTH));
-        
-        $_SESSION[self::SESSION_KEY] = array(
-            'token' => $token,
-            'timestamp' => time()
-        );
+        $_SESSION[self::SESSION_KEY] = $token;
         
         return $token;
     }
@@ -25,8 +21,8 @@ class CsrfHelper {
             session_start();
         }
         
-        if (isset($_SESSION[self::SESSION_KEY]['token'])) {
-            return $_SESSION[self::SESSION_KEY]['token'];
+        if (isset($_SESSION[self::SESSION_KEY])) {
+            return $_SESSION[self::SESSION_KEY];
         }
         
         return null;
@@ -50,23 +46,17 @@ class CsrfHelper {
             $token = isset($_POST[self::FORM_FIELD_NAME]) ? $_POST[self::FORM_FIELD_NAME] : null;
         }
         
-        if (!isset($_SESSION[self::SESSION_KEY]['token'])) {
+        if (!isset($_SESSION[self::SESSION_KEY])) {
+            error_log('CSRF validation failed: No token in session');
             return false;
         }
         
-        $sessionToken = $_SESSION[self::SESSION_KEY]['token'];
-        $sessionTimestamp = $_SESSION[self::SESSION_KEY]['timestamp'];
+        $sessionToken = $_SESSION[self::SESSION_KEY];
         
         if (!hash_equals($sessionToken, $token)) {
+            error_log('CSRF validation failed: Token mismatch');
             return false;
         }
-        
-        $maxAge = 3600; // 1 hour
-        if ((time() - $sessionTimestamp) > $maxAge) {
-            return false;
-        }
-
-        //$_SESSION[self::SESSION_KEY]['timestamp'] = time();
         
         return true;
     }
@@ -83,22 +73,19 @@ class CsrfHelper {
         return self::generateToken();
     }
     
-    public static function getTokenForAjax() {
-        $token = self::getToken();
-        if (!$token) {
-            $token = self::generateToken();
-        }
-        
-        return array(
-            'token' => $token,
-            'field_name' => self::FORM_FIELD_NAME
-        );
-    }
-    
+    /**
+     * Check if the current request method requires CSRF validation
+     * @return bool
+     */
     public static function requiresValidation() {
         return in_array($_SERVER['REQUEST_METHOD'], array('POST', 'PUT', 'PATCH', 'DELETE'));
     }
     
+    /**
+     * Validate CSRF token for the current request
+     * Only validates if the request method requires it (POST, PUT, PATCH, DELETE)
+     * @return bool
+     */
     public static function validateCurrentRequest() {
         if (!self::requiresValidation()) {
             return true;
@@ -111,7 +98,6 @@ class CsrfHelper {
         include_once __DIR__ . '/LocalizationHelper.php';
         include_once __DIR__ . '/LanguageSwitcher.php';
         
-        // Initialize language if not already done
         if (!isset($_SESSION['current_language'])) {
             LanguageSwitcher::initializeWithRouting();
         }

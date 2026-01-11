@@ -8,8 +8,8 @@ include_once __DIR__ . '../../app/services/ServiceContainer.php';
 include_once __DIR__ . '../../app/helpers/CsrfHelper.php';
 
 $serviceContainer = ServiceContainer::getInstance();
-$pracownikC = $serviceContainer->getController('EmployeeController');
-$pracownicy = $pracownikC->getAll();
+$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
+$pracownicy = $pracownikRepo->getAll();
 ?>
 
 <div id="alertContainer"></div>

@@ -4,7 +4,6 @@ include_once __DIR__ . '/../services/ServiceContainer.php';
 include_once __DIR__ . '/../helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
 
-// Initialize language system
 LanguageSwitcher::initializeWithRouting();
 
 try {
@@ -13,8 +12,8 @@ try {
         $rozmiar = $_GET['rozmiar'];
 
         $serviceContainer = ServiceContainer::getInstance();
-        $stanMagazynuC = $serviceContainer->getController('WarehouseController');
-        $ubranieExists = $stanMagazynuC->findByUbranieAndRozmiarByName($nazwa, $rozmiar);
+        $stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
+        $ubranieExists = $stanMagazynuRepo->findByUbranieAndRozmiarByName($nazwa, $rozmiar);
 
         $response = ['exists' => (bool)$ubranieExists];
         echo json_encode($response);

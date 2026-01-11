@@ -14,7 +14,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// CSRF validation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!CsrfHelper::validateToken()) {
         http_response_code(403);

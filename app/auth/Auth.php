@@ -16,11 +16,10 @@ function checkAccess($requiredStatus) {
     }
 
     $serviceContainer = ServiceContainer::getInstance();
-    $userController = $serviceContainer->getController('UserController');
-    $user = $userController->getUserById($_SESSION['user_id']);
+    $userRepo = $serviceContainer->getRepository('UserRepository');
+    $user = $userRepo->getUserById($_SESSION['user_id']);
 
     if (!$user || $user['status'] < $requiredStatus) {
-        // Initialize language if not already set
         if (!isset($_SESSION['current_language'])) {
             LanguageSwitcher::initializeWithRouting();
         }

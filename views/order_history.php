@@ -7,8 +7,8 @@ checkAccess(2);
 include_once __DIR__ . '../../app/services/ServiceContainer.php';
 
 $serviceContainer = ServiceContainer::getInstance();
-$zamowieniaC = $serviceContainer->getController('OrderHistoryController');
-$zamowienia = $zamowieniaC->getAll();
+$zamowieniaRepo = $serviceContainer->getRepository('OrderHistoryRepository');
+$zamowienia = $zamowieniaRepo->getAll();
 ?>
 
     <h2 class="mb-4"><?php echo __('history_order_title'); ?></h2>

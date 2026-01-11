@@ -26,9 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($id) && !empty($imie) && !empty($nazwisko) && !empty($stanowisko) && $status !== '') {
         $serviceContainer = ServiceContainer::getInstance();
-        $pracownikC = $serviceContainer->getController('EmployeeController');
+        $pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
 
-        if ($pracownikC->update($id, $imie, $nazwisko, $stanowisko, $status)) {
+        if ($pracownikRepo->update($id, $imie, $nazwisko, $stanowisko, $status)) {
             $response['success'] = true;
             $response['message'] = LocalizationHelper::translate('employee_update_success');
         } else {

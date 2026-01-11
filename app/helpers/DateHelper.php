@@ -9,7 +9,6 @@ function engToPL($date) {
 }
 
 function engToEN($date) {
-    // English months are already in English, so return as is
     return $date;
 }
 

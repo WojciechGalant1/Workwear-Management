@@ -6,8 +6,8 @@ try {
     $query = isset($_GET['query']) ? $_GET['query'] : '';
 
     $serviceContainer = ServiceContainer::getInstance();
-    $ubranieC = $serviceContainer->getController('ClothingController');
-    $ubrania = $ubranieC->searchByName($query);
+    $ubranieRepo = $serviceContainer->getRepository('ClothingRepository');
+    $ubrania = $ubranieRepo->searchByName($query);
 
     if ($ubrania === false) {
         throw new Exception('Failed to fetch data');

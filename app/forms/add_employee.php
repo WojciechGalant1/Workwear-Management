@@ -34,9 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $pracownik = new Employee($imie, $nazwisko, $stanowisko, $status);
     $serviceContainer = ServiceContainer::getInstance();
-    $pracownikC = $serviceContainer->getController('EmployeeController');
+    $pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
 
-    if ($pracownikC->create($pracownik)) {
+    if ($pracownikRepo->create($pracownik)) {
         $response['success'] = true;
         $response['message'] = LocalizationHelper::translate('employee_add_success');
     } else {

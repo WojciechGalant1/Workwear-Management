@@ -8,9 +8,9 @@ include_once __DIR__ . '../../app/services/ServiceContainer.php';
 include_once __DIR__ . '../../app/helpers/CsrfHelper.php';
 
 $serviceContainer = ServiceContainer::getInstance();
-$pracownikC = $serviceContainer->getController('EmployeeController');
-$ubranieC = $serviceContainer->getController('ClothingController');
-$ubrania = $ubranieC->getAllUnique();
+$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
+$ubranieRepo = $serviceContainer->getRepository('ClothingRepository');
+$ubrania = $ubranieRepo->getAllUnique();
 
 include_once __DIR__ . '../../app/helpers/DateHelper.php';
 
@@ -28,17 +28,17 @@ if ($fromRaport) {
     $stanowisko = isset($_GET['stanowisko']) ? htmlspecialchars($_GET['stanowisko']) : '';
 
 
-    $wydaneUbraniaC = $serviceContainer->getController('IssuedClothingController');
+    $wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
 
     $pracownikId = isset($_GET['pracownikId']) ? htmlspecialchars($_GET['pracownikId']) : '';
     $expiredUbrania = [];
 
     if ($pracownikId) {
-        $wydaniaC = $serviceContainer->getController('IssueController');
-        $wydaniaPracownika = $wydaniaC->getWydaniaByPracownikId($pracownikId);
+        $wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
+        $wydaniaPracownika = $wydaniaRepo->getWydaniaByPracownikId($pracownikId);
 
         foreach ($wydaniaPracownika as $wydanie) {
-            $expiringUbrania = $wydaneUbraniaC->getUbraniaByWydanieIdTermin($wydanie['id_wydania']);
+            $expiringUbrania = $wydaneUbraniaRepo->getUbraniaByWydanieIdTermin($wydanie['id_wydania']);
             foreach ($expiringUbrania as $ubranie) {
                 $expiredUbrania[] = $ubranie;
             }

@@ -35,8 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $serviceContainer = ServiceContainer::getInstance();
-    $pracownikC = $serviceContainer->getController('EmployeeController');
-    $pracownik = $pracownikC->getById($pracownikID);
+    $pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
+    $pracownik = $pracownikRepo->getById($pracownikID);
 
     if (!$pracownik) {
         $response['success'] = false;
@@ -50,8 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $current_user_id = $_SESSION['user_id'];
 
-    $userC = $serviceContainer->getController('UserController');
-    $currentUser = $userC->getUserById($current_user_id);
+    $userRepo = $serviceContainer->getRepository('UserRepository');
+    $currentUser = $userRepo->getUserById($current_user_id);
 
     if (!$currentUser) {
         $response['success'] = false;
@@ -61,12 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $wydaniaC = $serviceContainer->getController('IssueController');
-    $wydaneUbraniaC = $serviceContainer->getController('IssuedClothingController');
-    $stanMagazynuC = $serviceContainer->getController('WarehouseController');
+    $wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
+    $wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
+    $stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
 
     $wydanie = new Issue($current_user_id, $pracownik['id_pracownik'], $data_wydania_obj, $uwagi);
-    $id_wydania = $wydaniaC->create($wydanie);
+    $id_wydania = $wydaniaRepo->create($wydanie);
 
     $all_items_valid = true;
 
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idRozmiar = isset($ubranie['id_rozmiar']) ? intval($ubranie['id_rozmiar']) : 0;
         $ilosc = isset($ubranie['ilosc']) ? intval($ubranie['ilosc']) : 0;
         
-        $iloscDostepna = $stanMagazynuC->getIlosc($idUbrania, $idRozmiar);
+        $iloscDostepna = $stanMagazynuRepo->getIlosc($idUbrania, $idRozmiar);
 
         if ($idUbrania == 0 || $idRozmiar == 0) {
             $response['success'] = false;
@@ -120,8 +120,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data_waznosci = $data_waznosci_obj->format('Y-m-d H:i:s');
 
             $wydaneUbrania = new IssuedClothing($data_waznosci, $id_wydania, $idUbrania, $idRozmiar, $ilosc, $status);
-            if ($wydaneUbraniaC->create($wydaneUbrania)) {
-                $stanMagazynuC->updateIlosc($idUbrania, $idRozmiar, $ilosc);
+            if ($wydaneUbraniaRepo->create($wydaneUbrania)) {
+                $stanMagazynuRepo->updateIlosc($idUbrania, $idRozmiar, $ilosc);
             } else {
                 $response['success'] = false;
                 $response['message'] = LocalizationHelper::translate('issue_error_processing');

@@ -23,9 +23,8 @@ if (!$csrfToken) {
     $csrfToken = CsrfHelper::generateToken();
 }
 
-// This function always uses the current language from LocalizationHelper
 function __($key, $params = array()) {
-    // Ensure we're using the current language from the session/cookie/URL
+    // current language from session/cookie/URL
     $currentLang = LanguageSwitcher::getCurrentLanguage();
     LocalizationHelper::setLanguage($currentLang);
     return LocalizationHelper::translate($key, $params);

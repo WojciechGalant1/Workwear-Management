@@ -51,15 +51,16 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 
 |Warstwa|Technologia|
 |:-|:-|
-|Backend|PHP (własny MVC), REST-owe punkty końcowe|
+|Backend|PHP (własny MVC), REST-owe punkty końcowe, wzorzec Repository|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
 |Baza danych|MySQL (relacyjna, zoptymalizowane zapytania)|
 |Bezpieczeństwo|Ochrona CSRF, zapobieganie XSS, kontrola dostępu oparta na rolach|
 |Lokalizacja|Własny system i18n (polski/angielski)|
 |Wydajność|Dostosowany do środowisk o niskich zasobach|
+|Architektura|Wzorzec Repository dla dostępu do danych, Service Container dla dependency injection|
 
 > **Notatka**
-> Optymalizowany pod PHP 5.3 z uwagi na ograniczenia infrastruktury w czasie wdrożenia.
+> Optymalizowany pod PHP 5.6. Projekt wykorzystuje wzorzec Repository dla warstwy dostępu do danych, oddzielając logikę biznesową od operacji na bazie danych.
 
 ## Struktura Projektu (uproszczona)
 
@@ -67,13 +68,13 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 project/
 ├── app/                    # Logika aplikacji
 │   ├── auth/               # Autoryzacja i zarządzanie sesjami
-│   ├── controllers/        # Kontrolery biznesowe
+│   ├── repositories/        # Warstwa dostępu do danych (wzorzec Repository)
 │   ├── models/             # Modele danych
 │   ├── config/             # Pliki konfiguracyjne
 │   │   └── translations/   # Wsparcie wielojęzyczne (PL/EN)
 │   ├── services/           # Połączenie z bazą danych i kontener usług
-│   ├── forms/              # Obsługa formularzy
-│   ├── handlers/           # Obsługa żądań AJAX
+│   ├── forms/              # Obsługa formularzy (kontrolery żądań)
+│   ├── handlers/           # Obsługa żądań AJAX (kontrolery żądań)
 │   └── helpers/            # Funkcje pomocnicze (CSRF, i18n, itp.)
 ├── views/                  # Szablony widoków
 ├── img/                    # Zasoby graficzne
@@ -102,7 +103,7 @@ project/
 - **Responsywność** – optymalizacja pod tablety i urządzenia mobilne
 - **Integracja z API** – możliwość połączenia z systemami zewnętrznymi (np. ERP, HR)
 - **Przetwarzanie wsadowe** – import i eksport danych w formacie CSV
-- **Usprawnienie MVC** – większy podział na moduły, testowalność, separacja odpowiedzialności
+- **Usprawnienie MVC** – implementacja prawdziwych kontrolerów MVC (obecnie forms/handlers pełnią rolę kontrolerów), dalsza separacja odpowiedzialności między obsługą żądań a logiką biznesową
 - **Obsługa błędów** – globalny handler błędów i kontrola wyjątków
 - **Dodatkowe zabezpieczenia**:
   - Limity prób logowania (brute-force)

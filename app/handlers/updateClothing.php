@@ -5,18 +5,16 @@ include_once __DIR__ . '/../helpers/CsrfHelper.php';
 include_once __DIR__ . '/../helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
 
-// Initialize language system
 LanguageSwitcher::initializeWithRouting();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate CSRF token
+
     if (!CsrfHelper::validateToken()) {
         http_response_code(403);
         echo json_encode(CsrfHelper::getErrorResponse());
         exit;
     }
 
-    // Ensure session and get current user id
     $sessionManager = new SessionManager();
     $currentUserId = $sessionManager->getUserId();
 
@@ -47,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $serviceContainer = ServiceContainer::getInstance();
-    $stanMagazynuC = $serviceContainer->getController('WarehouseController');
+    $stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
 
-    $result = $stanMagazynuC->updateStanMagazynu($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId);
+    $result = $stanMagazynuRepo->updateStanMagazynu($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId);
 
     if ($result['status'] === 'success') {
         http_response_code(200);

@@ -1,8 +1,8 @@
 <?php
-include_once __DIR__ . '/BaseController.php';
+include_once __DIR__ . '/BaseRepository.php';
 include_once __DIR__ . '/../models/IssuedClothing.php';
 
-class IssuedClothingController extends BaseController {
+class IssuedClothingRepository extends BaseRepository {
 
     private $currentDate;
     private $twoMonthsAhead; 

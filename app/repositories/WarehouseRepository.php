@@ -1,16 +1,18 @@
 <?php
-include_once __DIR__ . '/BaseController.php';
+include_once __DIR__ . '/BaseRepository.php';
 include_once __DIR__ . '/../models/Warehouse.php';
 include_once __DIR__ . '/../models/OrderHistory.php';
 include_once __DIR__ . '/../models/OrderDetails.php';
+include_once __DIR__ . '/../models/Clothing.php';
+include_once __DIR__ . '/../models/Size.php';
 include_once __DIR__ . '/../helpers/LocalizationHelper.php';
-include_once __DIR__ . '/ClothingController.php';
-include_once __DIR__ . '/SizeController.php';
-include_once __DIR__ . '/UserController.php';
-include_once __DIR__ . '/OrderHistoryController.php';
-include_once __DIR__ . '/OrderDetailsController.php';
+include_once __DIR__ . '/ClothingRepository.php';
+include_once __DIR__ . '/SizeRepository.php';
+include_once __DIR__ . '/UserRepository.php';
+include_once __DIR__ . '/OrderHistoryRepository.php';
+include_once __DIR__ . '/OrderDetailsRepository.php';
 
-class WarehouseController extends BaseController {
+class WarehouseRepository extends BaseRepository {
 
     public function __construct(PDO $pdo) {
         parent::__construct($pdo);
@@ -94,9 +96,8 @@ class WarehouseController extends BaseController {
 
     public function updateStanMagazynu($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId = null) {
         try {
-            //$this->pdo->beginTransaction();
-            $ubranieC = new ClothingController($this->pdo);
-            $rozmiarC = new SizeController($this->pdo);
+            $ubranieC = new ClothingRepository($this->pdo);
+            $rozmiarC = new SizeRepository($this->pdo);
     
             $existingUbranie = $ubranieC->findByName($nazwa);
             $idUbrania = $existingUbranie ? $existingUbranie->getIdUbranie() : $ubranieC->create(new Clothing($nazwa));
@@ -105,7 +106,6 @@ class WarehouseController extends BaseController {
             $stmt->bindParam(':idUbrania', $idUbrania, PDO::PARAM_INT);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             if (!$stmt->execute()) {
-                $this->pdo->rollBack();
                 return array('status' => 'error', 'message' => LocalizationHelper::translate('warehouse_update_clothing_error'));
             }
     
@@ -116,7 +116,6 @@ class WarehouseController extends BaseController {
             $stmt->bindParam(':idRozmiaru', $idRozmiaru, PDO::PARAM_INT);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             if (!$stmt->execute()) {
-                $this->pdo->rollBack();
                 return array('status' => 'error', 'message' => LocalizationHelper::translate('warehouse_update_size_error'));
             }
     
@@ -135,23 +134,18 @@ class WarehouseController extends BaseController {
                 if ($iloscDiff !== 0) {
                     $this->addHistoriaZamowien($idUbrania, $idRozmiaru, $iloscDiff, $uwagi, $currentUserId);
                 }
-                //$this->pdo->commit();
                 return array('status' => 'success', 'message' => 'Stan magazynu zostal zaktualizowany.');
             } else {
-                //$this->pdo->rollBack();
                 return array('status' => 'error', 'message' => 'Blad podczas aktualizacji ilości.');
             }
         } catch (Exception $e) {
-            // if ($this->pdo->inTransaction()) {
-            //     $this->pdo->rollBack();
-            // }
             return array('status' => 'error', 'message' => $e->getMessage());
         }
     }
     
     private function addHistoriaZamowien($idUbrania, $idRozmiaru, $iloscDiff, $uwagi, $currentUserId = null) {
-        $historiaZamowienC = new OrderHistoryController($this->pdo);
-        $szczegolyZamowieniaC = new OrderDetailsController($this->pdo);
+        $historiaZamowienC = new OrderHistoryRepository($this->pdo);
+        $szczegolyZamowieniaC = new OrderDetailsRepository($this->pdo);
 
         $userId = $currentUserId !== null ? $currentUserId : (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null);
         if (!$userId) {

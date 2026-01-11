@@ -61,7 +61,6 @@ export const WorkerSuggestions = (() => {
             }
         } catch (error) {
             if (error.name === 'AbortError') {
-                // Ignoruj anulowane żądania
                 return;
             }
             console.error('Failed to load data:', error);

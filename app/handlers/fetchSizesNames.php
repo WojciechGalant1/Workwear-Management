@@ -6,8 +6,8 @@ try {
     $query = isset($_GET['query']) ? $_GET['query'] : '';
 
     $serviceContainer = ServiceContainer::getInstance();
-    $rozmiarC = $serviceContainer->getController('SizeController');
-    $rozmiary = $rozmiarC->searchByName($query);
+    $rozmiarRepo = $serviceContainer->getRepository('SizeRepository');
+    $rozmiary = $rozmiarRepo->searchByName($query);
 
     header('Content-Type: application/json');
     echo json_encode($rozmiary);

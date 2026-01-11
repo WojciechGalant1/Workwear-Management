@@ -8,10 +8,10 @@ checkAccess(4);
 include_once __DIR__ . '../../app/services/ServiceContainer.php';
 
 $serviceContainer = ServiceContainer::getInstance();
-$pracownikC = $serviceContainer->getController('EmployeeController');
-$wydaniaC = $serviceContainer->getController('IssueController');
-$wydaneUbraniaC = $serviceContainer->getController('IssuedClothingController');
-$ubraniaPoTerminie = $wydaneUbraniaC->getUbraniaPoTerminie();
+$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
+$wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
+$wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
+$ubraniaPoTerminie = $wydaneUbraniaRepo->getUbraniaPoTerminie();
 ?>
 <div id="alertContainer"></div>
 
@@ -31,14 +31,14 @@ $ubraniaPoTerminie = $wydaneUbraniaC->getUbraniaPoTerminie();
     </thead>
     <tbody>
         <?php
-        $wydania = $wydaniaC->getAllWydania();
+        $wydania = $wydaniaRepo->getAllWydania();
         if ($wydania) {
             foreach ($wydania as $wydanie) {
                 $id_wydania = $wydanie['id_wydania'];
                 $pracownikImie = $wydanie['imie'];
                 $pracownikNazwisko = $wydanie['nazwisko'];
                 $pracownikStanowisko = $wydanie['stanowisko'];
-                $ubrania = $wydaneUbraniaC->getUbraniaByWydanieIdTermin($id_wydania);
+                $ubrania = $wydaneUbraniaRepo->getUbraniaByWydanieIdTermin($id_wydania);
 
                 foreach ($ubrania as $ubranie) {
                     $rowClass = $ubranie['statusText'] === 'Przeterminowane' ? 'table-danger' : ($ubranie['statusText'] === 'Koniec ważności' ? 'table-warning' : '');

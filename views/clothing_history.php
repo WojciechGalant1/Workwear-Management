@@ -7,11 +7,11 @@ checkAccess(5);
 include_once __DIR__ . '../../app/services/ServiceContainer.php';
 
 $serviceContainer = ServiceContainer::getInstance();
-$pracownikC = $serviceContainer->getController('EmployeeController');
-$wydaniaC = $serviceContainer->getController('IssueController');
-$wydaneUbraniaC = $serviceContainer->getController('IssuedClothingController');
+$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
+$wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
+$wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
 
-$data = $wydaneUbraniaC->getWydaneUbraniaWithDetails();
+$data = $wydaneUbraniaRepo->getWydaneUbraniaWithDetails();
 ?>
 <div id="alertContainer"></div>
 
@@ -56,7 +56,7 @@ $data = $wydaneUbraniaC->getWydaneUbraniaWithDetails();
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo __('close'); ?>"></button>
             </div>
             <div class="modal-body">
-                <!-- nazwa_ubrania rozmiar ilosc wydane_przez wydane_dla data -->       
+                <!-- nazwa_ubrania, rozmiar, ilosc, wydane_przez, wydane_dla, data -->       
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo __('close'); ?></button>

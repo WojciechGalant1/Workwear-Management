@@ -1,11 +1,11 @@
 <?php
-include_once __DIR__ . '/BaseController.php';
+include_once __DIR__ . '/BaseRepository.php';
 include_once __DIR__ . '/../models/OrderHistory.php';
-include_once __DIR__ . '/ClothingController.php';
-include_once __DIR__ . '/SizeController.php';
-include_once __DIR__ . '/WarehouseController.php';
+include_once __DIR__ . '/ClothingRepository.php';
+include_once __DIR__ . '/SizeRepository.php';
+include_once __DIR__ . '/WarehouseRepository.php';
 
-class OrderHistoryController extends BaseController {
+class OrderHistoryRepository extends BaseRepository {
 
     public function __construct(PDO $pdo) {
         parent::__construct($pdo);
@@ -39,13 +39,13 @@ class OrderHistoryController extends BaseController {
     }
 
     public function dodajDoMagazynu(OrderHistory $zamowienie) {
-        $szczegolyZamowieniaC = new OrderDetailsController($this->pdo);
+        $szczegolyZamowieniaC = new OrderDetailsRepository($this->pdo);
         $szczegoly = $szczegolyZamowieniaC->getByZamowienieId($zamowienie->getId());
 
         foreach ($szczegoly as $szczegolData) {
-            $ubranieC = new ClothingController($this->pdo);
-            $rozmiarC = new SizeController($this->pdo);
-            $stanMagazynuC = new WarehouseController($this->pdo);
+            $ubranieC = new ClothingRepository($this->pdo);
+            $rozmiarC = new SizeRepository($this->pdo);
+            $stanMagazynuC = new WarehouseRepository($this->pdo);
 
             $idUbrania = $szczegolData['id_ubrania'];
             $idRozmiaru = $szczegolData['id_rozmiaru'];

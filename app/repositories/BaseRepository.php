@@ -1,6 +1,6 @@
 <?php
 
-abstract class BaseController {
+abstract class BaseRepository {
     protected $pdo;
     
     public function __construct(PDO $pdo) {
@@ -11,3 +11,4 @@ abstract class BaseController {
         return $this->pdo;
     }
 }
+

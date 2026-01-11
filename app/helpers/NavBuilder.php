@@ -21,7 +21,6 @@ class NavBuilder {
         include_once __DIR__ . '/LocalizationHelper.php';
         include_once __DIR__ . '/LanguageSwitcher.php';
         
-        // Ensure we're using the current language for translations
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
         

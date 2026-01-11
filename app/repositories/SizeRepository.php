@@ -1,8 +1,8 @@
 <?php
-include_once __DIR__ . '/BaseController.php';
+include_once __DIR__ . '/BaseRepository.php';
 include_once __DIR__ . '/../models/Size.php';
 
-class SizeController extends BaseController {
+class SizeRepository extends BaseRepository {
 
     public function __construct(PDO $pdo) {
         parent::__construct($pdo);

@@ -51,14 +51,15 @@ A full-featured web platform designed to manage corporate workwear distribution 
 
 |Layer|Tech|
 |:-|:-|
-|Backend|PHP (custom MVC), REST-style endpoints|
+|Backend|PHP (custom MVC), REST-style endpoints, Repository pattern|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
 |Database|MySQL (relational, optimized queries)|
 |Security|CSRF protection, XSS prevention, role-based access|
 |Localization|Custom i18n system (English/Polish)|
 |Performance|Designed for low-resource deployment|
+|Architecture|Repository pattern for data access, Service Container for dependency injection|
 > **Note:**
-> Optimized for performance in PHP 5.3 environments due to infrastructure constraints at the time of development
+> Optimized for performance in PHP 5.6 environments. The project uses Repository pattern for data access layer, separating business logic from database operations.
 
 
 ##  Project Structure (Simplified)
@@ -67,13 +68,13 @@ A full-featured web platform designed to manage corporate workwear distribution 
 project/
 ├── app/                    # Application core
 │   ├── auth/               # Authorization and session management
-│   ├── controllers/        # Business logic controllers
+│   ├── repositories/       # Data access layer (Repository pattern)
 │   ├── models/             # Data models
 │   ├── config/             # Configuration files
 │   │   └── translations/   # Multilingual support (EN/PL)
 │   ├── services/           # Database connection and service container
-│   ├── forms/              # Form processing handlers
-│   ├── handlers/           # AJAX request handlers
+│   ├── forms/              # Form processing handlers 
+│   ├── handlers/           # AJAX request handlers 
 │   └── helpers/            # Utility functions (CSRF, i18n, etc.)
 ├── views/                  # View templates
 ├── img/                    # Image assets
@@ -101,7 +102,7 @@ project/
 - **Mobile Optimization** – Enhance touch interactions and responsive views for tablet/handheld use in warehouse environments
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
-- **MVC Architecture Improvements** – Refine custom MVC structure for better modularity, testability, and separation of concerns
+- **MVC Architecture Improvements** – Implement true MVC controllers (currently forms/handlers act as controllers), further separate concerns between request handling and business logic
 - **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack
 - **Additional Security Enhancements**:
   - Rate limiting to prevent brute-force form submissions

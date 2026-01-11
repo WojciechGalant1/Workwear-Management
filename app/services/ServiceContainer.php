@@ -1,21 +1,21 @@
 <?php
 include_once __DIR__ . '/database/Database.php'; 
-include_once __DIR__ . '/../controllers/BaseController.php';
-include_once __DIR__ . '/../controllers/WarehouseController.php';
-include_once __DIR__ . '/../controllers/ClothingController.php';
-include_once __DIR__ . '/../controllers/SizeController.php';
-include_once __DIR__ . '/../controllers/OrderHistoryController.php';
-include_once __DIR__ . '/../controllers/OrderDetailsController.php';
-include_once __DIR__ . '/../controllers/EmployeeController.php';
-include_once __DIR__ . '/../controllers/UserController.php';
-include_once __DIR__ . '/../controllers/IssueController.php';
-include_once __DIR__ . '/../controllers/IssuedClothingController.php';
-include_once __DIR__ . '/../controllers/CodeController.php';
+include_once __DIR__ . '/../repositories/BaseRepository.php';
+include_once __DIR__ . '/../repositories/WarehouseRepository.php';
+include_once __DIR__ . '/../repositories/ClothingRepository.php';
+include_once __DIR__ . '/../repositories/SizeRepository.php';
+include_once __DIR__ . '/../repositories/OrderHistoryRepository.php';
+include_once __DIR__ . '/../repositories/OrderDetailsRepository.php';
+include_once __DIR__ . '/../repositories/EmployeeRepository.php';
+include_once __DIR__ . '/../repositories/UserRepository.php';
+include_once __DIR__ . '/../repositories/IssueRepository.php';
+include_once __DIR__ . '/../repositories/IssuedClothingRepository.php';
+include_once __DIR__ . '/../repositories/CodeRepository.php';
 
 class ServiceContainer {
     private static $instance = null;
     private $pdo;
-    private $controllers = [];
+    private $repositories = [];
     
     private function __construct() {
         $db = new Database();
@@ -33,37 +33,37 @@ class ServiceContainer {
         return $this->pdo;
     }
     
-    public function getController($controllerName) {
-        if (!isset($this->controllers[$controllerName])) {
-            $this->controllers[$controllerName] = $this->createController($controllerName);
+    public function getRepository($repositoryName) {
+        if (!isset($this->repositories[$repositoryName])) {
+            $this->repositories[$repositoryName] = $this->createRepository($repositoryName);
         }
-        return $this->controllers[$controllerName];
+        return $this->repositories[$repositoryName];
     }
     
-    private function createController($controllerName) {
-        switch ($controllerName) {
-            case 'WarehouseController':
-                return new WarehouseController($this->pdo);
-            case 'ClothingController':
-                return new ClothingController($this->pdo);
-            case 'SizeController':
-                return new SizeController($this->pdo);
-            case 'OrderHistoryController':
-                return new OrderHistoryController($this->pdo);
-            case 'OrderDetailsController':
-                return new OrderDetailsController($this->pdo);
-            case 'EmployeeController':
-                return new EmployeeController($this->pdo);
-            case 'UserController':
-                return new UserController($this->pdo);
-            case 'IssueController':
-                return new IssueController($this->pdo);
-            case 'IssuedClothingController':
-                return new IssuedClothingController($this->pdo);
-            case 'CodeController':
-                return new CodeController($this->pdo);
+    private function createRepository($repositoryName) {
+        switch ($repositoryName) {
+            case 'WarehouseRepository':
+                return new WarehouseRepository($this->pdo);
+            case 'ClothingRepository':
+                return new ClothingRepository($this->pdo);
+            case 'SizeRepository':
+                return new SizeRepository($this->pdo);
+            case 'OrderHistoryRepository':
+                return new OrderHistoryRepository($this->pdo);
+            case 'OrderDetailsRepository':
+                return new OrderDetailsRepository($this->pdo);
+            case 'EmployeeRepository':
+                return new EmployeeRepository($this->pdo);
+            case 'UserRepository':
+                return new UserRepository($this->pdo);
+            case 'IssueRepository':
+                return new IssueRepository($this->pdo);
+            case 'IssuedClothingRepository':
+                return new IssuedClothingRepository($this->pdo);
+            case 'CodeRepository':
+                return new CodeRepository($this->pdo);
             default:
-                throw new Exception("Controller $controllerName not found");
+                throw new Exception("Repository $repositoryName not found");
         }
     }
 }

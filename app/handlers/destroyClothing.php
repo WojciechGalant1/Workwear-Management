@@ -8,13 +8,11 @@ include_once __DIR__ . '/../helpers/CsrfHelper.php';
 include_once __DIR__ . '/../helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
 
-// Initialize language system
 LanguageSwitcher::initializeWithRouting();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    // Validate CSRF token
     if (!CsrfHelper::validateTokenFromJson($data)) {
         http_response_code(403);
         echo json_encode(CsrfHelper::getErrorResponse());
@@ -25,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($id) {
         $serviceContainer = ServiceContainer::getInstance();
-        $wydaneUbraniaC = $serviceContainer->getController('IssuedClothingController');
-        $success = $wydaneUbraniaC->destroyStatus($id);
+        $wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
+        $success = $wydaneUbraniaRepo->destroyStatus($id);
 
         if ($success) {
             echo json_encode(['success' => true]);

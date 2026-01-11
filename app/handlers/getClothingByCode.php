@@ -3,13 +3,12 @@ include_once __DIR__ . '/../services/ServiceContainer.php';
 include_once __DIR__ . '/../helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
 
-// Initialize language system
 LanguageSwitcher::initializeWithRouting();
 
 if (isset($_GET['kod'])) {
     $serviceContainer = ServiceContainer::getInstance();
-    $kodC = $serviceContainer->getController('CodeController');
-    $kodData = $kodC->findByNazwa($_GET['kod']);
+    $kodRepo = $serviceContainer->getRepository('CodeRepository');
+    $kodData = $kodRepo->findByNazwa($_GET['kod']);
 
     if ($kodData) {
         $response = [

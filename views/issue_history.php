@@ -7,9 +7,9 @@ checkAccess(4);
 include_once __DIR__ . '../../app/services/ServiceContainer.php';
 
 $serviceContainer = ServiceContainer::getInstance();
-$pracownikC = $serviceContainer->getController('EmployeeController');
-$wydaniaC = $serviceContainer->getController('IssueController');
-$wydaneUbraniaC = $serviceContainer->getController('IssuedClothingController');
+$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
+$wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
+$wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
 
 include_once __DIR__ . '../../layout/ClassModal.php';
 $modal = new ClassModal();
@@ -46,13 +46,13 @@ $modal = new ClassModal();
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pracownikID']) && !empty($_GET['pracownikID'])) {
     $pracownikID = $_GET['pracownikID'];
-    $pracownik = $pracownikC->getById($pracownikID);
+    $pracownik = $pracownikRepo->getById($pracownikID);
 
     if ($pracownik) {
         $imie = $pracownik['imie'];
         $nazwisko = $pracownik['nazwisko'];
 
-        $historia = $wydaniaC->getWydaniaByPracownikId($pracownikID);
+        $historia = $wydaniaRepo->getWydaniaByPracownikId($pracownikID);
 
         if ($historia) {
             echo "<h2>" . __('history_issue_for') . ": $imie $nazwisko</h2> <br/>";
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pracownikID']) && !empt
                 $id_wydania = $wydanie['id_wydania'];
                 $data_wydania = $wydanie['data_wydania'];
                 $wydane_przez = $wydanie['user_name'];
-                $ubrania = $wydaneUbraniaC->getUbraniaByWydanieId($id_wydania);
+                $ubrania = $wydaneUbraniaRepo->getUbraniaByWydanieId($id_wydania);
 
                 $oneMonthAfter = date('Y-m-d', strtotime($data_wydania . ' +1 month'));
                 $currentDate = date('Y-m-d');

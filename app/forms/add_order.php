@@ -33,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $current_user_id = $_SESSION['user_id'];
     $serviceContainer = ServiceContainer::getInstance();
-    $userC = $serviceContainer->getController('UserController');
-    $currentUser = $userC->getUserById($current_user_id);
+    $userRepo = $serviceContainer->getRepository('UserRepository');
+    $currentUser = $userRepo->getUserById($current_user_id);
 
     if (!$currentUser) {
         $response['success'] = false;
@@ -45,12 +45,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $zamowienie = new OrderHistory($data_zamowienia_obj, $current_user_id, $uwagi, $status);
-    $zamowienieC = $serviceContainer->getController('OrderHistoryController');
-    $szczegolyZamowieniaC = $serviceContainer->getController('OrderDetailsController');
-    $kodC = $serviceContainer->getController('CodeController');
+    $zamowienieRepo = $serviceContainer->getRepository('OrderHistoryRepository');
+    $szczegolyZamowieniaRepo = $serviceContainer->getRepository('OrderDetailsRepository');
+    $kodRepo = $serviceContainer->getRepository('CodeRepository');
 
-    if ($zamowienieC->create($zamowienie)) {
-        $zamowienieId = $zamowienieC->getLastInsertId();
+    if ($zamowienieRepo->create($zamowienie)) {
+        $zamowienieId = $zamowienieRepo->getLastInsertId();
         $zamowienie->setId($zamowienieId); 
         $ubrania = isset($_POST['ubrania']) ? $_POST['ubrania'] : array();
 
@@ -70,24 +70,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     exit;
                 }
 
-                $ubranieC = $serviceContainer->getController('ClothingController');
-                $rozmiarC = $serviceContainer->getController('SizeController');
+                $ubranieRepo = $serviceContainer->getRepository('ClothingRepository');
+                $rozmiarRepo = $serviceContainer->getRepository('SizeRepository');
 
-                $idUbrania = $ubranieC->firstOrCreate(new Clothing($nazwa));
-                $idRozmiaru = $rozmiarC->firstOrCreate(new Size($rozmiar));
+                $idUbrania = $ubranieRepo->firstOrCreate(new Clothing($nazwa));
+                $idRozmiaru = $rozmiarRepo->firstOrCreate(new Size($rozmiar));
 
-                $kod = $kodC->findKodByNazwa($kod_nazwa);  
+                $kod = $kodRepo->findKodByNazwa($kod_nazwa);  
 
                 if (!$kod) {
                     $nowyKod = new Code($kod_nazwa, $idUbrania, $idRozmiaru, $status); 
-                    $kodId = $kodC->create($nowyKod);  
+                    $kodId = $kodRepo->create($nowyKod);  
                 } else {
                     $kodId = $kod->getIdKod();
                 }
 
                 $szczegol = new OrderDetails($zamowienieId, $idUbrania, $idRozmiaru, $ilosc, $iloscMin, $firma, $kodId);
 
-                if (!$szczegolyZamowieniaC->create($szczegol)) {
+                if (!$szczegolyZamowieniaRepo->create($szczegol)) {
                     $response['success'] = false;
                     $response['message'] = LocalizationHelper::translate('order_details_error');
                     echo json_encode($response);
@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if ($status == 1) {
-            $zamowienieC->dodajDoMagazynu($zamowienie);
+            $zamowienieRepo->dodajDoMagazynu($zamowienie);
         }
 
         $response['success'] = true;
