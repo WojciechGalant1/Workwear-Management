@@ -1,5 +1,5 @@
 <?php
-require_once './app/Router.php';
+require_once './app/core/Router.php';
 require_once './app/config/RouteConfig.php';
 
 $router = new Router();

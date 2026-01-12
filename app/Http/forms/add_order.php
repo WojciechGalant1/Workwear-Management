@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include_once __DIR__ . '/../../services/ServiceContainer.php';
+include_once __DIR__ . '/../../core/ServiceContainer.php';
 include_once __DIR__ . '/../../helpers/CsrfHelper.php';
 include_once __DIR__ . '/../../helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../../helpers/LanguageSwitcher.php';

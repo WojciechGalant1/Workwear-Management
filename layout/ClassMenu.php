@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__ . '/../app/services/ServiceContainer.php';
+include_once __DIR__ . '/../app/core/ServiceContainer.php';
 include_once __DIR__ . '/../app/auth/SessionManager.php';
 include_once __DIR__ . '/../app/helpers/UrlHelper.php';
 include_once __DIR__ . '/../app/helpers/NavBuilder.php';

@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-include_once __DIR__ . '/../../services/ServiceContainer.php';
+include_once __DIR__ . '/../../core/ServiceContainer.php';
 
 try {
     $query = isset($_GET['query']) ? $_GET['query'] : '';

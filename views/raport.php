@@ -5,7 +5,7 @@ include_once __DIR__ . '../../layout/header.php';
 include_once __DIR__ . '../../app/auth/Auth.php';
 checkAccess(4);
 
-include_once __DIR__ . '../../app/services/ServiceContainer.php';
+include_once __DIR__ . '../../app/core/ServiceContainer.php';
 
 $serviceContainer = ServiceContainer::getInstance();
 $pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');

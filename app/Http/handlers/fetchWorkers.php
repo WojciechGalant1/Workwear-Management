@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../../services/ServiceContainer.php';
+include_once __DIR__ . '/../../core/ServiceContainer.php';
 
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 

@@ -4,7 +4,7 @@ header("Content-Type:text/html; charset=utf-8");
 include_once __DIR__ . '../../layout/header.php';
 include_once __DIR__ . '../../app/auth/Auth.php';
 checkAccess(4);
-include_once __DIR__ . '../../app/services/ServiceContainer.php';
+include_once __DIR__ . '../../app/core/ServiceContainer.php';
 include_once __DIR__ . '../../app/helpers/CsrfHelper.php';
 
 $serviceContainer = ServiceContainer::getInstance();

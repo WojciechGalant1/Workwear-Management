@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../../services/ServiceContainer.php';
+include_once __DIR__ . '/../../core/ServiceContainer.php';
 
 $ubranie_id  = isset($_GET['ubranie_id']) ? $_GET['ubranie_id'] : '';
 

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/helpers/UrlHelper.php';
+require_once __DIR__ . '/../helpers/UrlHelper.php';
 
 class Router {
     private $routes = array();
