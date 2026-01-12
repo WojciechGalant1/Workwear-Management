@@ -106,19 +106,19 @@ class WarehouseRepository extends BaseRepository {
             $stmt->bindParam(':idUbrania', $idUbrania, PDO::PARAM_INT);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             if (!$stmt->execute()) {
-                return array('status' => 'error', 'message' => LocalizationHelper::translate('warehouse_update_clothing_error'));
+                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_clothing_error'));
             }
-    
+
             $existingRozmiar = $rozmiarC->findByName($rozmiar);
             $idRozmiaru = $existingRozmiar ? $existingRozmiar->getIdRozmiar() : $rozmiarC->create(new Size($rozmiar));
-    
+
             $stmt = $this->pdo->prepare("UPDATE stan_magazynu SET id_rozmiaru = :idRozmiaru WHERE id = :id");
             $stmt->bindParam(':idRozmiaru', $idRozmiaru, PDO::PARAM_INT);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             if (!$stmt->execute()) {
-                return array('status' => 'error', 'message' => LocalizationHelper::translate('warehouse_update_size_error'));
+                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_size_error'));
             }
-    
+
             $stmt = $this->pdo->prepare("SELECT ilosc FROM stan_magazynu WHERE id = :id");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -134,12 +134,12 @@ class WarehouseRepository extends BaseRepository {
                 if ($iloscDiff !== 0) {
                     $this->addHistoriaZamowien($idUbrania, $idRozmiaru, $iloscDiff, $uwagi, $currentUserId);
                 }
-                return array('status' => 'success', 'message' => 'Stan magazynu zostal zaktualizowany.');
+                return array('success' => true, 'message' => LocalizationHelper::translate('warehouse_update_success'));
             } else {
-                return array('status' => 'error', 'message' => 'Blad podczas aktualizacji ilości.');
+                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_error'));
             }
         } catch (Exception $e) {
-            return array('status' => 'error', 'message' => $e->getMessage());
+            return array('success' => false, 'message' => $e->getMessage());
         }
     }
     

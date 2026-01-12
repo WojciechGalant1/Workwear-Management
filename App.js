@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 	const moduleLoaders = {
 		AlertManager: async () => {
 			const { AlertManager } = await import('./script/AlertManager.js');
-			const { addCsrfToFormData } = await import('./script/utils.js');
+			const { apiClient } = await import('./script/apiClient.js');
 			const alertManagerContainer = document.getElementById('alertContainer');
 			if (!alertManagerContainer) {
 				console.warn('AlertManager: alertContainer element not found.');
@@ -27,26 +27,20 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 					if (submitBtn) submitBtn.disabled = true;
 					if (loadingSpinner) loadingSpinner.style.display = 'block';
 					const formData = new FormData(this);
-					addCsrfToFormData(formData);
 					const actionUrl = this.getAttribute('action');
 					try {
-						const response = await fetch(actionUrl, { method: 'POST', body: formData });
-						if (!response.ok) throw new Error('Network error: ' + response.statusText);
-						const data = await response.json();
-						if (data.success) {
-							alertManager.createAlert(data.message, 'success');
-							if (window.fromRaport) {
-								const modalElement = document.getElementById('confirmModal');
-								if (modalElement) { new bootstrap.Modal(modalElement).show(); }
-							} else {
-								await new Promise(resolve => setTimeout(resolve, 200));
-								location.reload();
-							}
+						const data = await apiClient.postFormData(actionUrl, formData);
+						alertManager.createAlert(data.message || Translations.translate('operation_success'), 'success');
+						if (window.fromRaport) {
+							const modalElement = document.getElementById('confirmModal');
+							if (modalElement) { new bootstrap.Modal(modalElement).show(); }
 						} else {
-							alertManager.createAlert(data.message || Translations.translate('error_general'), 'danger');
+							await new Promise(resolve => setTimeout(resolve, 200));
+							location.reload();
 						}
 					} catch (err) {
-						alertManager.createAlert(Translations.translate('error_general'), 'danger');
+						console.error('Form submission error:', err);
+						alertManager.createAlert(err.message || Translations.translate('error_general'), 'danger');
 						const modalElement = document.getElementById('confirmModal');
 						if (modalElement) { new bootstrap.Modal(modalElement).show(); }
 					} finally {
@@ -156,20 +150,32 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 			RedirectStatus.initialize();
 		},
 		ChangeStatus: async () => {
-			const { ChangeStatus } = await import('./script/ChangeStatus.js');
-			ChangeStatus.initialize();
+			const [{ AlertManager }, { ChangeStatus }] = await Promise.all([
+				import('./script/AlertManager.js'),
+				import('./script/ChangeStatus.js')
+			]);
+			const alertManager = AlertManager.create(document.getElementById('alertContainer'));
+			ChangeStatus.initialize(alertManager);
 		},
 		CancelIssue: async () => {
-			const { CancelIssue } = await import('./script/CancelIssue.js');
-			CancelIssue.initialize();
+			const [{ AlertManager }, { CancelIssue }] = await Promise.all([
+				import('./script/AlertManager.js'),
+				import('./script/CancelIssue.js')
+			]);
+			const alertManager = AlertManager.create(document.getElementById('alertContainer'));
+			CancelIssue.initialize(alertManager);
 		},
 		ModalEditEmployee: async () => {
 			const { ModalEditEmployee } = await import('./script/ModalEditEmployee.js');
 			ModalEditEmployee.initialize();
 		},
 		DestroyClothing: async () => {
-			const { DestroyClothing } = await import('./script/DestroyClothing.js');
-			DestroyClothing.initialize();
+			const [{ AlertManager }, { DestroyClothing }] = await Promise.all([
+				import('./script/AlertManager.js'),
+				import('./script/DestroyClothing.js')
+			]);
+			const alertManager = AlertManager.create(document.getElementById('alertContainer'));
+			DestroyClothing.initialize(alertManager);
 		},
 		ClothingHistoryDetails: async () => {
 			const { ClothingHistoryDetails } = await import('./script/ClothingHistoryDetails.js');

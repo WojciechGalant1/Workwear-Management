@@ -1,5 +1,6 @@
 import { ClothingCode } from './ClothingCode.js';
-import { getBaseUrl, buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const ClothingManager = (() => {
@@ -160,9 +161,7 @@ export const ClothingManager = (() => {
             if (selectedUbranieId) {
                 rozmiarSelect.disabled = false;
                 try {
-                    const url = buildApiUrl(API_ENDPOINTS.GET_SIZES, { ubranie_id: selectedUbranieId });
-                    const response = await fetch(url);
-                    const data = await response.json();
+                    const data = await apiClient.get(API_ENDPOINTS.GET_SIZES, { ubranie_id: selectedUbranieId });
 
                     rozmiarSelect.innerHTML = `<option value="">${Translations.translate('select_size_name')}</option>`;
                     data.forEach(rozmiar => {

@@ -33,6 +33,7 @@ export const Translations = (() => {
         'network_error': 'Network error occurred',
         'server_error': 'Server error occurred',
         'error_general': 'An error occurred while processing the request',
+        'error_invalid_response': 'Invalid server response',
         
         // Status messages
         'status_changed': 'Status changed',
@@ -125,6 +126,7 @@ export const Translations = (() => {
         'network_error': 'Wystąpił błąd sieci',
         'server_error': 'Wystąpił błąd serwera',
         'error_general': 'Wystąpił błąd podczas przetwarzania żądania',
+        'error_invalid_response': 'Nieprawidłowa odpowiedź serwera',
         
         // Status messages
         'status_changed': 'Status zmieniony',

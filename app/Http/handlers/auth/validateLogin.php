@@ -35,19 +35,19 @@ try {
         $stmt->execute(array(':username' => $username));
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user) {
-            $hashed_password = $user['password'];
-            if (crypt($password, $hashed_password) == $hashed_password) {
-                $sessionManager = new SessionManager();
-                $sessionManager->login($user['id'], $user['status']);
+            if ($user) {
+                $hashed_password = $user['password'];
+                if (crypt($password, $hashed_password) == $hashed_password) {
+                    $sessionManager = new SessionManager();
+                    $sessionManager->login($user['id'], $user['status']);
 
-                echo json_encode(array('status' => 'success', 'message' => LocalizationHelper::translate('login_success')));
+                    echo json_encode(array('success' => true, 'message' => LocalizationHelper::translate('login_success')));
+                } else {
+                    echo json_encode(array('success' => false, 'message' => LocalizationHelper::translate('login_invalid_credentials')));
+                }
             } else {
-                echo json_encode(array('status' => 'error', 'message' => LocalizationHelper::translate('login_invalid_credentials')));
+                echo json_encode(array('success' => false, 'message' => LocalizationHelper::translate('login_invalid_credentials')));
             }
-        } else {
-            echo json_encode(array('status' => 'error', 'message' => LocalizationHelper::translate('login_invalid_credentials')));
-        }
     } elseif (!empty($kodID)) {
         // Very basic rate-limit using session 
         if (!isset($_SESSION['login_attempts'])) {
@@ -66,15 +66,15 @@ try {
             $sessionManager = new SessionManager();
             $sessionManager->login($user['id'], $user['status']);
 
-            echo json_encode(array('status' => 'success', 'message' => LocalizationHelper::translate('login_success')));
+            echo json_encode(array('success' => true, 'message' => LocalizationHelper::translate('login_success')));
         } else {
-            echo json_encode(array('status' => 'error', 'message' => LocalizationHelper::translate('login_invalid_code')));
+            echo json_encode(array('success' => false, 'message' => LocalizationHelper::translate('login_invalid_code')));
         }
     } else {
-        echo json_encode(array('status' => 'error', 'message' => LocalizationHelper::translate('login_no_credentials')));
+        echo json_encode(array('success' => false, 'message' => LocalizationHelper::translate('login_no_credentials')));
     }
 } catch (PDOException $e) {
-    echo json_encode(array('status' => 'error', 'message' => LocalizationHelper::translate('login_connection_failed') . ': ' . $e->getMessage()));
+    echo json_encode(array('success' => false, 'message' => LocalizationHelper::translate('login_connection_failed') . ': ' . $e->getMessage()));
 }
 
 

@@ -43,7 +43,8 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **Barcode integration** - Items added/edited via scanner input with auto-form submission
 - **Multilingual Support** - Full English and Polish language support with dynamic switching
 - **CSRF Protection** - Comprehensive security implementation across all forms and AJAX requests
-- **Centralized API Management** - All API endpoints centralized in JavaScript with URL builder utility
+- **Centralized API Client** - Unified API client (`apiClient`) with automatic CSRF injection, response validation, and error handling
+- **Response Validation** - Automatic validation of API response structure with centralized error policy
 - **Responsive Design** - Mobile-friendly interface optimized for warehouse environments
 > **Warning:**
 > Barcode scanners must be configured to automatically append an "Enter" keystroke after each scan for proper form submission and system interaction.
@@ -58,9 +59,9 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Security|CSRF protection, XSS prevention, role-based access|
 |Localization|Custom i18n system (English/Polish)|
 |Performance|Designed for low-resource deployment|
-|Architecture|Repository pattern for data access, Service Container for dependency injection, HTTP layer separation|
+|Architecture|Repository pattern for data access, Service Container for dependency injection, HTTP layer separation, centralized API client|
 > **Note:**
-> Optimized for performance in PHP 5.6 environments. The project uses Repository pattern for data access layer, separating business logic from database operations. HTTP layer (forms/handlers) is separated from business logic, with centralized API endpoint management in JavaScript.
+> Optimized for performance in PHP 5.6 environments. The project uses Repository pattern for data access layer, separating business logic from database operations. HTTP layer (forms/handlers) is separated from business logic. All API requests are handled through a centralized `apiClient` that automatically injects CSRF tokens, validates response structure, and provides unified error handling. All API responses use consistent `{success: boolean}` format.
 
 
 ##  Project Structure (Simplified)
@@ -68,25 +69,25 @@ A full-featured web platform designed to manage corporate workwear distribution 
 ```
 project/
 ├── app/                    # Application core
-│   ├── auth/               # Authorization and session management
+│   ├── auth/               # Access control and session management
 │   ├── repositories/       # Data access layer (Repository pattern)
-│   ├── models/             # Data models
-│   ├── config/             # Configuration files
-│   │   └── translations/   # Multilingual support (EN/PL)
-│   ├── services/           # Database connection and service container
+│   ├── models/             # Domain entities (Employee, Clothing, etc.)
+│   ├── config/             # Configuration & translations
+│   ├── core/               # Core infrastructure (Router, DI Container, DB Singleton)
 │   ├── Http/               # HTTP layer (request handling)
 │   │   ├── forms/          # Form processing handlers (POST requests)
-│   │   └── handlers/       # AJAX request handlers
-│   │       └── auth/       # Authentication handlers
-│   ├── helpers/            # Utility functions (CSRF, i18n, etc.)
-│   └── Router.php          # Routing system
-├── views/                  # View templates
-├── img/                    # Image assets
-├── layout/                 # Layout templates (header, footer, navigation)
-├── script/                 # JavaScript modules (ES6 modules)
+│   │   └── handlers/       # AJAX / API request handlers
+│   └── helpers/            # Utility functions
+├── views/                  # View templates (presentation layer)
+├── layout/                 # Shared layout components (header, footer, menu)
+├── script/                 # JavaScript modules (ES6)
+│   ├── auth/               # Frontend validation & auth logic
+│   ├── apiClient.js        # Centralized API communication
+│   └── ...                 
 ├── styl/                   # CSS stylesheets
+├── img/                    # Image assets
 ├── .htaccess               # Apache configuration
-├── App.js                  # Main application JavaScript
+├── App.js                  # Frontend entry point / Module loader
 └── index.php               # Application entry point
 ```
 
@@ -101,12 +102,13 @@ project/
 |Expiration Reports|Track upcoming renewals and automate replacements|
 |Access Control|Define admin/staff roles with granular permission levels|
 
+
 ## Potential Enhancements & Future Development
 - **Codebase Modernization** – Upgrade PHP version and refactor legacy components for modern standards (e.g., PHP 8+, namespaces, Composer)
 - **Mobile Optimization** – Enhance touch interactions and responsive views for tablet/handheld use in warehouse environments
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
-- **MVC Architecture Improvements** – Implement true MVC controllers (currently Http/forms and Http/handlers act as request controllers), further separate concerns between request handling and business logic
+- **MVC Architecture Improvements** – Implement true MVC controllers (currently Http/forms and Http/handlers act as request controllers), further separate concerns between request handling and business logic. Consider introducing a Services layer to encapsulate business logic between HTTP handlers and Repositories
 - **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack
 - **Additional Security Enhancements**:
   - Rate limiting to prevent brute-force form submissions

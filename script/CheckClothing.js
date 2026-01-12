@@ -1,4 +1,5 @@
-import { buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const CheckClothing = (() => {
@@ -44,9 +45,7 @@ export const CheckClothing = (() => {
             if (!kod) return;
 
             try {
-                const url = buildApiUrl(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
-                const response = await fetch(url);
-                const data = await response.json();
+                const data = await apiClient.get(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
 
                 if (data && !data.error) {
                     alertManager.createAlert(`${Translations.translate('clothing_found')}: ${data.nazwa_ubrania}, ${Translations.translate('clothing_size')}: ${data.nazwa_rozmiaru}`);
@@ -61,7 +60,7 @@ export const CheckClothing = (() => {
                 }
             } catch (error) {
                 console.error('Error checking warehouse:', error);
-                alertManager.createAlert(Translations.translate('clothing_search_error'));
+                alertManager.createAlert(error.message || Translations.translate('clothing_search_error'));
             }
         };
 
@@ -81,9 +80,10 @@ export const CheckClothing = (() => {
             if (!productName || !sizeName) return;
 
             try {
-                const url = buildApiUrl(API_ENDPOINTS.CHECK_CLOTHING_EXISTS, { nazwa: productName, rozmiar: sizeName });
-                const response = await fetch(url);
-                const data = await response.json();
+                const data = await apiClient.get(API_ENDPOINTS.CHECK_CLOTHING_EXISTS, {
+                    nazwa: productName,
+                    rozmiar: sizeName
+                });
 
                 if (data.exists) {
                     alertManager.createAlert(`${Translations.translate('clothing_exists')}`);

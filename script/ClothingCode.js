@@ -1,4 +1,5 @@
-import { buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const ClothingCode = (() => {
@@ -20,9 +21,7 @@ export const ClothingCode = (() => {
             }
 
             try {
-                const url = buildApiUrl(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
-                const response = await fetch(url);
-                const data = await response.json();
+                const data = await apiClient.get(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
 
                 if (data && !data.error) {
                     ubranieIdInput.value = data.id_ubrania;
@@ -35,7 +34,7 @@ export const ClothingCode = (() => {
                 }
             } catch (error) {
                 console.error('Error searching for clothing:', error);
-                alertManager.createAlert(Translations.translate('clothing_search_error'));
+                alertManager.createAlert(error.message || Translations.translate('clothing_search_error'));
             }
         });
     };

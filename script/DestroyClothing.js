@@ -1,40 +1,25 @@
-import { addCsrfToObject, buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const DestroyClothing = (function () {
     let ubranieId = null;
     let selectedButton = null;
 
-    const destroy = async () => {
+    const destroy = async (alertManager) => {
         try {
-            const requestData = addCsrfToObject({ id: ubranieId });
-            const url = buildApiUrl(API_ENDPOINTS.DESTROY_CLOTHING);
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify(requestData)
-            });
+            await apiClient.post(API_ENDPOINTS.DESTROY_CLOTHING, { id: ubranieId });
 
-            const data = await response.json();
-
-            if (data.success) {
-                selectedButton.disabled = true;
-                selectedButton.textContent = Translations.translate('status_changed');
-                window.location.reload();
-            } else {
-                alert(Translations.translate('delete_error'));
-            }
+            selectedButton.disabled = true;
+            selectedButton.textContent = Translations.translate('status_changed');
+            window.location.reload();
         } catch (error) {
             console.error('Error:', error);
-            alert(Translations.translate('network_error'));
+            alertManager.createAlert(error.message || Translations.translate('delete_error'), 'danger');
         }
     };
 
-    const initialize = () => {
+    const initialize = (alertManager) => {
         const informButtons = document.querySelectorAll('.destroy-btn');
 
         informButtons.forEach(button => {
@@ -46,7 +31,7 @@ export const DestroyClothing = (function () {
         });
 
         document.getElementById('confirmDestroyBtn').addEventListener('click', () => {
-            destroy();
+            destroy(alertManager);
             $('#confirmDestroyModal').modal('hide');
         });
     };

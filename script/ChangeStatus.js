@@ -1,11 +1,12 @@
-import { getBaseUrl, addCsrfToObject, buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const ChangeStatus = (function () {
     let selectedId = null;
     let selectedButton = null;
 
-    const initialize = () => {
+    const initialize = (alertManager) => {
         const informButtons = document.querySelectorAll('.inform-btn');
 
         informButtons.forEach(button => {
@@ -18,83 +19,52 @@ export const ChangeStatus = (function () {
                     const currentAction = clickedButton.getAttribute('data-action');
                     const isInactive = currentAction === 'Inactive' || currentAction === 'Nieaktywne';
                     const currentStatus = isInactive ? 1 : 0;
-                    updateStatus(currentStatus);
+                    updateStatus(currentStatus, alertManager);
                 } else {
-                    updateStatusForModal();
+                    updateStatusForModal(alertManager);
                 }
             });
         });
     };
 
-    const updateStatus = async (currentStatus) => {
-        const baseUrl = getBaseUrl();
+    const updateStatus = async (currentStatus, alertManager) => {
         const originalText = selectedButton.textContent;
 
         try {
             selectedButton.disabled = true;
             selectedButton.textContent = Translations.translate('processing');
 
-            const requestData = addCsrfToObject({ id: selectedId, currentStatus });
-            const url = buildApiUrl(API_ENDPOINTS.CHANGE_STATUS);
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData)
+            await apiClient.post(API_ENDPOINTS.CHANGE_STATUS, {
+                id: selectedId,
+                currentStatus
             });
 
-            const data = await response.json();
-
-            if (data.success) {
-                selectedButton.textContent = Translations.translate('status_changed');
-                setTimeout(() => window.location.reload(), 100);
-            } else {
-                alert(data.message || Translations.translate('status_update_failed'));
-                selectedButton.disabled = false;
-                selectedButton.textContent = originalText;
-            }
+            selectedButton.textContent = Translations.translate('status_changed');
+            setTimeout(() => window.location.reload(), 100);
         } catch (error) {
             console.error('Error:', error);
-            alert(Translations.translate('status_update_failed'));
+            alertManager.createAlert(error.message || Translations.translate('status_update_failed'), 'danger');
             selectedButton.disabled = false;
             selectedButton.textContent = originalText;
         }
     };
 
-    const updateStatusForModal = async () => {
-        const isRaport = selectedButton.getAttribute('data-raport') === 'true';
-        const baseUrl = getBaseUrl();
+    const updateStatusForModal = async (alertManager) => {
         const originalText = selectedButton.textContent;
 
         try {
             selectedButton.disabled = true;
             selectedButton.textContent = Translations.translate('processing');
 
-            const requestData = addCsrfToObject({ id: selectedId, currentStatus: 1 });
-            const url = buildApiUrl(API_ENDPOINTS.CHANGE_STATUS);
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData)
+            await apiClient.post(API_ENDPOINTS.CHANGE_STATUS, {
+                id: selectedId,
+                currentStatus: 1
             });
 
-            const data = await response.json();
-
-            if (data.success) {
-                selectedButton.textContent = Translations.translate('status_changed');
-            } else {
-                alert(data.message || Translations.translate('status_update_failed'));
-                selectedButton.disabled = false;
-                selectedButton.textContent = originalText;
-            }
+            selectedButton.textContent = Translations.translate('status_changed');
         } catch (error) {
             console.error('Error:', error);
-            alert(Translations.translate('status_update_failed'));
+            alertManager.createAlert(error.message || Translations.translate('status_update_failed'), 'danger');
             selectedButton.disabled = false;
             selectedButton.textContent = originalText;
         }

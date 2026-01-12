@@ -1,11 +1,25 @@
-import { addCsrfToObject, buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const CancelIssue = (function () {
     let ubranieId = null;
     let selectedButton = null;
 
-    const initialize = () => {
+    const cancel = async (alertManager) => {
+        try { 
+            await apiClient.post(API_ENDPOINTS.CANCEL_ISSUE, { id: ubranieId });
+
+            selectedButton.disabled = true;
+            selectedButton.textContent = Translations.translate('status_cancelled');
+            window.location.reload();
+        } catch (error) {
+            console.error('Error:', error);
+            alertManager.createAlert(error.message || Translations.translate('operation_error'), 'danger');
+        }
+    };
+
+    const initialize = (alertManager) => {
         const informButtons = document.querySelectorAll('.cancel-btn');
     
         informButtons.forEach(button => {
@@ -21,40 +35,9 @@ export const CancelIssue = (function () {
     
         document.getElementById('confirmCancelBtn')
             .addEventListener('click', () => {
-                cancel();
+                cancel(alertManager);
                 $('#confirmCancelModal').modal('hide');
             });
-    };
-    
-
-    const cancel = async () => {
-        try { 
-            const requestData = addCsrfToObject({ id: ubranieId });
-            const url = buildApiUrl(API_ENDPOINTS.CANCEL_ISSUE);
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify(requestData)
-            });
-            
-            const data = await response.json();
-
-            if (data.success) {
-                selectedButton.disabled = true;
-                selectedButton.textContent = Translations.translate('status_cancelled');
-                window.location.reload();
-            } else {
-                alert(Translations.translate('operation_error'));
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            alert(Translations.translate('network_error'));
-        }
     };
 
     return { initialize };

@@ -1,4 +1,6 @@
-import { getBaseUrl, debounce, buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { debounce } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 
 export const ProductSuggestions = (function () {
     const cache = {};
@@ -22,9 +24,8 @@ export const ProductSuggestions = (function () {
                 currentController.abort();
             }
             currentController = new AbortController();
-            const url = buildApiUrl(endpoint, { query });
-            const response = await fetch(url, { signal: currentController.signal });
-            const data = await response.json();
+            
+            const data = await apiClient.get(endpoint, { query }, { signal: currentController.signal });
             cache[cacheKey] = data;
             showSuggestions(data, suggestionsList, inputField);
         } catch (error) {

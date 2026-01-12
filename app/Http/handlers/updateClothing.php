@@ -28,19 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Basic validation
     if ($id <= 0) {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => LocalizationHelper::translate('validation_invalid_id')]);
+        echo json_encode(['success' => false, 'message' => LocalizationHelper::translate('validation_invalid_id')]);
         exit;
     }
 
     if (empty($nazwa) || empty($rozmiar)) {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => LocalizationHelper::translate('validation_name_size_required')]);
+        echo json_encode(['success' => false, 'message' => LocalizationHelper::translate('validation_name_size_required')]);
         exit;
     }
 
     if ($ilosc < 0 || $iloscMin < 0) {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => LocalizationHelper::translate('validation_quantity_negative')]);
+        echo json_encode(['success' => false, 'message' => LocalizationHelper::translate('validation_quantity_negative')]);
         exit;
     }
 
@@ -49,17 +49,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $result = $stanMagazynuRepo->updateStanMagazynu($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId);
 
-    if ($result['status'] === 'success') {
+    if ($result['success']) {
         http_response_code(200);
-    } elseif ($result['status'] === 'not_found') {
-        http_response_code(404);
+        echo json_encode($result);
     } else {
         http_response_code(500);
+        echo json_encode($result);
     }
-    echo json_encode($result);
 } else {
     http_response_code(405);
-    echo json_encode(['status' => 'method_not_allowed', 'message' => LocalizationHelper::translate('error_method_not_allowed')]);
+    echo json_encode(['success' => false, 'message' => LocalizationHelper::translate('error_method_not_allowed')]);
 }
 ?>
 

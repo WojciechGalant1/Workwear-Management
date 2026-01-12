@@ -1,4 +1,6 @@
-import { getBaseUrl, debounce, buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { debounce } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const WorkerSuggestions = (() => {
@@ -27,7 +29,7 @@ export const WorkerSuggestions = (() => {
 
     const cache = {};
 
-    const fetchSuggestions = async (query, baseUrl, suggestions, usernameInput, hiddenInput, alertManager, loadingSpinner) => {
+    const fetchSuggestions = async (query, suggestions, usernameInput, hiddenInput, alertManager, loadingSpinner) => {
         if (query.length < 3) {
             suggestions.style.display = 'none';
             suggestions.innerHTML = '';
@@ -47,11 +49,13 @@ export const WorkerSuggestions = (() => {
                 currentController.abort();
             }
             currentController = new AbortController();
-            const url = buildApiUrl(API_ENDPOINTS.WORKERS, { query });
-            const response = await fetch(url, { signal: currentController.signal });
-            if (!response.ok) throw new Error('Network response was not ok');
             
-            const data = await response.json();
+            const data = await apiClient.get(
+                API_ENDPOINTS.WORKERS,
+                { query },
+                { signal: currentController.signal }
+            );
+            
             cache[query] = data;
 
             if (data.length === 0) {
@@ -70,7 +74,6 @@ export const WorkerSuggestions = (() => {
     };
 
     const create = (usernameInput, suggestions, alertManager) => {
-        const baseUrl = getBaseUrl();
         const hiddenInput = document.getElementById('pracownikID');
         const loadingSpinner = document.getElementById('loadingSpinnerName');
 
@@ -86,7 +89,7 @@ export const WorkerSuggestions = (() => {
                 loadingSpinner.style.display = 'none';
                 alertManager.createAlert(Translations.translate('validation_name_invalid_characters'));
             } else {
-                fetchSuggestions(query, baseUrl, suggestions, usernameInput, hiddenInput, alertManager, loadingSpinner);
+                fetchSuggestions(query, suggestions, usernameInput, hiddenInput, alertManager, loadingSpinner);
             }
         };
 

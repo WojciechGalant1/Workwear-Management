@@ -134,7 +134,7 @@ return array(
     'warehouse_minimum' => 'Minimum',
     'warehouse_current' => 'Aktualny',
     'warehouse_low_stock' => 'Alert o niskim stanie',
-    'warehouse_update_success' => 'Magazyn został zaktualizowany pomyślnie',
+    'warehouse_update_success' => 'Stan magazynu został zaktualizowany.',
     'warehouse_update_error' => 'Błąd podczas aktualizacji magazynu',
     'warehouse_update_clothing_error' => 'Błąd podczas aktualizacji nazwy ubrania',
     'warehouse_update_size_error' => 'Błąd podczas aktualizacji nazwy rozmiaru',

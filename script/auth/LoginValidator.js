@@ -1,6 +1,7 @@
 import { AlertManager } from '../AlertManager.js';
 import { Translations } from '../translations.js';
-import { getBaseUrl, getCsrfToken, buildApiUrl, API_ENDPOINTS } from '../utils.js';
+import { getBaseUrl, API_ENDPOINTS } from '../utils.js';
+import { apiClient } from '../apiClient.js';
 
 export const LoginValidator = (function () {
     let kodInput = '';
@@ -24,7 +25,7 @@ export const LoginValidator = (function () {
         };
     };
 
-    let autoValidateKodLogin = function () {
+    let autoValidateKodLogin = async function () {
         const kodID = kodInput.value.trim();
 
         if (kodID.length === 0) {
@@ -35,29 +36,20 @@ export const LoginValidator = (function () {
         this.showSpinner();
 
         const baseUrl = getBaseUrl();
-        const url = buildApiUrl(API_ENDPOINTS.VALIDATE_LOGIN);
 
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: { kodID: kodID, csrf_token: getCsrfToken() },
-            success: (data) => {
-                if (data.status === 'success') {
-                    alertManager.createAlert(Translations.translate('login_success'), 'success');
-                    window.location.href = baseUrl + '/issue-clothing';
-                    this.hideSpinner();
-                } else {
-                    alertManager.createAlert(Translations.translate('login_invalid_code'));
-                    kodInput.value = '';
-                    kodInput.focus();
-                    this.hideSpinner();
-                }
-            },
-            error: () => {
-                alertManager.createAlert(Translations.translate('server_error'));
-                this.hideSpinner();
-            },
-        });
+        try {
+            await apiClient.postForm(API_ENDPOINTS.VALIDATE_LOGIN, { kodID: kodID });
+            
+            alertManager.createAlert(Translations.translate('login_success'), 'success');
+            window.location.href = baseUrl + '/issue-clothing';
+            this.hideSpinner();
+        } catch (error) {
+            console.error('Login error:', error);
+            alertManager.createAlert(error.message || Translations.translate('login_invalid_code'));
+            kodInput.value = '';
+            kodInput.focus();
+            this.hideSpinner();
+        }
     };
 
     return { kodValidator };

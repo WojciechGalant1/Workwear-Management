@@ -1,4 +1,5 @@
-import { getBaseUrl, buildApiUrl, API_ENDPOINTS } from './utils.js';
+import { apiClient } from './apiClient.js';
+import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
 
 export const EditClothing = (() => {
@@ -32,33 +33,26 @@ export const EditClothing = (() => {
             }
         });
 
-        $('#zapiszUbranie').on('click', (event) => {
+        $('#zapiszUbranie').on('click', async (event) => {
             event.preventDefault();
 
             const form = $('#edycjaUbraniaForm');
             const formData = form.serialize();
-            const url = buildApiUrl(API_ENDPOINTS.UPDATE_CLOTHING);
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: formData,
-                xhrFields: {
-                    withCredentials: true
-                },
-                success: (response) => {
-                    if (alertManager) {
-                        alertManager.createAlert(Translations.translate('edit_success'), 'success');
-                    }
-                    $('#editModal').modal('hide');
-                    location.reload();
-                },
-                error: () => {
-                    if (alertManager) {
-                        alertManager.createAlert(Translations.translate('edit_error'), 'danger');
-                    }
+            try {
+                await apiClient.postForm(API_ENDPOINTS.UPDATE_CLOTHING, formData);
+                
+                if (alertManager) {
+                    alertManager.createAlert(Translations.translate('edit_success'), 'success');
                 }
-            });
+                $('#editModal').modal('hide');
+                location.reload();
+            } catch (error) {
+                console.error('Error updating clothing:', error);
+                if (alertManager) {
+                    alertManager.createAlert(error.message || Translations.translate('edit_error'), 'danger');
+                }
+            }
         });
     };
 
