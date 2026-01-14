@@ -71,55 +71,84 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 			}
 		},
 		ClothingManager: async () => {
-			const [{ AlertManager }, { ClothingManager }, { ClothingCode }] = await Promise.all([
+			const [{ AlertManager }, { ClothingManager }] = await Promise.all([
 				import('./script/AlertManager.js'),
-				import('./script/ClothingManager.js'),
-				import('./script/ClothingCode.js')
+				import('./script/clothing/ClothingManager.js')
 			]);
 			const alertManager = AlertManager.create(document.getElementById('alertContainer'));
-			const manager = ClothingManager.create();
+			const container = document.getElementById('ubraniaContainer');
+			const templateRow = document.querySelector('.ubranieRow');
+			
+			if (!container || !templateRow) {
+				console.warn('ClothingManager: Missing required elements');
+				return;
+			}
+
+			const manager = ClothingManager.create({
+				container,
+				templateRow,
+				mode: 'ISSUE',
+				alertManager
+			});
+
 			const addUbranieBtn = document.querySelector('.addUbranieBtn');
 			if (addUbranieBtn) {
-				addUbranieBtn.addEventListener('click', () => { manager.addUbranie(alertManager); });
+				addUbranieBtn.addEventListener('click', () => {
+					manager.addRow();
+				});
 			}
-			const ubraniaContainer = document.getElementById('ubraniaContainer');
-			if (ubraniaContainer) {
-				ubraniaContainer.addEventListener('click', manager.removeUbranie);
-				ubraniaContainer.addEventListener('change', manager.loadRozmiary);
-			}
-			manager.updateRemoveButtonVisibility();
-			manager.loadInitialRozmiary();
-			const existingRadioButtons = document.querySelectorAll('input[type="radio"]');
-			if (existingRadioButtons.length) { manager.initializeRadioBehavior(existingRadioButtons); }
-			const kodInputs = document.querySelectorAll('.kodSection input');
-			if (kodInputs.length) { kodInputs.forEach(input => ClothingCode.initializeKodInput(input, alertManager)); }
 		},
 		ProductSuggestions: async () => {
 			const [{ AlertManager }, { ClothingManager }, { CheckClothing }, { ProductSuggestions }] = await Promise.all([
 				import('./script/AlertManager.js'),
-				import('./script/ClothingManager.js'),
+				import('./script/clothing/ClothingManager.js'),
 				import('./script/CheckClothing.js'),
 				import('./script/ProductSuggestions.js')
 			]);
 			const alertManager = AlertManager.create(document.getElementById('alertContainer'));
-			const manager = ClothingManager.create();
+			const container = document.getElementById('ubraniaContainer');
+			const templateRow = document.querySelector('.ubranieRow');
+			
+			if (!container || !templateRow) {
+				console.warn('ProductSuggestions: Missing required elements');
+				return;
+			}
+
+			const manager = ClothingManager.create({
+				container,
+				templateRow,
+				mode: 'ORDER',
+				alertManager
+			});
+
 			const initCheckClothingForRow = (row) => {
 				const inputs = row.querySelectorAll('input[name^="ubrania"]');
 				inputs.forEach(input => {
-					if (input.name.endsWith('[kod]')) { CheckClothing.checkKod(input, alertManager); }
-					else if (input.name.endsWith('[nazwa]') || input.name.endsWith('[rozmiar]')) { CheckClothing.checkNameSize(input, alertManager); }
+					if (input.name.endsWith('[kod]')) {
+						CheckClothing.checkKod(input, alertManager);
+					} else if (input.name.endsWith('[nazwa]') || input.name.endsWith('[rozmiar]')) {
+						CheckClothing.checkNameSize(input, alertManager);
+					}
 				});
 			};
+
 			ProductSuggestions.init(document);
-			document.querySelector('.addUbranieBtn').addEventListener('click', () => {
-				manager.addZamowienieUbranie();
-				const lastUbranieRow = document.querySelector('.ubranieRow:last-of-type');
-				ProductSuggestions.init(lastUbranieRow);
-				initCheckClothingForRow(lastUbranieRow);
+			const existingRows = container.querySelectorAll('.ubranieRow');
+			existingRows.forEach(row => {
+				ProductSuggestions.init(row);
+				initCheckClothingForRow(row);
 			});
-			document.getElementById('ubraniaContainer').addEventListener('click', (event) => {
-				if (event.target.classList.contains('removeUbranieBtn')) { manager.removeUbranie(event); }
-			});
+
+			const addUbranieBtn = document.querySelector('.addUbranieBtn');
+			if (addUbranieBtn) {
+				addUbranieBtn.addEventListener('click', () => {
+					const newRow = manager.addRow();
+					if (newRow) {
+						ProductSuggestions.init(newRow);
+						initCheckClothingForRow(newRow);
+					}
+				});
+			}
 		},
 		CheckClothing: async () => {
 			const [{ AlertManager }, { CheckClothing }] = await Promise.all([

@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $iloscMin = isset($_POST['iloscMin']) ? intval($_POST['iloscMin']) : 0;
     $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
 
-    // Basic validation
     if ($id <= 0) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => LocalizationHelper::translate('validation_invalid_id')]);
@@ -60,5 +59,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => LocalizationHelper::translate('error_method_not_allowed')]);
 }
-?>
 

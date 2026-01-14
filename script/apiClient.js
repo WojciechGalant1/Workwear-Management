@@ -73,19 +73,13 @@ const request = async (
     // For GET requests, some endpoints return data directly (arrays, objects without success field)
     // Only validate success field for mutating requests (POST, PUT, PATCH, DELETE)
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-        // Validate API response structure for mutating requests
-        if (
-            json === null ||
-            typeof json !== 'object' ||
-            typeof json.success !== 'boolean'
-        ) {
+        if (json === null || typeof json !== 'object' || typeof json.success !== 'boolean') {
             throw new Error(
                 Translations.translate('error_invalid_response') ||
                 'Malformed API response'
             );
         }
 
-        // Business logic error
         if (!json.success) {
             throw new Error(
                 json.message ||
@@ -103,10 +97,18 @@ const request = async (
  * Automatically adds CSRF token to FormData
  */
 const postFormData = async (endpoint, formData, signal = null) => {
-    const url = buildApiUrl(endpoint);
+    let url;
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://') || endpoint.startsWith('/')) {
+        // Already a full URL or absolute path - use as is
+        url = endpoint.startsWith('/') ? `${window.location.origin}${endpoint}` : endpoint;
+    } else {
+        // Relative endpoint - use buildApiUrl
+        url = buildApiUrl(endpoint);
+    }
     const csrfToken = getCsrfToken();
     
-    if (csrfToken) {
+    // Only add CSRF token if it's not already in FormData
+    if (csrfToken && !formData.has('csrf_token')) {
         formData.append('csrf_token', csrfToken);
     }
 

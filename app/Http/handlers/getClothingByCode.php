@@ -23,6 +23,5 @@ if (isset($_GET['kod'])) {
     header('Content-Type: application/json');
     echo json_encode($response);
 }
-?>
 
 
