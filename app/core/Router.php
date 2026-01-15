@@ -5,8 +5,8 @@ class Router {
     private $routes = array();
     private $notFoundCallback;
 
-    public function add($path, $viewFile) {
-        $this->routes[$path] = $viewFile;
+    public function add($path, $routeConfig) {
+        $this->routes[$path] = $routeConfig;
     }
 
     public function setNotFound($callback) {
@@ -17,13 +17,45 @@ class Router {
         $uri = UrlHelper::getCleanUri();
         
         if (isset($this->routes[$uri])) {
-            $viewFile = $this->routes[$uri];
+            $route = $this->routes[$uri];
             
-            if (file_exists($viewFile)) {
-                include_once $viewFile;
-                return true;
-            } else {
-                throw new Exception("View file not found: $viewFile");
+            // Backward compatible: string paths (stare widoki)
+            if (is_string($route)) {
+                if (file_exists($route)) {
+                    include_once $route;
+                    return true;
+                } else {
+                    throw new Exception("View file not found: $route");
+                }
+            }
+            
+            // Nowe kontrolery: array config
+            if (is_array($route)) {
+                // Middleware - Auth check (PRZED kontrolerem)
+                if (isset($route['auth'])) {
+                    require_once __DIR__ . '/../auth/Auth.php';
+                    checkAccess($route['auth']);  
+                }
+                
+                // Wykonanie kontrolera (użytkownik jest już zweryfikowany)
+                if (isset($route['controller']) && isset($route['action'])) {
+                    require_once __DIR__ . '/../Http/Controllers/' . $route['controller'] . '.php';
+                    $controller = new $route['controller']();
+                    $controllerResult = $controller->{$route['action']}();
+                    
+                    // Przekazanie danych do widoku
+                    if (isset($controllerResult) && is_array($controllerResult)) {
+                        extract($controllerResult, EXTR_SKIP);  // EXTR_SKIP zapobiega nadpisywaniu istniejących zmiennych
+                    }
+                }
+                
+                // Renderowanie widoku
+                if (isset($route['view']) && file_exists($route['view'])) {
+                    include_once $route['view'];
+                    return true;
+                } else {
+                    throw new Exception("View file not found: " . (isset($route['view']) ? $route['view'] : 'unknown'));
+                }
             }
         } else {
             if (is_callable($this->notFoundCallback)) {

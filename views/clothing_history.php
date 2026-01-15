@@ -2,16 +2,6 @@
 header("Content-Type:text/html; charset=utf-8");
 
 include_once __DIR__ . '../../layout/header.php';
-include_once __DIR__ . '../../app/auth/Auth.php';
-checkAccess(5);
-include_once __DIR__ . '../../app/core/ServiceContainer.php';
-
-$serviceContainer = ServiceContainer::getInstance();
-$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-$wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
-$wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
-
-$data = $wydaneUbraniaRepo->getWydaneUbraniaWithDetails();
 ?>
 <div id="alertContainer"></div>
 

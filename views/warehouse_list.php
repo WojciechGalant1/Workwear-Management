@@ -2,14 +2,6 @@
 header("Content-Type:text/html; charset=utf-8");
 
 include_once __DIR__ . '../../layout/header.php';
-include_once __DIR__ . '../../app/auth/Auth.php';
-checkAccess(2);
-include_once __DIR__ . '../../app/core/ServiceContainer.php';
-include_once __DIR__ . '../../app/helpers/CsrfHelper.php';
-
-$serviceContainer = ServiceContainer::getInstance();
-$stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
-$ubrania = $stanMagazynuRepo->readAll();
 ?>
 
 <div id="alertContainer"></div>
@@ -88,7 +80,7 @@ $ubrania = $stanMagazynuRepo->readAll();
 </div>
 
 
-<script id="ubrania-data" type="application/json"><?php echo json_encode($ubrania); ?></script>
+<script id="ubrania-data" type="application/json"><?php echo json_encode($ubrania, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?></script>
 <script type="module" src="<?php echo $baseUrl; ?>/App.js"></script>
 <script>
     new DataTable('#example', {

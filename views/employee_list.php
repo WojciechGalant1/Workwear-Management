@@ -2,14 +2,6 @@
 header("Content-Type:text/html; charset=utf-8");
 
 include_once __DIR__ . '../../layout/header.php';
-include_once __DIR__ . '../../app/auth/Auth.php';
-checkAccess(4);
-include_once __DIR__ . '../../app/core/ServiceContainer.php';
-include_once __DIR__ . '../../app/helpers/CsrfHelper.php';
-
-$serviceContainer = ServiceContainer::getInstance();
-$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-$pracownicy = $pracownikRepo->getAll();
 ?>
 
 <div id="alertContainer"></div>
@@ -42,7 +34,7 @@ $pracownicy = $pracownikRepo->getAll();
     </tbody>
 </table>
 
-<script id="pracownicy-data" type="application/json"><?php echo json_encode($pracownicy); ?></script>
+<script id="pracownicy-data" type="application/json"><?php echo json_encode($pracownicy, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?></script>
 
 <!-- Modal -->
 <div id="editModal" class="modal fade" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">

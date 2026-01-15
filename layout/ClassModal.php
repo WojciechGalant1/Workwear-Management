@@ -4,10 +4,6 @@ include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
 
 class ClassModal {
     public function anulujModal() {
-        // Ensure language is initialized
-        if (!isset($_SESSION['current_language'])) {
-            LanguageSwitcher::initializeWithRouting();
-        }
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
         
@@ -33,10 +29,6 @@ class ClassModal {
     }
 
     public function zniszczoneModal() {
-        // Ensure language is initialized
-        if (!isset($_SESSION['current_language'])) {
-            LanguageSwitcher::initializeWithRouting();
-        }
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
         

@@ -9,16 +9,66 @@ class RouteConfig {
      */
     public static function getRoutes() {
         return array(
-            '/' => './views/issue_clothing.php',
-            '/issue-clothing' => './views/issue_clothing.php',
-            '/order-history' => './views/order_history.php',
-            '/clothing-history' => './views/clothing_history.php',
-            '/issue-history' => './views/issue_history.php',
-            '/employees' => './views/employee_list.php',
-            '/warehouse' => './views/warehouse_list.php',
-            '/add-order' => './views/add_order.php',
-            '/report' => './views/raport.php',
-            '/add-employee' => './views/add_employee.php',
+            '/' => array(
+                'controller' => 'IssueController',
+                'action' => 'issue',
+                'view' => './views/issue_clothing.php',
+                'auth' => 1
+            ),
+            '/issue-clothing' => array(
+                'controller' => 'IssueController',
+                'action' => 'issue',
+                'view' => './views/issue_clothing.php',
+                'auth' => 1
+            ),
+            '/order-history' => array(
+                'controller' => 'OrderController',
+                'action' => 'history',
+                'view' => './views/order_history.php',
+                'auth' => 2
+            ),
+            '/clothing-history' => array(
+                'controller' => 'ClothingController',
+                'action' => 'history',
+                'view' => './views/clothing_history.php',
+                'auth' => 5
+            ),
+            '/issue-history' => array(
+                'controller' => 'IssueController',
+                'action' => 'history',
+                'view' => './views/issue_history.php',
+                'auth' => 4
+            ),
+            '/employees' => array(
+                'controller' => 'EmployeeController',
+                'action' => 'list',
+                'view' => './views/employee_list.php',
+                'auth' => 4
+            ),
+            '/warehouse' => array(
+                'controller' => 'WarehouseController',
+                'action' => 'list',
+                'view' => './views/warehouse_list.php',
+                'auth' => 2
+            ),
+            '/add-order' => array(
+                'controller' => 'OrderController',
+                'action' => 'create',
+                'view' => './views/add_order.php',
+                'auth' => 2
+            ),
+            '/report' => array(
+                'controller' => 'ReportController',
+                'action' => 'index',
+                'view' => './views/raport.php',
+                'auth' => 4
+            ),
+            '/add-employee' => array(
+                'controller' => 'EmployeeController',
+                'action' => 'create',
+                'view' => './views/add_employee.php',
+                'auth' => 4
+            ),
             '/login' => './views/auth/login.php'
         );
     }

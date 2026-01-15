@@ -1,20 +1,15 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 require_once __DIR__ . '/../../app/helpers/UrlHelper.php';
 require_once __DIR__ . '/../../app/helpers/CsrfHelper.php';
 require_once __DIR__ . '/../../app/helpers/LocalizationHelper.php';
 require_once __DIR__ . '/../../app/helpers/LanguageSwitcher.php';
 
-$currentLanguage = LanguageSwitcher::initializeWithRouting();
+$currentLanguage = LanguageSwitcher::getCurrentLanguage();
 
 $baseUrl = UrlHelper::getBaseUrl();
 
 function __($key, $params = array())
 {
-    // Ensure we're using the current language from the session/cookie/URL
     $currentLang = LanguageSwitcher::getCurrentLanguage();
     LocalizationHelper::setLanguage($currentLang);
     return LocalizationHelper::translate($key, $params);

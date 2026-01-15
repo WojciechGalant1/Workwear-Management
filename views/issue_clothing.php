@@ -1,50 +1,9 @@
 <?php
-
 include_once __DIR__ . '../../layout/header.php';
-include_once __DIR__ . '../../app/auth/Auth.php';
-checkAccess(1);
-
-include_once __DIR__ . '../../app/core/ServiceContainer.php';
-include_once __DIR__ . '../../app/helpers/CsrfHelper.php';
-
-$serviceContainer = ServiceContainer::getInstance();
-$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-$ubranieRepo = $serviceContainer->getRepository('ClothingRepository');
-$ubrania = $ubranieRepo->getAllUnique();
 
 include_once __DIR__ . '../../app/helpers/DateHelper.php';
 
-$expire_date_months = [6, 12, 18, 24];
-
-$fromRaport = isset($_GET['fromRaport']) && $_GET['fromRaport'] == '1';
-$imie = '';
-$nazwisko = '';
-$stanowisko = '';
-
-if ($fromRaport) {
-    $pracownikId = isset($_GET['pracownikId']) ? htmlspecialchars($_GET['pracownikId']) : '';
-    $imie = isset($_GET['imie']) ? htmlspecialchars($_GET['imie']) : '';
-    $nazwisko = isset($_GET['nazwisko']) ? htmlspecialchars($_GET['nazwisko']) : '';
-    $stanowisko = isset($_GET['stanowisko']) ? htmlspecialchars($_GET['stanowisko']) : '';
-
-
-    $wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
-
-    $pracownikId = isset($_GET['pracownikId']) ? htmlspecialchars($_GET['pracownikId']) : '';
-    $expiredUbrania = [];
-
-    if ($pracownikId) {
-        $wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
-        $wydaniaPracownika = $wydaniaRepo->getWydaniaByPracownikId($pracownikId);
-
-        foreach ($wydaniaPracownika as $wydanie) {
-            $expiringUbrania = $wydaneUbraniaRepo->getUbraniaByWydanieIdTermin($wydanie['id_wydania']);
-            foreach ($expiringUbrania as $ubranie) {
-                $expiredUbrania[] = $ubranie;
-            }
-        }
-    }
-}
+$expire_date_months = array(6, 12, 18, 24);
 ?>
 
 <div id="alertContainer"></div>

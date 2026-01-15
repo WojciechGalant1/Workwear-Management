@@ -52,18 +52,6 @@ class EmployeeRepository extends BaseRepository {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function findByImieNazwisko($imieNazwisko) {
-        $parts = explode(' ', $imieNazwisko);
-        $imie = $parts[0];
-        $nazwisko = isset($parts[1]) ? $parts[1] : '';
-        $stmt = $this->pdo->prepare('SELECT id_pracownik FROM pracownicy WHERE imie = :imie AND nazwisko = :nazwisko');
-        $stmt->bindParam(':imie', $imie);
-        $stmt->bindParam(':nazwisko', $nazwisko);
-        $stmt->execute();
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
 }
 ?>
 

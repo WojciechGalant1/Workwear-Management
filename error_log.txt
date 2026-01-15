@@ -1,0 +1,26 @@
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Error [2]: Undefined array key "nazwa_ubrania" in E:\xampp\htdocs\ubrania\views\clothing_history.php:26
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Warning:  Undefined array key "nazwa_ubrania" in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 26
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Error [8192]: htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in E:\xampp\htdocs\ubrania\views\clothing_history.php:26
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 26
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Error [2]: Undefined array key "rozmiar" in E:\xampp\htdocs\ubrania\views\clothing_history.php:27
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Warning:  Undefined array key "rozmiar" in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 27
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Error [8192]: htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in E:\xampp\htdocs\ubrania\views\clothing_history.php:27
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 27
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Error [2]: Undefined array key "wydane_dla" in E:\xampp\htdocs\ubrania\views\clothing_history.php:28
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Warning:  Undefined array key "wydane_dla" in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 28
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Error [8192]: htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in E:\xampp\htdocs\ubrania\views\clothing_history.php:28
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 28
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Error [2]: Undefined array key "id" in E:\xampp\htdocs\ubrania\views\clothing_history.php:31
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Warning:  Undefined array key "id" in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 31
+[15-Jan-2026 00:46:54 Europe/Warsaw] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in E:\xampp\htdocs\ubrania\views\clothing_history.php:26
+Stack trace:
+#0 E:\xampp\htdocs\ubrania\app\core\Router.php(55): include_once()
+#1 E:\xampp\htdocs\ubrania\index.php(69): Router->dispatch('/clothing-histo...')
+#2 {main}
+  thrown in E:\xampp\htdocs\ubrania\views\clothing_history.php on line 26
+[15-Jan-2026 00:46:54 Europe/Warsaw] Fatal Error: Uncaught TypeError: Cannot access offset of type string on string in E:\xampp\htdocs\ubrania\views\clothing_history.php:26
+Stack trace:
+#0 E:\xampp\htdocs\ubrania\app\core\Router.php(55): include_once()
+#1 E:\xampp\htdocs\ubrania\index.php(69): Router->dispatch('/clothing-histo...')
+#2 {main}
+  thrown in E:\xampp\htdocs\ubrania\views\clothing_history.php:26

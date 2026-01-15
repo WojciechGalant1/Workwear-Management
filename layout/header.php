@@ -1,14 +1,10 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 include_once __DIR__ . '/../app/helpers/UrlHelper.php';
 include_once __DIR__ . '/../app/helpers/CsrfHelper.php';
 include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
 
-$currentLanguage = LanguageSwitcher::initializeWithRouting();
+$currentLanguage = LanguageSwitcher::getCurrentLanguage();
 $baseUrl = UrlHelper::getBaseUrl();
 $uri = UrlHelper::getCleanUri();
 $current_page = UrlHelper::getCurrentPage($uri);

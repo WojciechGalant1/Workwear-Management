@@ -47,29 +47,6 @@ class IssuedClothingRepository extends BaseRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getUbraniaByWydanieIdTermin($id_wydania) {
-        $stmt = $this->pdo->prepare("SELECT wu.id, wu.ilosc, wu.data_waznosci, wu.id_ubrania, u.nazwa_ubrania, r.nazwa_rozmiaru,
-           CASE 
-               WHEN wu.data_waznosci <= :currentDate THEN 'Przeterminowane'
-               WHEN wu.data_waznosci <= :twoMonthsAheadDup THEN 'Koniec ważności'
-               ELSE 'Brak danych'
-           END AS statusText
-        FROM wydane_ubrania wu
-        LEFT JOIN ubranie u ON wu.id_ubrania = u.id_ubranie
-        LEFT JOIN rozmiar r ON wu.id_rozmiaru = r.id_rozmiar
-        WHERE wu.id_wydania = :id_wydania
-        AND wu.status = 1 AND (wu.data_waznosci <= :currentDateDup OR wu.data_waznosci <= :twoMonthsAhead)");
-
-        $stmt->bindValue(':id_wydania', $id_wydania);
-        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':currentDateDup', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAheadDup', $this->twoMonthsAhead->format('Y-m-d'));
-        
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function updateStatus($id, $newStatus) {
         $stmt = $this->pdo->prepare("UPDATE wydane_ubrania SET status = :newStatus WHERE id = :id");
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -133,7 +110,117 @@ class IssuedClothingRepository extends BaseRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
+    /**
+     * Pobiera historię wydań dla pracownika - jedno zapytanie zamiast N+1
+     * Używane w issue_history.php
+     */
+    public function getIssueHistoryByEmployeeId($pracownikId) {
+        $stmt = $this->pdo->prepare("SELECT 
+                w.id_wydania,
+                w.data_wydania,
+                uz.nazwa AS user_name,
+                wu.id,
+                wu.ilosc,
+                wu.data_waznosci,
+                wu.status,
+                u.nazwa_ubrania,
+                r.nazwa_rozmiaru,
+                CASE 
+                    WHEN wu.data_waznosci <= :currentDate THEN 1
+                    WHEN wu.data_waznosci <= :twoMonthsAhead THEN 1
+                    ELSE 0
+                END AS canBeReported
+            FROM wydane_ubrania wu
+            JOIN wydania w ON wu.id_wydania = w.id_wydania
+            JOIN ubranie u ON wu.id_ubrania = u.id_ubranie
+            JOIN rozmiar r ON wu.id_rozmiaru = r.id_rozmiar
+            LEFT JOIN uzytkownicy uz ON w.user_id = uz.id
+            WHERE w.pracownik_id = :pracownik_id
+            ORDER BY w.data_wydania DESC, wu.id");
+        
+        $stmt->bindValue(':pracownik_id', $pracownikId, PDO::PARAM_INT);
+        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
+        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
+    /**
+     * Pobiera wygasające/przeterminowane ubrania dla konkretnego pracownika
+     * Używane w issue_clothing.php (fromRaport)
+     */
+    public function getExpiringClothingByEmployeeId($pracownikId) {
+        $stmt = $this->pdo->prepare("SELECT 
+                wu.id,
+                wu.ilosc,
+                wu.data_waznosci,
+                u.nazwa_ubrania,
+                r.nazwa_rozmiaru,
+                CASE 
+                    WHEN wu.data_waznosci <= :currentDate THEN 'Przeterminowane'
+                    WHEN wu.data_waznosci <= :twoMonthsAhead THEN 'Koniec ważności'
+                    ELSE 'Brak danych'
+                END AS statusText
+            FROM wydane_ubrania wu
+            JOIN wydania w ON wu.id_wydania = w.id_wydania
+            JOIN ubranie u ON wu.id_ubrania = u.id_ubranie
+            JOIN rozmiar r ON wu.id_rozmiaru = r.id_rozmiar
+            WHERE w.pracownik_id = :pracownik_id
+              AND wu.status = 1 
+              AND (wu.data_waznosci <= :currentDateDup OR wu.data_waznosci <= :twoMonthsAheadDup)
+            ORDER BY wu.data_waznosci ASC");
+        
+        $stmt->bindValue(':pracownik_id', $pracownikId, PDO::PARAM_INT);
+        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
+        $stmt->bindValue(':currentDateDup', $this->currentDate->format('Y-m-d'));
+        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
+        $stmt->bindValue(':twoMonthsAheadDup', $this->twoMonthsAhead->format('Y-m-d'));
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Pobiera wszystkie ubrania wygasające/przeterminowane z danymi pracowników
+     * Używane w raporcie 
+     */
+    public function getExpiringClothingWithEmployeeDetails() {
+        $stmt = $this->pdo->prepare("
+            SELECT 
+                w.id_wydania,
+                w.pracownik_id,
+                p.imie AS pracownik_imie,
+                p.nazwisko AS pracownik_nazwisko,
+                p.stanowisko AS pracownik_stanowisko,
+                wu.id,
+                wu.ilosc,
+                wu.data_waznosci,
+                u.nazwa_ubrania,
+                r.nazwa_rozmiaru,
+                CASE 
+                    WHEN wu.data_waznosci <= :currentDate THEN 'Przeterminowane'
+                    WHEN wu.data_waznosci <= :twoMonthsAhead THEN 'Koniec ważności'
+                    ELSE 'Brak danych'
+                END AS statusText
+            FROM wydane_ubrania wu
+            JOIN wydania w ON wu.id_wydania = w.id_wydania
+            JOIN pracownicy p ON w.pracownik_id = p.id_pracownik
+            JOIN ubranie u ON wu.id_ubrania = u.id_ubranie
+            JOIN rozmiar r ON wu.id_rozmiaru = r.id_rozmiar
+            WHERE wu.status = 1 
+              AND (wu.data_waznosci <= :currentDateDup OR wu.data_waznosci <= :twoMonthsAheadDup)
+            ORDER BY wu.data_waznosci ASC
+        ");
+        
+        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
+        $stmt->bindValue(':currentDateDup', $this->currentDate->format('Y-m-d'));
+        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
+        $stmt->bindValue(':twoMonthsAheadDup', $this->twoMonthsAhead->format('Y-m-d'));
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
 }
 

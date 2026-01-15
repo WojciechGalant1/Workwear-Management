@@ -2,16 +2,8 @@
 header("Content-Type:text/html; charset=utf-8");
 
 include_once __DIR__ . '../../layout/header.php';
-include_once __DIR__ . '../../app/auth/Auth.php';
-checkAccess(4);
-
-include_once __DIR__ . '../../app/core/ServiceContainer.php';
-
-$serviceContainer = ServiceContainer::getInstance();
-$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-$wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
-$wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
-$ubraniaPoTerminie = $wydaneUbraniaRepo->getUbraniaPoTerminie();
+// - $expiringClothing - szczegółowa lista ubrań wygasających/przeterminowanych
+// - $ubraniaPoTerminie - podsumowanie ubrań po terminie
 ?>
 <div id="alertContainer"></div>
 
@@ -30,45 +22,35 @@ $ubraniaPoTerminie = $wydaneUbraniaRepo->getUbraniaPoTerminie();
         </tr>
     </thead>
     <tbody>
-        <?php
-        $wydania = $wydaniaRepo->getAllWydania();
-        if ($wydania) {
-            foreach ($wydania as $wydanie) {
-                $id_wydania = $wydanie['id_wydania'];
-                $pracownikImie = $wydanie['imie'];
-                $pracownikNazwisko = $wydanie['nazwisko'];
-                $pracownikStanowisko = $wydanie['stanowisko'];
-                $ubrania = $wydaneUbraniaRepo->getUbraniaByWydanieIdTermin($id_wydania);
-
-                foreach ($ubrania as $ubranie) {
-                    $rowClass = $ubranie['statusText'] === 'Przeterminowane' ? 'table-danger' : ($ubranie['statusText'] === 'Koniec ważności' ? 'table-warning' : '');
-
-                    echo "<tr class='{$rowClass}'>";
-                    echo "<td>" . date('Y-m-d H:i', strtotime($ubranie['data_waznosci'])) . "</td>";
-                    
-                    echo "<td>{$pracownikImie} {$pracownikNazwisko}</td>";
-                    echo "<td>{$pracownikStanowisko}</td>";
-                    echo "<td>{$ubranie['nazwa_ubrania']}</td>";
-                    echo "<td>{$ubranie['nazwa_rozmiaru']}</td>";
-                    echo "<td>{$ubranie['ilosc']}</td>";
-                    echo "<td>{$ubranie['statusText']}</td>";
-                    echo "<td>
-                    <div class='d-flex justify-content-between'>
-                        <button class='btn btn-primary redirect-btn me-2' 
-                                    data-pracownik-id='{$wydanie['pracownik_id']}' 
-                                    data-pracownik-imie='{$pracownikImie}' 
-                                    data-pracownik-nazwisko='{$pracownikNazwisko}' 
-                                    data-pracownik-stanowisko='{$pracownikStanowisko}'>" . __('reports_issue') . "</button>
-                        <button class='btn btn-secondary inform-btn p-1' data-raport='true' data-id='{$ubranie['id']}'>" . __('reports_remove_from_report') . "</button>
-                     </div>
-                        </td>
-                    </tr>";
-                }
-            }
-        } else {
-            echo "<tr><td colspan='8'>" . __('reports_no_issued_clothing') . "</td></tr>";
-        }
-        ?>
+        <?php if (!empty($expiringClothing)) : ?>
+            <?php foreach ($expiringClothing as $item) : 
+                $rowClass = $item['statusText'] === 'Przeterminowane' ? 'table-danger' : ($item['statusText'] === 'Koniec ważności' ? 'table-warning' : '');
+            ?>
+                <tr class="<?php echo $rowClass; ?>">
+                    <td><?php echo date('Y-m-d H:i', strtotime($item['data_waznosci'])); ?></td>
+                    <td><?php echo htmlspecialchars($item['pracownik_imie'] . ' ' . $item['pracownik_nazwisko']); ?></td>
+                    <td><?php echo htmlspecialchars($item['pracownik_stanowisko']); ?></td>
+                    <td><?php echo htmlspecialchars($item['nazwa_ubrania']); ?></td>
+                    <td><?php echo htmlspecialchars($item['nazwa_rozmiaru']); ?></td>
+                    <td><?php echo htmlspecialchars($item['ilosc']); ?></td>
+                    <td><?php echo htmlspecialchars($item['statusText']); ?></td>
+                    <td>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-primary redirect-btn me-2" 
+                                    data-pracownik-id="<?php echo $item['pracownik_id']; ?>" 
+                                    data-pracownik-imie="<?php echo htmlspecialchars($item['pracownik_imie']); ?>" 
+                                    data-pracownik-nazwisko="<?php echo htmlspecialchars($item['pracownik_nazwisko']); ?>" 
+                                    data-pracownik-stanowisko="<?php echo htmlspecialchars($item['pracownik_stanowisko']); ?>"><?php echo __('reports_issue'); ?></button>
+                            <button class="btn btn-secondary inform-btn p-1" data-raport="true" data-id="<?php echo $item['id']; ?>"><?php echo __('reports_remove_from_report'); ?></button>
+                        </div>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <tr>
+                <td colspan="8"><?php echo __('reports_no_issued_clothing'); ?></td>
+            </tr>
+        <?php endif; ?>
     </tbody>
 </table>
 

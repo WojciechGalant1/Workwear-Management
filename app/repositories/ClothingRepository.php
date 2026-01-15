@@ -48,11 +48,6 @@ class ClothingRepository extends BaseRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllWithRozmiary() {
-        $stmt = $this->pdo->query("SELECT u.id_ubranie AS id, u.nazwa_ubrania AS nazwa, r.id_rozmiar AS rozmiar_id, r.nazwa_rozmiaru AS rozmiar FROM stan_magazynu sm JOIN ubranie u ON sm.id_ubrania = u.id_ubranie JOIN rozmiar r ON sm.id_rozmiaru = r.id_rozmiar");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function getAllUnique() {
         $stmt = $this->pdo->query("SELECT DISTINCT u.id_ubranie AS id, u.nazwa_ubrania AS nazwa FROM ubranie u JOIN stan_magazynu sm ON u.id_ubranie = sm.id_ubrania");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

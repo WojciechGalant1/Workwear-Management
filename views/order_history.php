@@ -2,13 +2,6 @@
 header("Content-Type:text/html; charset=utf-8");
 
 include_once __DIR__ . '../../layout/header.php';
-include_once __DIR__ . '../../app/auth/Auth.php';
-checkAccess(2);
-include_once __DIR__ . '../../app/core/ServiceContainer.php';
-
-$serviceContainer = ServiceContainer::getInstance();
-$zamowieniaRepo = $serviceContainer->getRepository('OrderHistoryRepository');
-$zamowienia = $zamowieniaRepo->getAll();
 ?>
 
     <h2 class="mb-4"><?php echo __('history_order_title'); ?></h2>

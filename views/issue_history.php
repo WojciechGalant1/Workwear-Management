@@ -2,14 +2,6 @@
 header("Content-Type:text/html; charset=utf-8");
 
 include_once __DIR__ . '../../layout/header.php';
-include_once __DIR__ . '../../app/auth/Auth.php';
-checkAccess(4);
-include_once __DIR__ . '../../app/core/ServiceContainer.php';
-
-$serviceContainer = ServiceContainer::getInstance();
-$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-$wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
-$wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
 
 include_once __DIR__ . '../../layout/ClassModal.php';
 $modal = new ClassModal();
@@ -44,20 +36,16 @@ $modal = new ClassModal();
 </form>
 
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pracownikID']) && !empty($_GET['pracownikID'])) {
-    $pracownikID = $_GET['pracownikID'];
-    $pracownik = $pracownikRepo->getById($pracownikID);
-
-    if ($pracownik) {
-        $imie = $pracownik['imie'];
-        $nazwisko = $pracownik['nazwisko'];
-
-        $historia = $wydaniaRepo->getWydaniaByPracownikId($pracownikID);
-
-        if ($historia) {
-            echo "<h2>" . __('history_issue_for') . ": $imie $nazwisko</h2> <br/>";
-            echo '<table id="example" class="table table-hover table-striped table-bordered text-center align-middle" style="width:100%">';
-            echo '<thead class="table-dark"><tr>
+if ($pracownikNotFound) {
+    echo "<p>" . __('history_employee_not_found') . "</p>";
+} elseif ($pracownik) {
+    $imie = htmlspecialchars($pracownik['imie']);
+    $nazwisko = htmlspecialchars($pracownik['nazwisko']);
+    
+    if (!empty($historia)) {
+        echo "<h2>" . __('history_issue_for') . ": {$imie} {$nazwisko}</h2> <br/>";
+        echo '<table id="example" class="table table-hover table-striped table-bordered text-center align-middle" style="width:100%">';
+        echo '<thead class="table-dark"><tr>
             <th scope="col">' . __('history_issue_date') . '</th>
             <th scope="col">' . __('clothing_name') . '</th>
             <th scope="col">' . __('clothing_size') . '</th>
@@ -69,66 +57,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pracownikID']) && !empt
         </tr></thead>
         <tbody>';
 
-            foreach ($historia as $wydanie) {
-                $id_wydania = $wydanie['id_wydania'];
-                $data_wydania = $wydanie['data_wydania'];
-                $wydane_przez = $wydanie['user_name'];
-                $ubrania = $wydaneUbraniaRepo->getUbraniaByWydanieId($id_wydania);
+        $currentDate = date('Y-m-d');
+        
+        // Jedna pętla zamiast zagnieżdżonych (dane z jednego zapytania JOIN)
+        foreach ($historia as $item) {
+            $data_wydania = $item['data_wydania'];
+            $oneMonthAfter = date('Y-m-d', strtotime($data_wydania . ' +1 month'));
+            
+            $status = $item['status'];
+            $data_waznosci = date('Y-m-d', strtotime($item['data_waznosci']));
+            $canBeReported = $item['canBeReported'] == 1;
+            
+            $statusText = $status == 1 ? __('history_issued') : ($status == 0 ? __('history_removed_from_report') : ($status == 3 ? __('history_cancelled') : __('history_destroyed_clothing') . ": {$data_waznosci}"));
+            $cancelBtn = $status == 3 ? __('history_cancelled') : __('history_cancel_issue');
+            $withinOneMonth = ($status == 1 && $currentDate <= $oneMonthAfter);
+            $disabledBtn = !$withinOneMonth ? "disabled" : "";
+            $rowClass = $status == 0 ? "table-warning" : ($status == 2 ? "table-danger" : "");
+            $buttonText = $status == 1 ? __('history_remove_from_report') : __('history_add_to_report');
+            $buttonAction = $status == 1 ? __('history_inactive') : __('history_active');
+            $reportDisabledBtn = !$canBeReported || $status == 2 || $status == 3 ? "disabled" : "";
+            $destroyDisabled = $status != 1 ? "disabled" : "";
+            $buttonHtml = "<button class='btn btn-warning cancel-btn' data-id='" . htmlspecialchars($item['id']) . "' {$disabledBtn}>{$cancelBtn}</button>";
 
-                $oneMonthAfter = date('Y-m-d', strtotime($data_wydania . ' +1 month'));
-                $currentDate = date('Y-m-d');
-
-                foreach ($ubrania as $ubranie) {
-                    $nazwa_ubrania = $ubranie['nazwa_ubrania'];
-                    $nazwa_rozmiaru = $ubranie['nazwa_rozmiaru'];
-                    $ilosc = $ubranie['ilosc'];
-                    $status = $ubranie['status'];
-                    $data_waznosci = date('Y-m-d', strtotime($ubranie['data_waznosci']));
-                    $canBeReported = $ubranie['canBeReported'] == 1;
-
-                    $statusText = $status == 1 ? __('history_issued') : ($status == 0 ? __('history_removed_from_report') : ($status == 3 ? __('history_cancelled') : __('history_destroyed_clothing') . ": {$data_waznosci}"));
-                    $cancelBtn = $status == 3 ? __('history_cancelled') : __('history_cancel_issue');
-                    $withinOneMonth = ($status == 1 && $currentDate <= $oneMonthAfter);
-                    $disabledBtn = !$withinOneMonth ? "disabled" : "";
-                    $rowClass = $status == 0 ? "table-warning" : ($status == 2 ? "table-danger" : "");
-                    $buttonText = $status == 1 ? __('history_remove_from_report') : __('history_add_to_report');
-                    $buttonAction = $status == 1 ? __('history_inactive') : __('history_active');
-                    $reportDisabledBtn = !$canBeReported || $status == 2 || $status == 3 ? "disabled" : "";
-                    $destroyDisabled = $status != 1 ? "disabled" : "";
-                    $buttonHtml = "<button class='btn btn-warning cancel-btn' data-id='{$ubranie['id']}' {$disabledBtn}>{$cancelBtn}</button>";
-
-                    echo "<tr class='{$rowClass}'>";
-                    echo "<td>" . date('Y-m-d H:i', strtotime($data_wydania)) . "</td>";
-                    echo "<td>{$nazwa_ubrania}</td>";
-                    echo "<td>{$nazwa_rozmiaru}</td>";
-                    echo "<td>{$ilosc}</td>";
-                    echo "<td>{$wydane_przez}</td>";
-                    if ($disabledBtn) {
-                        echo "<td>
-                        <span class='d-inline-block' tabindex='0' data-bs-toggle='tooltip' data-bs-placement='top' title='" . __('history_cancel_time_expired') . "'>
-                            {$buttonHtml}
-                        </span>
-                      </td>";
-                    } else {
-                        echo "<td>{$buttonHtml}</td>";
-                    }
-                    echo "<td>{$statusText}</td>";
-                    echo "<td>
-        <div class='d-flex flex-column align-items-center'>
-            <button class='btn btn-info inform-btn mb-2' data-id='{$ubranie['id']}' data-action='{$buttonAction}' {$reportDisabledBtn}>{$buttonText}</button>
-            <button class='btn btn-danger destroy-btn' data-id='{$ubranie['id']}' {$destroyDisabled}>" . __('history_destroy_clothing') . "</button>
-        </div>
-      </td>";
-                    echo "</tr>";
-                }
+            echo "<tr class='{$rowClass}'>";
+            echo "<td>" . date('Y-m-d H:i', strtotime($data_wydania)) . "</td>";
+            echo "<td>" . htmlspecialchars($item['nazwa_ubrania']) . "</td>";
+            echo "<td>" . htmlspecialchars($item['nazwa_rozmiaru']) . "</td>";
+            echo "<td>" . htmlspecialchars($item['ilosc']) . "</td>";
+            echo "<td>" . htmlspecialchars($item['user_name']) . "</td>";
+            if ($disabledBtn) {
+                echo "<td>
+                    <span class='d-inline-block' tabindex='0' data-bs-toggle='tooltip' data-bs-placement='top' title='" . __('history_cancel_time_expired') . "'>
+                        {$buttonHtml}
+                    </span>
+                </td>";
+            } else {
+                echo "<td>{$buttonHtml}</td>";
             }
-
-            echo '</tbody></table>';
-        } else {
-            echo "<p>" . __('history_no_data_for_user') . "</p>";
+            echo "<td>{$statusText}</td>";
+            echo "<td>
+                <div class='d-flex flex-column align-items-center'>
+                    <button class='btn btn-info inform-btn mb-2' data-id='" . htmlspecialchars($item['id']) . "' data-action='{$buttonAction}' {$reportDisabledBtn}>{$buttonText}</button>
+                    <button class='btn btn-danger destroy-btn' data-id='" . htmlspecialchars($item['id']) . "' {$destroyDisabled}>" . __('history_destroy_clothing') . "</button>
+                </div>
+            </td>";
+            echo "</tr>";
         }
+
+        echo '</tbody></table>';
     } else {
-        echo "<p>" . __('history_employee_not_found') . "</p>";
+        echo "<p>" . __('history_no_data_for_user') . "</p>";
     }
 }
 
