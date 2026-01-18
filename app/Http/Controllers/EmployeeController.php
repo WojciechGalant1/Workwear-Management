@@ -15,7 +15,6 @@ class EmployeeController {
     }
     
     public function create() {
-        // Widok formularza dodawania nie wymaga danych z repozytorium
         return array(
             'pageTitle' => 'employee_add_title'
         );

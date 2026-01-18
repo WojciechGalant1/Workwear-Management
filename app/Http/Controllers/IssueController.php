@@ -58,7 +58,6 @@ class IssueController {
             'pracownikNotFound' => false
         );
         
-        // Obsługa GET parameter
         if (isset($_GET['pracownikID']) && !empty($_GET['pracownikID'])) {
             $pracownikID = intval($_GET['pracownikID']);
             $pracownik = $pracownikRepo->getById($pracownikID);

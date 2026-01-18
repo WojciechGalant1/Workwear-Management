@@ -1,142 +1,101 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-include_once __DIR__ . '/../../core/ServiceContainer.php';
-include_once __DIR__ . '/../../helpers/CsrfHelper.php';
-include_once __DIR__ . '/../../helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../../helpers/LanguageSwitcher.php';
-include_once __DIR__ . '/../../models/Issue.php';
-include_once __DIR__ . '/../../models/IssuedClothing.php';
+require_once __DIR__ . '/../BaseHandler.php';
+require_once __DIR__ . '/../../models/Issue.php';
+require_once __DIR__ . '/../../models/IssuedClothing.php';
 
-LanguageSwitcher::initializeWithRouting();
-
-$response = array();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    if (!CsrfHelper::validateToken()) {
-        $response['success'] = false;
-        $response['message'] = LocalizationHelper::translate('error_csrf');
-        header("Content-Type: application/json");
-        echo json_encode($response);
-        exit;
-    }
+class IssueClothingHandler extends BaseHandler {
     
-    $pracownikID = isset($_POST['pracownikID']) ? trim($_POST['pracownikID']) : '';
-    $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
-
-    if (empty($pracownikID)) {
-        $response['success'] = false;
-        $response['message'] = LocalizationHelper::translate('issue_employee_required');
-        header("Content-Type: application/json");
-        echo json_encode($response);
-        exit;
-    }
-
-    $serviceContainer = ServiceContainer::getInstance();
-    $pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-    $pracownik = $pracownikRepo->getById($pracownikID);
-
-    if (!$pracownik) {
-        $response['success'] = false;
-        $response['message'] = LocalizationHelper::translate('issue_employee_not_found');
-        header("Content-Type: application/json");
-        echo json_encode($response);
-        exit;
-    }
-
-    $data_wydania_obj = new DateTime();
-
-    $current_user_id = $_SESSION['user_id'];
-
-    $userRepo = $serviceContainer->getRepository('UserRepository');
-    $currentUser = $userRepo->getUserById($current_user_id);
-
-    if (!$currentUser) {
-        $response['success'] = false;
-        $response['message'] = LocalizationHelper::translate('error_user_not_found');
-        header("Content-Type: application/json");
-        echo json_encode($response);
-        exit;
-    }
-
-    $wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
-    $wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
-    $stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
-
-    $wydanie = new Issue($current_user_id, $pracownik['id_pracownik'], $data_wydania_obj, $uwagi);
-    $id_wydania = $wydaniaRepo->create($wydanie);
-
-    $all_items_valid = true;
-
-    if (!isset($_POST['ubrania']) || !is_array($_POST['ubrania'])) {
-        $response['success'] = false;
-        $response['message'] = LocalizationHelper::translate('issue_no_clothing_data');
-        header("Content-Type: application/json");
-        echo json_encode($response);
-        exit;
-    }
-
-    foreach ($_POST['ubrania'] as $ubranie) {
-        $idUbrania = isset($ubranie['id_ubrania']) ? intval($ubranie['id_ubrania']) : 0;
-        $idRozmiar = isset($ubranie['id_rozmiar']) ? intval($ubranie['id_rozmiar']) : 0;
-        $ilosc = isset($ubranie['ilosc']) ? intval($ubranie['ilosc']) : 0;
+    public function handle() {
+        if (!$this->isPost()) {
+            $this->errorResponse('error_method_not_allowed');
+        }
         
-        $iloscDostepna = $stanMagazynuRepo->getIlosc($idUbrania, $idRozmiar);
-
-        if ($idUbrania == 0 || $idRozmiar == 0) {
-            $response['success'] = false;
-            $response['message'] = LocalizationHelper::translate('issue_invalid_code');
-            $all_items_valid = false;
-            break;
+        if (!$this->validateCsrf()) {
+            $this->errorResponse('error_csrf');
         }
-
-        if ($ilosc <= 0) {
-            $response['success'] = false;
-            $response['message'] = LocalizationHelper::translate('issue_quantity_positive');
-            $all_items_valid = false;
-            break;
+        
+        $pracownikID = isset($_POST['pracownikID']) ? trim($_POST['pracownikID']) : '';
+        $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
+        
+        if (empty($pracownikID)) {
+            $this->errorResponse('issue_employee_required');
         }
-
-        if ($ilosc > $iloscDostepna) {
-            $response['success'] = false;
-            $response['message'] = LocalizationHelper::translate('issue_insufficient_stock');
-            $all_items_valid = false;
-            break;
+        
+        // Walidacja pracownika
+        $pracownikRepo = $this->getRepository('EmployeeRepository');
+        $pracownik = $pracownikRepo->getById($pracownikID);
+        
+        if (!$pracownik) {
+            $this->errorResponse('issue_employee_not_found');
         }
-    }
-
-    if ($all_items_valid) {
+        
+        // Walidacja użytkownika
+        $currentUserId = $this->getUserId();
+        $userRepo = $this->getRepository('UserRepository');
+        $currentUser = $userRepo->getUserById($currentUserId);
+        
+        if (!$currentUser) {
+            $this->errorResponse('error_user_not_found');
+        }
+        
+        // Walidacja danych ubrań
+        if (!isset($_POST['ubrania']) || !is_array($_POST['ubrania'])) {
+            $this->errorResponse('issue_no_clothing_data');
+        }
+        
+        $stanMagazynuRepo = $this->getRepository('WarehouseRepository');
+        
+        // Sprawdzenie dostępności w magazynie
+        foreach ($_POST['ubrania'] as $ubranie) {
+            $idUbrania = isset($ubranie['id_ubrania']) ? intval($ubranie['id_ubrania']) : 0;
+            $idRozmiar = isset($ubranie['id_rozmiar']) ? intval($ubranie['id_rozmiar']) : 0;
+            $ilosc = isset($ubranie['ilosc']) ? intval($ubranie['ilosc']) : 0;
+            
+            if ($idUbrania == 0 || $idRozmiar == 0) {
+                $this->errorResponse('issue_invalid_code');
+            }
+            
+            if ($ilosc <= 0) {
+                $this->errorResponse('issue_quantity_positive');
+            }
+            
+            $iloscDostepna = $stanMagazynuRepo->getIlosc($idUbrania, $idRozmiar);
+            if ($ilosc > $iloscDostepna) {
+                $this->errorResponse('issue_insufficient_stock');
+            }
+        }
+        
+        // Tworzenie wydania
+        $wydaniaRepo = $this->getRepository('IssueRepository');
+        $wydaneUbraniaRepo = $this->getRepository('IssuedClothingRepository');
+        
+        $dataWydaniaObj = new DateTime();
+        $wydanie = new Issue($currentUserId, $pracownik['id_pracownik'], $dataWydaniaObj, $uwagi);
+        $idWydania = $wydaniaRepo->create($wydanie);
+        
+        // Dodawanie ubrań i aktualizacja magazynu
         foreach ($_POST['ubrania'] as $ubranie) {
             $idUbrania = intval($ubranie['id_ubrania']);
             $idRozmiar = intval($ubranie['id_rozmiar']);
             $ilosc = intval($ubranie['ilosc']);
             $status = 1;
-
-            $data_waznosci_miesiace = isset($ubranie['data_waznosci']) ? intval($ubranie['data_waznosci']) : 0;
-            $data_waznosci_obj = new DateTime();
-            $data_waznosci_obj->modify("+{$data_waznosci_miesiace} months");
-            $data_waznosci = $data_waznosci_obj->format('Y-m-d H:i:s');
-
-            $wydaneUbrania = new IssuedClothing($data_waznosci, $id_wydania, $idUbrania, $idRozmiar, $ilosc, $status);
+            
+            $dataWaznosciMiesiace = isset($ubranie['data_waznosci']) ? intval($ubranie['data_waznosci']) : 0;
+            $dataWaznosciObj = new DateTime();
+            $dataWaznosciObj->modify("+{$dataWaznosciMiesiace} months");
+            $dataWaznosci = $dataWaznosciObj->format('Y-m-d H:i:s');
+            
+            $wydaneUbrania = new IssuedClothing($dataWaznosci, $idWydania, $idUbrania, $idRozmiar, $ilosc, $status);
+            
             if ($wydaneUbraniaRepo->create($wydaneUbrania)) {
                 $stanMagazynuRepo->updateIlosc($idUbrania, $idRozmiar, $ilosc);
             } else {
-                $response['success'] = false;
-                $response['message'] = LocalizationHelper::translate('issue_error_processing');
-                break;
+                $this->errorResponse('issue_error_processing');
             }
         }
-        if (!isset($response['success']) || $response['success'] !== false) {
-            $response['success'] = true;
-            $response['message'] = LocalizationHelper::translate('issue_success');
-        }
+        
+        $this->successResponse('issue_success');
     }
-} else {
-    $response['success'] = false;
-    $response['message'] = LocalizationHelper::translate('error_method_not_allowed');
 }
 
-header("Content-Type: application/json");
-echo json_encode($response);
+IssueClothingHandler::run();

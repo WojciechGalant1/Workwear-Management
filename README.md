@@ -45,6 +45,9 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **CSRF Protection** - Comprehensive security implementation across all forms and AJAX requests
 - **Centralized API Client** - Unified API client (`apiClient`) with automatic CSRF injection, response validation, and error handling
 - **Response Validation** - Automatic validation of API response structure with centralized error policy
+- **BaseHandler Pattern** - Base class for HTTP handlers eliminating code duplication (session, CSRF, localization initialization)
+- **Middleware Architecture** - Authentication handled via middleware in Router (before controllers execute)
+- **Controller Layer** - MVC Controllers separate presentation logic from views (views are "dumb")
 - **Responsive Design** - Mobile-friendly interface optimized for warehouse environments
 > **Warning:**
 > Barcode scanners must be configured to automatically append an "Enter" keystroke after each scan for proper form submission and system interaction.
@@ -55,13 +58,13 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |:-|:-|
 |Backend|PHP (custom MVC), REST-style endpoints, Repository pattern|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
-|Database|MySQL (relational, optimized queries)|
-|Security|CSRF protection, XSS prevention, role-based access|
+|Database|MySQL (relational)|
+|Security|CSRF protection, XSS prevention, role-based access, middleware auth|
 |Localization|Custom i18n system (English/Polish)|
 |Performance|Designed for low-resource deployment|
-|Architecture|Repository pattern for data access, Service Container for dependency injection, HTTP layer separation, centralized API client|
+|Architecture|MVC with Controllers, Repository pattern, Service Container (DI), BaseHandler for HTTP handlers, middleware-based routing|
 > **Note:**
-> Optimized for performance in PHP 5.6 environments. The project uses Repository pattern for data access layer, separating business logic from database operations. HTTP layer (forms/handlers) is separated from business logic. All API requests are handled through a centralized `apiClient` that automatically injects CSRF tokens, validates response structure, and provides unified error handling. All API responses use consistent `{success: boolean}` format.
+> Optimized for performance in PHP 5.6 environments. The project follows MVC architecture with Controllers handling presentation logic, Repositories managing data access, and Views being "dumb" (no business logic). HTTP handlers (forms/handlers) extend `BaseHandler` to eliminate code duplication. Authentication is handled via middleware in the Router (before controllers execute). Database queries are optimized with JOINs to prevent N+1 query problems. All API requests use a centralized `apiClient` with automatic CSRF injection, response validation, and unified error handling. API responses use consistent `{success: boolean}` format.
 
 
 ##  Project Structure (Simplified)
@@ -70,13 +73,31 @@ A full-featured web platform designed to manage corporate workwear distribution 
 project/
 ├── app/                    # Application core
 │   ├── auth/               # Access control and session management
+│   │   ├── Auth.php        # Authentication middleware
+│   │   └── SessionManager.php
 │   ├── repositories/       # Data access layer (Repository pattern)
+│   │   ├── BaseRepository.php
+│   │   ├── EmployeeRepository.php
+│   │   ├── ClothingRepository.php
+│   │   └── ...            # Other repositories
 │   ├── models/             # Domain entities (Employee, Clothing, etc.)
 │   ├── config/             # Configuration & translations
-│   ├── core/               # Core infrastructure (Router, DI Container, DB Singleton)
+│   │   ├── RouteConfig.php # Route definitions with auth levels
+│   │   └── translations/   # i18n files (EN/PL)
+│   ├── core/               # Core infrastructure
+│   │   ├── Router.php      # URL routing with middleware support
+│   │   ├── ServiceContainer.php # Dependency injection container
+│   │   └── database/       # Database singleton
 │   ├── Http/               # HTTP layer (request handling)
+│   │   ├── BaseHandler.php # Base class eliminating code duplication
+│   │   ├── Controllers/    # MVC Controllers (presentation logic)
+│   │   │   ├── EmployeeController.php
+│   │   │   ├── IssueController.php
+│   │   │   └── ...         # Other controllers
 │   │   ├── forms/          # Form processing handlers (POST requests)
 │   │   └── handlers/       # AJAX / API request handlers
+│   │       ├── auth/       # Authentication handlers
+│   │       └── ...         # Other handlers
 │   └── helpers/            # Utility functions
 ├── views/                  # View templates (presentation layer)
 ├── layout/                 # Shared layout components (header, footer, menu)
@@ -88,7 +109,7 @@ project/
 ├── img/                    # Image assets
 ├── .htaccess               # Apache configuration
 ├── App.js                  # Frontend entry point / Module loader
-└── index.php               # Application entry point
+└── index.php               # Application entry point (centralized initialization)
 ```
 
 ##  System Modules
@@ -108,16 +129,17 @@ project/
 - **Mobile Optimization** – Enhance touch interactions and responsive views for tablet/handheld use in warehouse environments
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
-- **MVC Architecture Improvements** – Implement true MVC controllers (currently Http/forms and Http/handlers act as request controllers), further separate concerns between request handling and business logic. Consider introducing a Services layer to encapsulate business logic between HTTP handlers and Repositories
+- **Services Layer** – Consider introducing a Services layer to encapsulate complex business logic between HTTP handlers and Repositories (e.g., issue clothing workflow, order processing)
 - **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack
 - **Additional Security Enhancements**:
   - Rate limiting to prevent brute-force form submissions
   - API request throttling to mitigate abuse and maintain performance
 - **Performance Optimizations**:
-  - Database query optimization and caching
+  - Database query caching for frequently accessed data
   - Asset minification and compression
   - CDN integration for static resources
-- Implementation of automated test suites to improve future maintainability and reduce regression risk
+- **Testing** – Implementation of automated test suites to improve future maintainability and reduce regression risk
+- **Documentation** – API documentation for external integrations
 
 
 ## My Role & Responsibilities

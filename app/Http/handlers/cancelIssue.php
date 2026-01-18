@@ -1,61 +1,42 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../BaseHandler.php';
 
-include_once __DIR__ . '/../../core/ServiceContainer.php';
-include_once __DIR__ . '/../../helpers/CsrfHelper.php';
-include_once __DIR__ . '/../../helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../../helpers/LanguageSwitcher.php';
-
-LanguageSwitcher::initializeWithRouting();
-
-header('Content-Type: application/json; charset=utf-8');
-
-try {
-    $data = json_decode(file_get_contents('php://input'), true);
+class CancelIssueHandler extends BaseHandler {
     
-    if (!CsrfHelper::validateTokenFromJson($data)) {
-        http_response_code(403);
-        echo json_encode(CsrfHelper::getErrorResponse());
-        exit;
-    }
-
-    if (!isset($data['id']) || !is_numeric($data['id'])) {
-        throw new Exception(LocalizationHelper::translate('validation_invalid_input'));
-    }
-
-    $ubranieId = $data['id'];
-
-    $serviceContainer = ServiceContainer::getInstance();
-    $wydaneUbraniaRepo = $serviceContainer->getRepository('IssuedClothingRepository');
-    $stanMagazynuRepo = $serviceContainer->getRepository('WarehouseRepository');
-    $wydaniaRepo = $serviceContainer->getRepository('IssueRepository');
-
-    $wydaneUbranie = $wydaneUbraniaRepo->getUbraniaById($ubranieId);
-    if (!$wydaneUbranie) {
-        throw new Exception(LocalizationHelper::translate('clothing_issued_not_found'));
-    }
-
-    $idWydania = $wydaneUbranie['id_wydania'];
-    $ilosc = $wydaneUbranie['ilosc'];
-    $idUbrania = $wydaneUbranie['id_ubrania'];
-    $idRozmiaru = $wydaneUbranie['id_rozmiaru'];
-
-    if ($wydaneUbraniaRepo->deleteWydaneUbranieStatus($ubranieId)) {
-        $stanMagazynuRepo->updateIlosc($idUbrania, $idRozmiaru, $ilosc, true);
-        /* 
-        $pozostaleUbrania = $wydaneUbraniaC->getUbraniaByWydanieId($idWydania);
-        if (empty($pozostaleUbrania)) {
-            $wydaniaC->deleteWydanie($idWydania);
+    public function handle() {
+        $data = $this->getJsonInput();
+        
+        if (!$this->validateCsrf($data)) {
+            $this->csrfErrorResponse();
         }
- */
-        echo json_encode(['success' => true]);
-    } else {
-        throw new Exception(LocalizationHelper::translate('cancel_issue_failed'));
+        
+        if (!isset($data['id']) || !is_numeric($data['id'])) {
+            $this->errorResponse('validation_invalid_input');
+        }
+        
+        $ubranieId = intval($data['id']);
+        
+        $wydaneUbraniaRepo = $this->getRepository('IssuedClothingRepository');
+        $stanMagazynuRepo = $this->getRepository('WarehouseRepository');
+        
+        $wydaneUbranie = $wydaneUbraniaRepo->getUbraniaById($ubranieId);
+        
+        if (!$wydaneUbranie) {
+            $this->errorResponse('clothing_issued_not_found');
+        }
+        
+        $idUbrania = $wydaneUbranie['id_ubrania'];
+        $idRozmiaru = $wydaneUbranie['id_rozmiaru'];
+        $ilosc = $wydaneUbranie['ilosc'];
+        
+        if ($wydaneUbraniaRepo->deleteWydaneUbranieStatus($ubranieId)) {
+            // Zwróć do magazynu
+            $stanMagazynuRepo->updateIlosc($idUbrania, $idRozmiaru, $ilosc, true);
+            $this->successResponse();
+        } else {
+            $this->errorResponse('cancel_issue_failed');
+        }
     }
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
-    exit;
 }
 
+CancelIssueHandler::run();

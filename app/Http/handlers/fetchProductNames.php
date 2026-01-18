@@ -1,19 +1,23 @@
 <?php
-header('Content-Type: application/json');
-include_once __DIR__ . '/../../core/ServiceContainer.php';
+require_once __DIR__ . '/../BaseHandler.php';
 
-try {
-    $query = isset($_GET['query']) ? $_GET['query'] : '';
-
-    $serviceContainer = ServiceContainer::getInstance();
-    $ubranieRepo = $serviceContainer->getRepository('ClothingRepository');
-    $ubrania = $ubranieRepo->searchByName($query);
-
-    if ($ubrania === false) {
-        throw new Exception('Failed to fetch data');
+class FetchProductNamesHandler extends BaseHandler {
+    protected $requireSession = false;
+    protected $requireLocalization = false;
+    
+    public function handle() {
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
+        
+        $ubranieRepo = $this->getRepository('ClothingRepository');
+        $ubrania = $ubranieRepo->searchByName($query);
+        
+        if ($ubrania === false) {
+            $this->jsonResponse(array('success' => false, 'error' => 'Failed to fetch data'));
+            return;
+        }
+        
+        $this->jsonResponse($ubrania);
     }
-
-    echo json_encode($ubrania);
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
+
+FetchProductNamesHandler::run();

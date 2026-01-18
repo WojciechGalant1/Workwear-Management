@@ -14,7 +14,6 @@ class OrderController {
     }
     
     public function create() {
-        // Widok formularza dodawania nie wymaga danych z repozytorium
         return array(
             'pageTitle' => 'order_add_title'
         );

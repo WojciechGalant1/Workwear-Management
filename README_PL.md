@@ -45,6 +45,10 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 - **Ochrona CSRF** - Kompleksowa implementacja zabezpieczeń we wszystkich formularzach i żądaniach AJAX
 - **Scentralizowany klient API** - Ujednolicony klient API (`apiClient`) z automatycznym wstrzykiwaniem CSRF, walidacją odpowiedzi i obsługą błędów
 - **Walidacja odpowiedzi** - Automatyczna walidacja struktury odpowiedzi API z centralną polityką błędów
+- **Wzorzec BaseHandler** - Klasa bazowa dla handlerów HTTP eliminująca duplikację kodu (sesja, CSRF, inicjalizacja lokalizacji)
+- **Architektura Middleware** - Autoryzacja obsługiwana przez middleware w Routerze (przed wykonaniem kontrolerów)
+- **Zoptymalizowane zapytania bazodanowe** - Zapytania oparte na JOIN-ach zapobiegające problemom N+1, pobieranie danych w jednym zapytaniu
+- **Warstwa Kontrolerów** - Kontrolery MVC oddzielają logikę prezentacji od widoków (widoki są "dumb")
 - **Responsywny design** - Interfejs przyjazny dla urządzeń mobilnych, zoptymalizowany dla środowisk magazynowych
 > **Ostrzeżenie:**
 > Czytniki kodów kreskowych muszą być skonfigurowane tak, aby automatycznie dodawać naciśnięcie klawisza "Enter" po każdym skanowaniu, aby zapewnić prawidłowe przesyłanie formularzy i interakcję z systemem.
@@ -56,12 +60,12 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 |Backend|PHP (niestandardowy MVC), punkty końcowe w stylu REST, wzorzec Repository|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
 |Baza danych|MySQL (relacyjna, zoptymalizowane zapytania)|
-|Bezpieczeństwo|Ochrona CSRF, zapobieganie XSS, dostęp oparty na rolach|
+|Bezpieczeństwo|Ochrona CSRF, zapobieganie XSS, dostęp oparty na rolach, middleware auth|
 |Lokalizacja|Niestandardowy system i18n (angielski/polski)|
 |Wydajność|Zaprojektowany do wdrożenia w środowiskach o niskich zasobach|
-|Architektura|Wzorzec Repository dla warstwy dostępu do danych, Service Container dla wstrzykiwania zależności, separacja warstwy HTTP, scentralizowany klient API|
+|Architektura|MVC z Kontrolerami, wzorzec Repository, Service Container (DI), BaseHandler dla handlerów HTTP, routing oparty na middleware|
 > **Uwaga:**
-> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje wzorzec Repository dla warstwy dostępu do danych, oddzielając logikę biznesową od operacji bazodanowych. Warstwa HTTP (forms/handlers) jest oddzielona od logiki biznesowej. Wszystkie żądania API są obsługiwane przez scentralizowany `apiClient`, który automatycznie wstrzykuje tokeny CSRF, waliduje strukturę odpowiedzi i zapewnia ujednoliconą obsługę błędów. Wszystkie odpowiedzi API używają spójnego formatu `{success: boolean}`.
+> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę MVC z Kontrolerami obsługującymi logikę prezentacji, Repozytoriami zarządzającymi dostępem do danych oraz Widokami będącymi "dumb" (bez logiki biznesowej). Handlery HTTP (forms/handlers) rozszerzają `BaseHandler` eliminując duplikację kodu. Autoryzacja jest obsługiwana przez middleware w Routerze (przed wykonaniem kontrolerów). Zapytania bazodanowe są zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF, walidacją odpowiedzi i ujednoliconą obsługą błędów. Odpowiedzi API używają spójnego formatu `{success: boolean}`.
 
 
 ##  Struktura projektu (uproszczona)
@@ -70,95 +74,43 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 project/
 ├── app/                    # Logika aplikacji
 │   ├── auth/               # Autoryzacja i zarządzanie sesjami
-│   │   ├── Auth.php        # Kontrola dostępu i sprawdzanie uprawnień
-│   │   └── SessionManager.php  # Obsługa sesji
+│   │   ├── Auth.php        # Middleware autoryzacji
+│   │   └── SessionManager.php
 │   ├── repositories/       # Warstwa dostępu do danych (wzorzec Repository)
-│   │   ├── BaseRepository.php  # Klasa bazowa repozytorium
+│   │   ├── BaseRepository.php
 │   │   ├── EmployeeRepository.php
 │   │   ├── ClothingRepository.php
-│   │   ├── WarehouseRepository.php
 │   │   └── ...             # Inne repozytoria
 │   ├── models/             # Modele domenowe (encje)
-│   │   ├── Employee.php
-│   │   ├── Clothing.php
-│   │   ├── Warehouse.php
-│   │   └── ...             # Inne modele
 │   ├── config/             # Pliki konfiguracyjne
-│   │   ├── DbConfig.php    # Konfiguracja bazy danych
-│   │   ├── RouteConfig.php # Definicje tras
-│   │   ├── modules.php     # Konfiguracja ładowania modułów JS
-│   │   └── translations/   # Wsparcie wielojęzyczne (EN/PL)
+│   │   ├── RouteConfig.php # Definicje tras z poziomami auth
+│   │   └── translations/   # Pliki i18n (EN/PL)
 │   ├── core/               # Infrastruktura rdzenia
-│   │   ├── database/
-│   │   │   └── Database.php    # Singleton połączenia z bazą danych
-│   │   ├── Router.php          # Routing URL
-│   │   └── ServiceContainer.php # Kontener wstrzykiwania zależności
+│   │   ├── Router.php      # Routing URL z obsługą middleware
+│   │   ├── ServiceContainer.php # Kontener wstrzykiwania zależności
+│   │   └── database/       # Singleton połączenia z bazą danych
 │   ├── Http/               # Warstwa HTTP (obsługa żądań)
-│   │   ├── forms/          # Handlery przetwarzania formularzy (żądania POST)
-│   │   │   ├── add_employee.php
-│   │   │   ├── add_order.php
-│   │   │   ├── issue_clothing.php
-│   │   │   └── employee_list.php
+│   │   ├── BaseHandler.php # Klasa bazowa eliminująca duplikację kodu
+│   │   ├── Controllers/    # Kontrolery MVC (logika prezentacji)
+│   │   │   ├── EmployeeController.php
+│   │   │   ├── IssueController.php
+│   │   │   └── ...         # Inne kontrolery
+│   │   ├── forms/          # Handlery przetwarzania formularzy (POST)
 │   │   └── handlers/       # Handlery żądań AJAX
 │   │       ├── auth/       # Handlery uwierzytelniania
-│   │       │   ├── validateLogin.php
-│   │       │   └── logout.php
-│   │       ├── fetchWorkers.php
-│   │       ├── getClothingByCode.php
-│   │       ├── changeStatus.php
-│   │       └── ...         # Inne handlery AJAX
+│   │       └── ...         # Inne handlery rozszerzające BaseHandler
 │   └── helpers/            # Funkcje pomocnicze
-│       ├── CsrfHelper.php  # Zarządzanie tokenami CSRF
-│       ├── LocalizationHelper.php  # Wsparcie i18n
-│       ├── LanguageSwitcher.php
-│       └── ...             # Inne helpery
-├── views/                  # Szablony widoków (warstwa prezentacji)
-│   ├── add_employee.php
-│   ├── issue_clothing.php
-│   ├── warehouse_list.php
-│   └── ...                 # Inne widoki
-├── layout/                 # Szablony układu
-│   ├── header.php
-│   ├── footer.php
-│   └── ClassMenu.php       # Budowniczy nawigacji
-├── script/                 # Moduły JavaScript (ES6)
-│   ├── apiClient.js        # Scentralizowany klient API z walidacją
-│   ├── AlertManager.js     # Ujednolicony system alertów
-│   ├── utils.js            # Narzędzia (endpointy API, CSRF, itp.)
-│   ├── translations.js     # Tłumaczenia po stronie klienta
-│   ├── auth/
-│   │   └── LoginValidator.js
-│   └── ...                 # Moduły funkcjonalne
-├── styl/                   # Arkusze stylów CSS
-├── img/                    # Zasoby graficzne
-├── .htaccess               # Konfiguracja Apache
-├── App.js                  # Główny plik JavaScript aplikacji (loader modułów)
-└── index.php               # Punkt wejścia aplikacji
-```
-
-```
-project/
-├── app/                    # Logika aplikacji
-│   ├── auth/               # Autoryzacja i zarządzanie sesjami
-│   ├── repositories/       # Kontrola dostępu i sprawdzanie uprawnień
-│   ├── models/             # Modele domenowe (encje)
-│   ├── config/             # Pliki konfiguracyjne
-│   ├── core/               # Routing, Singleton połączenia z bazą danych, Kontener wstrzykiwania zależności
-│   ├── Http/               # Warstwa HTTP (obsługa żądań)
-│   │   ├── forms/          # Handlery przetwarzania formularzy
-│   │   └── handlers/       # Handlery żądań AJAX
-│   └── helpers/            # Funkcje pomocnicze
-├── views/                  # Szablony widoków 
+├── views/                  # Szablony widoków
 ├── layout/                 # Szablony układu
 ├── script/                 # Moduły JavaScript (ES6)
-│   ├── auth/               # Frontend validation & auth logic
+│   ├── auth/               # Walidacja i logika auth po stronie klienta
 │   ├── apiClient.js        # Scentralizowany klient API z walidacją
 │   └── ...                 
 ├── styl/                   # Arkusze stylów CSS
 ├── img/                    # Zasoby graficzne
 ├── .htaccess               # Konfiguracja Apache
 ├── App.js                  # Główny plik JavaScript aplikacji (loader modułów)
-└── index.php               # Punkt wejścia aplikacji
+└── index.php               # Punkt wejścia aplikacji (centralna inicjalizacja)
 ```
 
 ##  Moduły systemu
@@ -178,16 +130,17 @@ project/
 - **Optymalizacja mobilna** – Ulepszenie interakcji dotykowych i responsywnych widoków dla użycia na tabletach/urządzeniach przenośnych w środowiskach magazynowych
 - **Integracja API** – Wprowadzenie punktów końcowych REST API dla synchronizacji z systemami zewnętrznymi (np. oprogramowanie ERP lub HR)
 - **Przetwarzanie wsadowe** – Umożliwienie zbiorczego importu/eksportu danych magazynowych przez CSV
-- **Ulepszenia architektury MVC** – Implementacja prawdziwych kontrolerów MVC (obecnie Http/forms i Http/handlers działają jako kontrolery żądań), dalsze rozdzielenie odpowiedzialności między obsługę żądań a logikę biznesową. Rozważenie wprowadzenia warstwy Services do enkapsulacji logiki biznesowej między handlerami HTTP a Repozytoriami
+- **Warstwa Services** – Rozważenie wprowadzenia warstwy Services do enkapsulacji złożonej logiki biznesowej między handlerami HTTP a Repozytoriami (np. workflow wydawania odzieży, przetwarzanie zamówień)
 - **Solidna obsługa błędów** – Implementacja globalnego handlera błędów i odpowiednich granic błędów w całym stosie
 - **Dodatkowe usprawnienia bezpieczeństwa**:
   - Ograniczanie częstotliwości, aby zapobiec atakom brute-force na formularze
   - Throttling żądań API w celu łagodzenia nadużyć i utrzymania wydajności
 - **Optymalizacje wydajności**:
-  - Optymalizacja zapytań bazodanowych i cachowanie
+  - Cachowanie zapytań bazodanowych dla często używanych danych
   - Minifikacja i kompresja zasobów
   - Integracja CDN dla zasobów statycznych
-- Implementacja automatycznych zestawów testów w celu poprawy przyszłej łatwości konserwacji i zmniejszenia ryzyka regresji
+- **Testowanie** – Implementacja automatycznych zestawów testów w celu poprawy przyszłej łatwości konserwacji i zmniejszenia ryzyka regresji
+- **Dokumentacja** – Dokumentacja API dla integracji zewnętrznych
 
 
 ## Moja rola i odpowiedzialności

@@ -1,11 +1,18 @@
 <?php
-include_once __DIR__ . '/../../core/ServiceContainer.php';
+require_once __DIR__ . '/../BaseHandler.php';
 
-$query = isset($_GET['query']) ? $_GET['query'] : '';
+class FetchWorkersHandler extends BaseHandler {
+    protected $requireSession = false;
+    protected $requireLocalization = false;
+    
+    public function handle() {
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
+        
+        $pracownikRepo = $this->getRepository('EmployeeRepository');
+        $pracownicy = $pracownikRepo->searchByName($query);
+        
+        $this->jsonResponse($pracownicy);
+    }
+}
 
-$serviceContainer = ServiceContainer::getInstance();
-$pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-$pracownicy = $pracownikRepo->searchByName($query);
-
-header('Content-Type: application/json');
-echo json_encode($pracownicy);
+FetchWorkersHandler::run();

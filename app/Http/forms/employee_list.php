@@ -1,49 +1,35 @@
 <?php
-include_once __DIR__ . '/../../core/ServiceContainer.php';
-include_once __DIR__ . '/../../helpers/CsrfHelper.php';
-include_once __DIR__ . '/../../helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../../helpers/LanguageSwitcher.php';
+require_once __DIR__ . '/../BaseHandler.php';
 
-LanguageSwitcher::initializeWithRouting();
-
-$response = [];
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    if (!CsrfHelper::validateToken()) {
-        $response['success'] = false;
-        $response['message'] = LocalizationHelper::translate('error_csrf');
-        header('Content-Type: application/json');
-        echo json_encode($response);
-        exit;
-    }
-
-    $id = isset($_POST['id']) ? $_POST['id'] : '';
-    $imie = isset($_POST['imie']) ? $_POST['imie'] : '';
-    $nazwisko = isset($_POST['nazwisko']) ? $_POST['nazwisko'] : '';
-    $stanowisko = isset($_POST['stanowisko']) ? $_POST['stanowisko'] : '';
-    $status = isset($_POST['status']) ? $_POST['status'] : '';
-
-    if (!empty($id) && !empty($imie) && !empty($nazwisko) && !empty($stanowisko) && $status !== '') {
-        $serviceContainer = ServiceContainer::getInstance();
-        $pracownikRepo = $serviceContainer->getRepository('EmployeeRepository');
-
-        if ($pracownikRepo->update($id, $imie, $nazwisko, $stanowisko, $status)) {
-            $response['success'] = true;
-            $response['message'] = LocalizationHelper::translate('employee_update_success');
-        } else {
-            $response['success'] = false;
-            $response['message'] = LocalizationHelper::translate('error_general');
+class UpdateEmployeeHandler extends BaseHandler {
+    
+    public function handle() {
+        if (!$this->isPost()) {
+            $this->errorResponse('error_general');
         }
-    } else {
-        $response['success'] = false;
-        $response['message'] = LocalizationHelper::translate('validation_required');
+        
+        if (!$this->validateCsrf()) {
+            $this->errorResponse('error_csrf');
+        }
+        
+        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        $imie = isset($_POST['imie']) ? trim($_POST['imie']) : '';
+        $nazwisko = isset($_POST['nazwisko']) ? trim($_POST['nazwisko']) : '';
+        $stanowisko = isset($_POST['stanowisko']) ? trim($_POST['stanowisko']) : '';
+        $status = isset($_POST['status']) ? intval($_POST['status']) : -1;
+        
+        if (empty($id) || empty($imie) || empty($nazwisko) || empty($stanowisko) || $status < 0) {
+            $this->errorResponse('validation_required');
+        }
+        
+        $pracownikRepo = $this->getRepository('EmployeeRepository');
+        
+        if ($pracownikRepo->update($id, $imie, $nazwisko, $stanowisko, $status)) {
+            $this->successResponse('employee_update_success');
+        } else {
+            $this->errorResponse('error_general');
+        }
     }
-} else {
-    $response['success'] = false;
-    $response['message'] = LocalizationHelper::translate('error_general');
 }
 
-header('Content-Type: application/json');
-echo json_encode($response);
-
+UpdateEmployeeHandler::run();
