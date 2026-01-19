@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../BaseHandler.php';
+require_once __DIR__ . '/../../BaseHandler.php';
 
 class UpdateEmployeeHandler extends BaseHandler {
     

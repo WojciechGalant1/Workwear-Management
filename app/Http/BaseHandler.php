@@ -1,7 +1,6 @@
 <?php
 /**
- * Bazowa klasa dla wszystkich handlerów HTTP (AJAX/form POST)
- * Eliminuje duplikację kodu inicjalizacyjnego
+ * Base class for all HTTP handlers (AJAX/form POST)
  */
 abstract class BaseHandler {
     protected $serviceContainer;
@@ -30,9 +29,10 @@ abstract class BaseHandler {
     
     private function loadDependencies() {
         require_once __DIR__ . '/../core/ServiceContainer.php';
-        require_once __DIR__ . '/../helpers/CsrfHelper.php';
+        require_once __DIR__ . '/../auth/CsrfGuard.php';
         require_once __DIR__ . '/../helpers/LocalizationHelper.php';
         require_once __DIR__ . '/../helpers/LanguageSwitcher.php';
+        require_once __DIR__ . '/../helpers/UrlHelper.php';
     }
     
     private function initLocalization() {
@@ -46,9 +46,9 @@ abstract class BaseHandler {
      */
     protected function validateCsrf($data = null) {
         if ($data !== null) {
-            return CsrfHelper::validateTokenFromJson($data);
+            return CsrfGuard::validateTokenFromJson($data);
         }
-        return CsrfHelper::validateToken();
+        return CsrfGuard::validateToken();
     }
     
     /**
@@ -92,7 +92,7 @@ abstract class BaseHandler {
      */
     protected function csrfErrorResponse() {
         http_response_code(403);
-        $this->jsonResponse(CsrfHelper::getErrorResponse());
+        $this->jsonResponse(CsrfGuard::getErrorResponse());
     }
     
     /**
@@ -102,6 +102,15 @@ abstract class BaseHandler {
      */
     protected function getRepository($name) {
         return $this->serviceContainer->getRepository($name);
+    }
+    
+    /**
+     * Pobiera serwis z ServiceContainer
+     * @param string $name Nazwa serwisu
+     * @return mixed
+     */
+    protected function getService($name) {
+        return $this->serviceContainer->getService($name);
     }
     
     /**
@@ -135,6 +144,16 @@ abstract class BaseHandler {
      */
     protected function translate($key) {
         return LocalizationHelper::translate($key);
+    }
+    
+    /**
+     * Przekierowuje do podanej ścieżki
+     * @param string $path Ścieżka względna (np. '/login')
+     */
+    protected function redirect($path) {
+        $baseUrl = UrlHelper::getAppBaseUrl();
+        header('Location: ' . $baseUrl . $path);
+        exit;
     }
     
     /**

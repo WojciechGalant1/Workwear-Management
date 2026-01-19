@@ -109,4 +109,24 @@ class RouteConfig {
             'login.php' => '/login'
         );
     }
+    
+    /**
+     * Get page filename from URI
+     * @param string $uri Clean URI
+     * @return string Page filename
+     */
+    public static function getPageFromUri($uri) {
+        $pageMap = self::getPageMap();
+        return isset($pageMap[$uri]) ? $pageMap[$uri] : basename($_SERVER['PHP_SELF']);
+    }
+    
+    /**
+     * Get clean URL from page filename
+     * @param string $fileName Page filename
+     * @return string Clean URL
+     */
+    public static function getUrlFromPage($fileName) {
+        $urlMap = self::getUrlMap();
+        return isset($urlMap[$fileName]) ? $urlMap[$fileName] : $fileName;
+    }
 } 

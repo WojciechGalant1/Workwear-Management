@@ -47,7 +47,7 @@ include_once __DIR__ . '../../layout/header.php';
             </div>
             <div class="modal-body">
                 <form id="edycjaUbraniaForm" action="test" method="post" class="needs-validation" novalidate>
-                    <?php echo CsrfHelper::getTokenField(); ?>
+                    <?php echo CsrfGuard::getTokenField(); ?>
                     <input type="hidden" id="id_ubrania" name="id">
                     <div class="mb-3 mt-2">
                         <label for="productName" class="form-label"><?php echo __('clothing_name'); ?>:</label>

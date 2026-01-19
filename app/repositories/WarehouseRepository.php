@@ -1,16 +1,6 @@
 <?php
 include_once __DIR__ . '/BaseRepository.php';
 include_once __DIR__ . '/../models/Warehouse.php';
-include_once __DIR__ . '/../models/OrderHistory.php';
-include_once __DIR__ . '/../models/OrderDetails.php';
-include_once __DIR__ . '/../models/Clothing.php';
-include_once __DIR__ . '/../models/Size.php';
-include_once __DIR__ . '/../helpers/LocalizationHelper.php';
-include_once __DIR__ . '/ClothingRepository.php';
-include_once __DIR__ . '/SizeRepository.php';
-include_once __DIR__ . '/UserRepository.php';
-include_once __DIR__ . '/OrderHistoryRepository.php';
-include_once __DIR__ . '/OrderDetailsRepository.php';
 
 class WarehouseRepository extends BaseRepository {
 
@@ -18,24 +8,23 @@ class WarehouseRepository extends BaseRepository {
         parent::__construct($pdo);
     }
 
-    public function create(Warehouse $stanMagazynu) {
-        $existingStan = $this->findByUbranieAndRozmiar($stanMagazynu->getIdUbrania(), $stanMagazynu->getIdRozmiaru());
-        if ($existingStan) {
-            return $this->increaseIlosc($existingStan['id'], $stanMagazynu->getIlosc());
-        } else {
-            $stmt = $this->pdo->prepare("INSERT INTO stan_magazynu (id_ubrania, id_rozmiaru, ilosc, iloscMin) VALUES (:id_ubrania, :id_rozmiaru, :ilosc, :iloscMin)");
-            $id_ubrania = $stanMagazynu->getIdUbrania();
-            $id_rozmiaru = $stanMagazynu->getIdRozmiaru();
-            $ilosc = $stanMagazynu->getIlosc();
-            $iloscMin = $stanMagazynu->getIloscMin();
-            $stmt->bindParam(':id_ubrania', $id_ubrania);
-            $stmt->bindParam(':id_rozmiaru', $id_rozmiaru);
-            $stmt->bindParam(':ilosc', $ilosc);
-            $stmt->bindParam(':iloscMin', $iloscMin);
-            return $stmt->execute();
-        }
+    /**
+     * Tworzy nowy wpis w magazynie (tylko INSERT - bez logiki biznesowej)
+     * Logika biznesowa jest w WarehouseService
+     */
+    public function insertNew(Warehouse $stanMagazynu) {
+        $stmt = $this->pdo->prepare("INSERT INTO stan_magazynu (id_ubrania, id_rozmiaru, ilosc, iloscMin) VALUES (:id_ubrania, :id_rozmiaru, :ilosc, :iloscMin)");
+        $id_ubrania = $stanMagazynu->getIdUbrania();
+        $id_rozmiaru = $stanMagazynu->getIdRozmiaru();
+        $ilosc = $stanMagazynu->getIlosc();
+        $iloscMin = $stanMagazynu->getIloscMin();
+        $stmt->bindParam(':id_ubrania', $id_ubrania);
+        $stmt->bindParam(':id_rozmiaru', $id_rozmiaru);
+        $stmt->bindParam(':ilosc', $ilosc);
+        $stmt->bindParam(':iloscMin', $iloscMin);
+        return $stmt->execute();
     }
-
+    
     public function readAll() {
         $stmt = $this->pdo->prepare("SELECT s.id, u.nazwa_ubrania, r.nazwa_rozmiaru,s.ilosc, s.iloscMin FROM stan_magazynu s
          JOIN ubranie u ON s.id_ubrania = u.id_ubranie JOIN rozmiar r ON s.id_rozmiaru = r.id_rozmiar");
@@ -93,82 +82,46 @@ class WarehouseRepository extends BaseRepository {
         return $stmt->fetchColumn() > 0; 
     }
     
-
-    public function updateStanMagazynu($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId = null) {
-        try {
-            $ubranieC = new ClothingRepository($this->pdo);
-            $rozmiarC = new SizeRepository($this->pdo);
-    
-            $existingUbranie = $ubranieC->findByName($nazwa);
-            $idUbrania = $existingUbranie ? $existingUbranie->getIdUbranie() : $ubranieC->create(new Clothing($nazwa));
-    
-            $stmt = $this->pdo->prepare("UPDATE stan_magazynu SET id_ubrania = :idUbrania WHERE id = :id");
-            $stmt->bindParam(':idUbrania', $idUbrania, PDO::PARAM_INT);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            if (!$stmt->execute()) {
-                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_clothing_error'));
-            }
-
-            $existingRozmiar = $rozmiarC->findByName($rozmiar);
-            $idRozmiaru = $existingRozmiar ? $existingRozmiar->getIdRozmiar() : $rozmiarC->create(new Size($rozmiar));
-
-            $stmt = $this->pdo->prepare("UPDATE stan_magazynu SET id_rozmiaru = :idRozmiaru WHERE id = :id");
-            $stmt->bindParam(':idRozmiaru', $idRozmiaru, PDO::PARAM_INT);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            if (!$stmt->execute()) {
-                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_size_error'));
-            }
-
-            $stmt = $this->pdo->prepare("SELECT ilosc FROM stan_magazynu WHERE id = :id");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            $oldIlosc = $stmt->fetchColumn();
-            $iloscDiff = $ilosc - $oldIlosc;
-
-            $stmt = $this->pdo->prepare("UPDATE stan_magazynu SET ilosc = :ilosc, iloscMin = :iloscMin WHERE id = :id");
-            $stmt->bindParam(':ilosc', $ilosc, PDO::PARAM_INT);
-            $stmt->bindParam(':iloscMin', $iloscMin, PDO::PARAM_INT);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-    
-            if ($stmt->execute()) {
-                if ($iloscDiff !== 0) {
-                    $this->addHistoriaZamowien($idUbrania, $idRozmiaru, $iloscDiff, $uwagi, $currentUserId);
-                }
-                return array('success' => true, 'message' => LocalizationHelper::translate('warehouse_update_success'));
-            } else {
-                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_error'));
-            }
-        } catch (Exception $e) {
-            return array('success' => false, 'message' => $e->getMessage());
-        }
+    /**
+     * Aktualizuje ID ubrania w pozycji magazynu (tylko data access)
+     */
+    public function updateUbranieId($id, $idUbrania) {
+        $stmt = $this->pdo->prepare("UPDATE stan_magazynu SET id_ubrania = :idUbrania WHERE id = :id");
+        $stmt->bindValue(':idUbrania', $idUbrania, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
     
-    private function addHistoriaZamowien($idUbrania, $idRozmiaru, $iloscDiff, $uwagi, $currentUserId = null) {
-        $historiaZamowienC = new OrderHistoryRepository($this->pdo);
-        $szczegolyZamowieniaC = new OrderDetailsRepository($this->pdo);
-
-        $userId = $currentUserId !== null ? $currentUserId : (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null);
-        if (!$userId) {
-            throw new Exception("Brak zalogowanego użytkownika.");
-        }
-
-        $zamowienie = new OrderHistory(new DateTime(), $userId, $uwagi, 2);
-
-        if (!$historiaZamowienC->create($zamowienie)) {
-            throw new Exception("Nie udało się zapisać historii zamówienia.");
-        }
-
-        $zamowienieId = $historiaZamowienC->getLastInsertId();
-        if (!$zamowienieId) {
-            throw new Exception("Nie udało się pobrać ID ostatniego zamówienia.");
-        }
-
-        $szczegol = new OrderDetails($zamowienieId, $idUbrania, $idRozmiaru, $iloscDiff, 0, "-", 0);
-
-        if (!$szczegolyZamowieniaC->create($szczegol)) {
-            throw new Exception("Nie udało się zapisać szczegółów zamówienia.");
-        }
+    /**
+     * Aktualizuje ID rozmiaru w pozycji magazynu (tylko data access)
+     */
+    public function updateRozmiarId($id, $idRozmiaru) {
+        $stmt = $this->pdo->prepare("UPDATE stan_magazynu SET id_rozmiaru = :idRozmiaru WHERE id = :id");
+        $stmt->bindValue(':idRozmiaru', $idRozmiaru, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
+    
+    /**
+     * Pobiera ilość dla pozycji magazynu po ID (tylko data access)
+     */
+    public function getIloscById($id) {
+        $stmt = $this->pdo->prepare("SELECT ilosc FROM stan_magazynu WHERE id = :id");
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return (int)$stmt->fetchColumn();
+    }
+    
+    /**
+     * Aktualizuje ilość i ilość minimalną (tylko data access)
+     */
+    public function updateIloscAndMin($id, $ilosc, $iloscMin) {
+        $stmt = $this->pdo->prepare("UPDATE stan_magazynu SET ilosc = :ilosc, iloscMin = :iloscMin WHERE id = :id");
+        $stmt->bindValue(':ilosc', $ilosc, PDO::PARAM_INT);
+        $stmt->bindValue(':iloscMin', $iloscMin, PDO::PARAM_INT);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
 }
-?>
 

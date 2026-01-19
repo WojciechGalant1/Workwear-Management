@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../app/helpers/UrlHelper.php';
-require_once __DIR__ . '/../../app/helpers/CsrfHelper.php';
+require_once __DIR__ . '/../../app/auth/CsrfGuard.php';
 require_once __DIR__ . '/../../app/helpers/LocalizationHelper.php';
 require_once __DIR__ . '/../../app/helpers/LanguageSwitcher.php';
 
@@ -24,9 +24,9 @@ function __($key, $params = array())
     <meta name="base-url" content="<?php echo $baseUrl; ?>">
     <meta name="current-language" content="<?php echo $currentLanguage; ?>">
     <?php
-    $csrfToken = CsrfHelper::getToken();
+    $csrfToken = CsrfGuard::getToken();
     if (!$csrfToken) {
-        $csrfToken = CsrfHelper::generateToken();
+        $csrfToken = CsrfGuard::generateToken();
     }
     ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">

@@ -63,9 +63,9 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 |Bezpieczeństwo|Ochrona CSRF, zapobieganie XSS, dostęp oparty na rolach, middleware auth|
 |Lokalizacja|Niestandardowy system i18n (angielski/polski)|
 |Wydajność|Zaprojektowany do wdrożenia w środowiskach o niskich zasobach|
-|Architektura|MVC z Kontrolerami, wzorzec Repository, Service Container (DI), BaseHandler dla handlerów HTTP, routing oparty na middleware|
+|Architektura|MVC z Kontrolerami, warstwa Services, wzorzec Repository, Service Container (DI), BaseHandler/BaseController, routing z middleware|
 > **Uwaga:**
-> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę MVC z Kontrolerami obsługującymi logikę prezentacji, Repozytoriami zarządzającymi dostępem do danych oraz Widokami będącymi "dumb" (bez logiki biznesowej). Handlery HTTP (forms/handlers) rozszerzają `BaseHandler` eliminując duplikację kodu. Autoryzacja jest obsługiwana przez middleware w Routerze (przed wykonaniem kontrolerów). Zapytania bazodanowe są zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF, walidacją odpowiedzi i ujednoliconą obsługą błędów. Odpowiedzi API używają spójnego formatu `{success: boolean}`.
+> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading. Autoryzacja używa `AccessGuard` jako middleware w Routerze. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF. Odpowiedzi API używają spójnego formatu `{success: boolean}`.
 
 
 ##  Struktura projektu (uproszczona)
@@ -74,8 +74,14 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 project/
 ├── app/                    # Logika aplikacji
 │   ├── auth/               # Autoryzacja i zarządzanie sesjami
-│   │   ├── Auth.php        # Middleware autoryzacji
+│   │   ├── AccessGuard.php # Middleware autoryzacji (kontrola ról)
+│   │   ├── CsrfGuard.php   # Ochrona CSRF
 │   │   └── SessionManager.php
+│   ├── services/           # Warstwa logiki biznesowej
+│   │   ├── IssueService.php
+│   │   ├── OrderService.php
+│   │   ├── WarehouseService.php
+│   │   └── ClothingExpiryService.php
 │   ├── repositories/       # Warstwa dostępu do danych (wzorzec Repository)
 │   │   ├── BaseRepository.php
 │   │   ├── EmployeeRepository.php
@@ -86,20 +92,27 @@ project/
 │   │   ├── RouteConfig.php # Definicje tras z poziomami auth
 │   │   └── translations/   # Pliki i18n (EN/PL)
 │   ├── core/               # Infrastruktura rdzenia
+│   │   ├── Database.php    # Factory PDO
 │   │   ├── Router.php      # Routing URL z obsługą middleware
-│   │   ├── ServiceContainer.php # Kontener wstrzykiwania zależności
-│   │   └── database/       # Singleton połączenia z bazą danych
+│   │   └── ServiceContainer.php # Kontener wstrzykiwania zależności
 │   ├── Http/               # Warstwa HTTP (obsługa żądań)
-│   │   ├── BaseHandler.php # Klasa bazowa eliminująca duplikację kodu
+│   │   ├── BaseHandler.php # Klasa bazowa dla handlerów AJAX
 │   │   ├── Controllers/    # Kontrolery MVC (logika prezentacji)
+│   │   │   ├── BaseController.php
 │   │   │   ├── EmployeeController.php
 │   │   │   ├── IssueController.php
 │   │   │   └── ...         # Inne kontrolery
-│   │   ├── forms/          # Handlery przetwarzania formularzy (POST)
-│   │   └── handlers/       # Handlery żądań AJAX
+│   │   └── handlers/       # Handlery żądań AJAX (pogrupowane domenowo)
 │   │       ├── auth/       # Handlery uwierzytelniania
-│   │       └── ...         # Inne handlery rozszerzające BaseHandler
-│   └── helpers/            # Funkcje pomocnicze
+│   │       ├── employee/   # Handlery zarządzania pracownikami
+│   │       ├── issue/      # Handlery wydawania odzieży
+│   │       ├── order/      # Handlery zamówień
+│   │       └── warehouse/  # Handlery magazynu
+│   └── helpers/            # Klasy pomocnicze (metody statyczne)
+│       ├── DateHelper.php
+│       ├── LocalizationHelper.php
+│       ├── UrlHelper.php
+│       └── ...
 ├── views/                  # Szablony widoków
 ├── layout/                 # Szablony układu
 ├── script/                 # Moduły JavaScript (ES6)
@@ -130,7 +143,6 @@ project/
 - **Optymalizacja mobilna** – Ulepszenie interakcji dotykowych i responsywnych widoków dla użycia na tabletach/urządzeniach przenośnych w środowiskach magazynowych
 - **Integracja API** – Wprowadzenie punktów końcowych REST API dla synchronizacji z systemami zewnętrznymi (np. oprogramowanie ERP lub HR)
 - **Przetwarzanie wsadowe** – Umożliwienie zbiorczego importu/eksportu danych magazynowych przez CSV
-- **Warstwa Services** – Rozważenie wprowadzenia warstwy Services do enkapsulacji złożonej logiki biznesowej między handlerami HTTP a Repozytoriami (np. workflow wydawania odzieży, przetwarzanie zamówień)
 - **Solidna obsługa błędów** – Implementacja globalnego handlera błędów i odpowiednich granic błędów w całym stosie
 - **Dodatkowe usprawnienia bezpieczeństwa**:
   - Ograniczanie częstotliwości, aby zapobiec atakom brute-force na formularze

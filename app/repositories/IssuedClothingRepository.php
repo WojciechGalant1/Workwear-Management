@@ -4,16 +4,16 @@ include_once __DIR__ . '/../models/IssuedClothing.php';
 
 class IssuedClothingRepository extends BaseRepository {
 
-    private $currentDate;
-    private $twoMonthsAhead; 
-    private $sixMonthsAgo;
+    private $expiryService;
 
-    public function __construct(PDO $pdo)
+    /**
+     * @param PDO $pdo
+     * @param ClothingExpiryService $expiryService Wstrzyknięta zależność dla reguł dat
+     */
+    public function __construct(PDO $pdo, $expiryService)
     {
         parent::__construct($pdo);
-        $this->currentDate = new DateTime();
-        $this->twoMonthsAhead = (new DateTime())->modify('+2 months');
-        $this->sixMonthsAgo = (new DateTime())->modify('-6 months');
+        $this->expiryService = $expiryService;
     }
 
     public function create(IssuedClothing $wydaneUbrania) {
@@ -40,8 +40,8 @@ class IssuedClothingRepository extends BaseRepository {
         WHERE wu.id_wydania = :id_wydania");
     
         $stmt->bindValue(':id_wydania', $id_wydania);
-        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
+        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
         
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -81,9 +81,9 @@ class IssuedClothingRepository extends BaseRepository {
               AND wydane_ubrania.status = 1
             GROUP BY ubranie.nazwa_ubrania, rozmiar.nazwa_rozmiaru");
 
-        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':currentDateDup', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
+        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':currentDateDup', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -98,7 +98,7 @@ class IssuedClothingRepository extends BaseRepository {
             LEFT JOIN pracownicy p ON w.pracownik_id = p.id_pracownik LEFT JOIN uzytkownicy uz ON w.user_id = uz.id 
             WHERE wu.data_waznosci >= :sixMonthsAgo ORDER BY nazwa_ubrania");
     
-        $stmt->bindValue(':sixMonthsAgo', $this->sixMonthsAgo->format('Y-m-d'));
+        $stmt->bindValue(':sixMonthsAgo', $this->expiryService->getHistoryStartDateFormatted());
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -139,8 +139,8 @@ class IssuedClothingRepository extends BaseRepository {
             ORDER BY w.data_wydania DESC, wu.id");
         
         $stmt->bindValue(':pracownik_id', $pracownikId, PDO::PARAM_INT);
-        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
+        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
         
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -172,10 +172,10 @@ class IssuedClothingRepository extends BaseRepository {
             ORDER BY wu.data_waznosci ASC");
         
         $stmt->bindValue(':pracownik_id', $pracownikId, PDO::PARAM_INT);
-        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':currentDateDup', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAheadDup', $this->twoMonthsAhead->format('Y-m-d'));
+        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':currentDateDup', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
+        $stmt->bindValue(':twoMonthsAheadDup', $this->expiryService->getExpiryWarningDateFormatted());
         
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -213,10 +213,10 @@ class IssuedClothingRepository extends BaseRepository {
             ORDER BY wu.data_waznosci ASC
         ");
         
-        $stmt->bindValue(':currentDate', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':currentDateDup', $this->currentDate->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAhead', $this->twoMonthsAhead->format('Y-m-d'));
-        $stmt->bindValue(':twoMonthsAheadDup', $this->twoMonthsAhead->format('Y-m-d'));
+        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':currentDateDup', $this->expiryService->getCurrentDateFormatted());
+        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
+        $stmt->bindValue(':twoMonthsAheadDup', $this->expiryService->getExpiryWarningDateFormatted());
         
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

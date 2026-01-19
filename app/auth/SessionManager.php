@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../helpers/CsrfHelper.php';
+include_once __DIR__ . '/CsrfGuard.php';
 
 class SessionManager {
     public function __construct() {
@@ -8,7 +8,7 @@ class SessionManager {
         }
         
         if (!isset($_SESSION['csrf_token'])) {
-            CsrfHelper::generateToken();
+            CsrfGuard::generateToken();
         }
     }
 
@@ -18,7 +18,7 @@ class SessionManager {
         $_SESSION['user_id'] = $userId;
         $_SESSION['user_status'] = $status;
         
-        CsrfHelper::regenerateToken();
+        CsrfGuard::regenerateToken();
     }
 
     public function logout() {

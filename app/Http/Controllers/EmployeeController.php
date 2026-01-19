@@ -1,12 +1,10 @@
 <?php
-require_once __DIR__ . '/../../core/ServiceContainer.php';
+require_once __DIR__ . '/BaseController.php';
 
-
-class EmployeeController {
+class EmployeeController extends BaseController {
     
     public function list() {
-        $serviceContainer = ServiceContainer::getInstance();
-        $employeeRepo = $serviceContainer->getRepository('EmployeeRepository');
+        $employeeRepo = $this->getRepository('EmployeeRepository');
         
         return array(
             'pracownicy' => $employeeRepo->getAll(),

@@ -62,9 +62,9 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Security|CSRF protection, XSS prevention, role-based access, middleware auth|
 |Localization|Custom i18n system (English/Polish)|
 |Performance|Designed for low-resource deployment|
-|Architecture|MVC with Controllers, Repository pattern, Service Container (DI), BaseHandler for HTTP handlers, middleware-based routing|
+|Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
 > **Note:**
-> Optimized for performance in PHP 5.6 environments. The project follows MVC architecture with Controllers handling presentation logic, Repositories managing data access, and Views being "dumb" (no business logic). HTTP handlers (forms/handlers) extend `BaseHandler` to eliminate code duplication. Authentication is handled via middleware in the Router (before controllers execute). Database queries are optimized with JOINs to prevent N+1 query problems. All API requests use a centralized `apiClient` with automatic CSRF injection, response validation, and unified error handling. API responses use consistent `{success: boolean}` format.
+> Optimized for performance in PHP 5.6 environments. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading. Authentication uses `AccessGuard` middleware in Router. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection. API responses use consistent `{success: boolean}` format.
 
 
 ##  Project Structure (Simplified)
@@ -73,32 +73,30 @@ A full-featured web platform designed to manage corporate workwear distribution 
 project/
 ├── app/                    # Application core
 │   ├── auth/               # Access control and session management
-│   │   ├── Auth.php        # Authentication middleware
+│   │   ├── AccessGuard.php # Authorization middleware (role-based access)
+│   │   ├── CsrfGuard.php   # CSRF protection
 │   │   └── SessionManager.php
+│   ├── services/           # Business logic layer
 │   ├── repositories/       # Data access layer (Repository pattern)
-│   │   ├── BaseRepository.php
-│   │   ├── EmployeeRepository.php
-│   │   ├── ClothingRepository.php
-│   │   └── ...            # Other repositories
+│   │   └── ...             # Other repositories
 │   ├── models/             # Domain entities (Employee, Clothing, etc.)
 │   ├── config/             # Configuration & translations
 │   │   ├── RouteConfig.php # Route definitions with auth levels
 │   │   └── translations/   # i18n files (EN/PL)
 │   ├── core/               # Core infrastructure
+│   │   ├── Database.php    # PDO factory
 │   │   ├── Router.php      # URL routing with middleware support
-│   │   ├── ServiceContainer.php # Dependency injection container
-│   │   └── database/       # Database singleton
+│   │   └── ServiceContainer.php # Dependency injection container
 │   ├── Http/               # HTTP layer (request handling)
-│   │   ├── BaseHandler.php # Base class eliminating code duplication
+│   │   ├── BaseHandler.php # Base class for AJAX handlers
 │   │   ├── Controllers/    # MVC Controllers (presentation logic)
-│   │   │   ├── EmployeeController.php
-│   │   │   ├── IssueController.php
-│   │   │   └── ...         # Other controllers
-│   │   ├── forms/          # Form processing handlers (POST requests)
-│   │   └── handlers/       # AJAX / API request handlers
+│   │   └── handlers/       # AJAX / API request handlers (domain-grouped)
 │   │       ├── auth/       # Authentication handlers
-│   │       └── ...         # Other handlers
-│   └── helpers/            # Utility functions
+│   │       ├── employee/   # Employee management handlers
+│   │       ├── issue/      # Issue clothing handlers
+│   │       ├── order/      # Order handlers
+│   │       └── warehouse/  # Warehouse handlers
+│   └── helpers/            # Utility classes (static methods)
 ├── views/                  # View templates (presentation layer)
 ├── layout/                 # Shared layout components (header, footer, menu)
 ├── script/                 # JavaScript modules (ES6)
@@ -129,7 +127,6 @@ project/
 - **Mobile Optimization** – Enhance touch interactions and responsive views for tablet/handheld use in warehouse environments
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
-- **Services Layer** – Consider introducing a Services layer to encapsulate complex business logic between HTTP handlers and Repositories (e.g., issue clothing workflow, order processing)
 - **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack
 - **Additional Security Enhancements**:
   - Rate limiting to prevent brute-force form submissions

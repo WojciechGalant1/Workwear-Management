@@ -1,16 +1,13 @@
 <?php
-require_once __DIR__ . '/../../core/ServiceContainer.php';
+require_once __DIR__ . '/BaseController.php';
 
-class ReportController {
+class ReportController extends BaseController {
     
     public function index() {
-        $serviceContainer = ServiceContainer::getInstance();
-        $issuedClothingRepo = $serviceContainer->getRepository('IssuedClothingRepository');
+        $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
         return array(
-            // Tabela 1: Szczegółowa lista ubrań wygasających/przeterminowanych z danymi pracowników
             'expiringClothing' => $issuedClothingRepo->getExpiringClothingWithEmployeeDetails(),
-            // Tabela 2: Podsumowanie ubrań po terminie (agregacja)
             'ubraniaPoTerminie' => $issuedClothingRepo->getUbraniaPoTerminie(),
             'pageTitle' => 'reports_issue_title'
         );

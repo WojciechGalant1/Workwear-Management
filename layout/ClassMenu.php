@@ -3,7 +3,8 @@
 include_once __DIR__ . '/../app/core/ServiceContainer.php';
 include_once __DIR__ . '/../app/auth/SessionManager.php';
 include_once __DIR__ . '/../app/helpers/UrlHelper.php';
-include_once __DIR__ . '/../app/helpers/NavBuilder.php';
+include_once __DIR__ . '/../app/config/RouteConfig.php';
+include_once __DIR__ . '/NavBuilder.php';
 
 class ClassMenu {
     public function navBar($currentPage, $currentLanguage = 'en') {
@@ -16,7 +17,7 @@ class ClassMenu {
         $hasShortages = $stanMagazynuRepo->checkIlosc();
 
         $baseUrl = UrlHelper::getBaseUrl();
-        $activeUri = UrlHelper::getCleanUrl($currentPage);
+        $activeUri = RouteConfig::getUrlFromPage($currentPage);
         
         echo '
         <nav class="navbar navbar-expand-sm bg-dark navbar-dark">

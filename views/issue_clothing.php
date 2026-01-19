@@ -15,8 +15,8 @@ $expire_date_months = array(6, 12, 18, 24);
     </div>
 </div>
 
-<form id="wydajUbranieForm" action="<?php echo $baseUrl; ?>/app/http/forms/issue_clothing.php" method="post" autocomplete="off">
-    <?php echo CsrfHelper::getTokenField(); ?>
+<form id="wydajUbranieForm" action="<?php echo $baseUrl; ?>/app/http/handlers/issue/issueClothing.php" method="post" autocomplete="off">
+    <?php echo CsrfGuard::getTokenField(); ?>
     <div class="mb-3 col-md-6">
         <div class="d-flex justify-content-between">
             <label for="username" class="form-label"><?php echo __('issue_employee'); ?>:</label>
@@ -72,7 +72,7 @@ $expire_date_months = array(6, 12, 18, 24);
                 <select id="data_waznosci" name="ubrania[0][data_waznosci]" class="form-select data_w-select" required>
                 <?php foreach ($expire_date_months as $expire_date_month): ?>
                         <option value="<?= $expire_date_month; ?>">
-                            <?= $expire_date_month; ?> <?php echo __('issue_months'); ?> (<?= newExpirationDate($expire_date_month); ?>)
+                            <?= $expire_date_month; ?> <?php echo __('issue_months'); ?> (<?= DateHelper::newExpirationDate($expire_date_month); ?>)
                         </option>
                     <?php endforeach; ?>
                 </select>

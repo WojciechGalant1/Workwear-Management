@@ -1,5 +1,5 @@
 <?php
-class CsrfHelper {
+class CsrfGuard {
     
     const TOKEN_LENGTH = 32;
     const SESSION_KEY = 'csrf_token';
@@ -95,8 +95,8 @@ class CsrfHelper {
     }
     
     public static function getErrorResponse() {
-        include_once __DIR__ . '/LocalizationHelper.php';
-        include_once __DIR__ . '/LanguageSwitcher.php';
+        include_once __DIR__ . '/../helpers/LocalizationHelper.php';
+        include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
         
         if (!isset($_SESSION['current_language'])) {
             LanguageSwitcher::initializeWithRouting();
@@ -109,4 +109,3 @@ class CsrfHelper {
         );
     }
 }
-?>

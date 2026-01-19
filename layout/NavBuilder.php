@@ -18,8 +18,8 @@ class NavBuilder {
     
 
     public static function buildNavGroups($activeUri, $baseUrl, $userStatus, $hasShortages = false) {
-        include_once __DIR__ . '/LocalizationHelper.php';
-        include_once __DIR__ . '/LanguageSwitcher.php';
+        include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
+        include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
         
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
@@ -62,8 +62,8 @@ class NavBuilder {
     
 
     public static function buildLanguageSwitcher($baseUrl, $currentLanguage) {
-        include_once __DIR__ . '/LocalizationHelper.php';
-        include_once __DIR__ . '/LanguageSwitcher.php';
+        include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
+        include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
         
         $availableLanguages = LocalizationHelper::getAvailableLanguages();
         $currentPath = UrlHelper::getCleanUri();
@@ -107,4 +107,4 @@ class NavBuilder {
         
         return isset($flags[$language]) ? $flags[$language] : '🌐';
     }
-} 
+}

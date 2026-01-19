@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../config/RouteConfig.php';
 
 class UrlHelper {
 
@@ -81,27 +80,4 @@ class UrlHelper {
         return $url;
     }
     
-    /**
-     * Get current page from URI using route mapping
-     */
-    public static function getCurrentPage($uri = null) {
-        if ($uri === null) {
-            $uri = self::getCleanUri();
-        }
-        
-        // Use centralized route configuration
-        $pageMap = RouteConfig::getPageMap();
-        
-        return isset($pageMap[$uri]) ? $pageMap[$uri] : basename($_SERVER['PHP_SELF']);
-    }
-    
-    /**
-     * Convert file name to clean URL
-     */
-    public static function getCleanUrl($fileName) {
-        // Use centralized route configuration
-        $urlMap = RouteConfig::getUrlMap();
-        
-        return isset($urlMap[$fileName]) ? $urlMap[$fileName] : $fileName;
-    }
 } 

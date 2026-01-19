@@ -44,25 +44,30 @@ export const getCsrfHeaders = () => {
 
 /**
  * Central mapping of all API endpoints
+ * Handlers are grouped by domain in /app/http/handlers/{domain}/
  */
 export const API_ENDPOINTS = {
     // Employee endpoints
-    WORKERS: '/app/http/handlers/fetchWorkers.php',
-    
-    // Clothing endpoints
-    GET_CLOTHING_BY_CODE: '/app/http/handlers/getClothingByCode.php',
-    CHECK_CLOTHING_EXISTS: '/app/http/handlers/checkClothingExists.php',
-    GET_SIZES: '/app/http/handlers/getSizes.php',
-    UPDATE_CLOTHING: '/app/http/handlers/updateClothing.php',
-    DESTROY_CLOTHING: '/app/http/handlers/destroyClothing.php',
-    
-    // Product suggestions
-    FETCH_PRODUCT_NAMES: '/app/http/handlers/fetchProductNames.php',
-    FETCH_SIZES_NAMES: '/app/http/handlers/fetchSizesNames.php',
+    WORKERS: '/app/http/handlers/employee/fetchWorkers.php',
+    ADD_EMPLOYEE: '/app/http/handlers/employee/addEmployee.php',
+    UPDATE_EMPLOYEE: '/app/http/handlers/employee/updateEmployee.php',
     
     // Issue endpoints
-    CANCEL_ISSUE: '/app/http/handlers/cancelIssue.php',
-    CHANGE_STATUS: '/app/http/handlers/changeStatus.php',
+    ISSUE_CLOTHING: '/app/http/handlers/issue/issueClothing.php',
+    CANCEL_ISSUE: '/app/http/handlers/issue/cancelIssue.php',
+    CHANGE_STATUS: '/app/http/handlers/issue/changeStatus.php',
+    DESTROY_CLOTHING: '/app/http/handlers/issue/destroyClothing.php',
+    
+    // Order endpoints
+    ADD_ORDER: '/app/http/handlers/order/addOrder.php',
+    
+    // Warehouse endpoints
+    UPDATE_CLOTHING: '/app/http/handlers/warehouse/updateClothing.php',
+    GET_CLOTHING_BY_CODE: '/app/http/handlers/warehouse/getClothingByCode.php',
+    CHECK_CLOTHING_EXISTS: '/app/http/handlers/warehouse/checkClothingExists.php',
+    GET_SIZES: '/app/http/handlers/warehouse/getSizes.php',
+    FETCH_PRODUCT_NAMES: '/app/http/handlers/warehouse/fetchProductNames.php',
+    FETCH_SIZES_NAMES: '/app/http/handlers/warehouse/fetchSizesNames.php',
     
     // Auth endpoints
     VALIDATE_LOGIN: '/app/http/handlers/auth/validateLogin.php'

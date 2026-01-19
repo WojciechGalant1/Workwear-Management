@@ -1,11 +1,10 @@
 <?php
-require_once __DIR__ . '/../../core/ServiceContainer.php';
+require_once __DIR__ . '/BaseController.php';
 
-class ClothingController {
+class ClothingController extends BaseController {
     
     public function history() {
-        $serviceContainer = ServiceContainer::getInstance();
-        $issuedClothingRepo = $serviceContainer->getRepository('IssuedClothingRepository');
+        $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
         return array(
             'data' => $issuedClothingRepo->getWydaneUbraniaWithDetails(),

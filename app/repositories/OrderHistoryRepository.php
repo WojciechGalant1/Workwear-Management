@@ -1,9 +1,6 @@
 <?php
 include_once __DIR__ . '/BaseRepository.php';
 include_once __DIR__ . '/../models/OrderHistory.php';
-include_once __DIR__ . '/ClothingRepository.php';
-include_once __DIR__ . '/SizeRepository.php';
-include_once __DIR__ . '/WarehouseRepository.php';
 
 class OrderHistoryRepository extends BaseRepository {
 
@@ -36,28 +33,6 @@ class OrderHistoryRepository extends BaseRepository {
                              LEFT JOIN uzytkownicy uz ON h.user_id = uz.id
                              ORDER BY h.data_zamowienia DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function dodajDoMagazynu(OrderHistory $zamowienie) {
-        $szczegolyZamowieniaC = new OrderDetailsRepository($this->pdo);
-        $szczegoly = $szczegolyZamowieniaC->getByZamowienieId($zamowienie->getId());
-
-        foreach ($szczegoly as $szczegolData) {
-            $ubranieC = new ClothingRepository($this->pdo);
-            $rozmiarC = new SizeRepository($this->pdo);
-            $stanMagazynuC = new WarehouseRepository($this->pdo);
-
-            $idUbrania = $szczegolData['id_ubrania'];
-            $idRozmiaru = $szczegolData['id_rozmiaru'];
-            $ilosc = $szczegolData['ilosc'];
-            $iloscMin = $szczegolData['iloscMin'];
-
-            $stanMagazynu = new Warehouse($idUbrania, $idRozmiaru, $ilosc, $iloscMin);
-            if (!$stanMagazynuC->create($stanMagazynu)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
 

@@ -1,22 +1,23 @@
 <?php
 include_once __DIR__ . '/../app/helpers/UrlHelper.php';
-include_once __DIR__ . '/../app/helpers/CsrfHelper.php';
+include_once __DIR__ . '/../app/config/RouteConfig.php';
+include_once __DIR__ . '/../app/auth/CsrfGuard.php';
 include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
 
 $currentLanguage = LanguageSwitcher::getCurrentLanguage();
 $baseUrl = UrlHelper::getBaseUrl();
 $uri = UrlHelper::getCleanUri();
-$current_page = UrlHelper::getCurrentPage($uri);
+$current_page = RouteConfig::getPageFromUri($uri);
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: " . $baseUrl . "/login");
     exit;
 }
 
-$csrfToken = CsrfHelper::getToken();
+$csrfToken = CsrfGuard::getToken();
 if (!$csrfToken) {
-    $csrfToken = CsrfHelper::generateToken();
+    $csrfToken = CsrfGuard::generateToken();
 }
 
 function __($key, $params = array()) {

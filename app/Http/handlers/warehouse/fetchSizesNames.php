@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../BaseHandler.php';
+require_once __DIR__ . '/../../BaseHandler.php';
 
 class FetchSizesNamesHandler extends BaseHandler {
     protected $requireSession = false;

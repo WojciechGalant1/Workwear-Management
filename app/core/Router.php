@@ -13,7 +13,7 @@ class Router {
         $this->notFoundCallback = $callback;
     }
 
-    public function dispatch($uri) {
+    public function dispatch() {
         $uri = UrlHelper::getCleanUri();
         
         if (isset($this->routes[$uri])) {
@@ -33,8 +33,9 @@ class Router {
             if (is_array($route)) {
                 // Middleware - Auth check (PRZED kontrolerem)
                 if (isset($route['auth'])) {
-                    require_once __DIR__ . '/../auth/Auth.php';
-                    checkAccess($route['auth']);  
+                    require_once __DIR__ . '/../auth/AccessGuard.php';
+                    $guard = new AccessGuard();
+                    $guard->requireStatus($route['auth']);
                 }
                 
                 // Wykonanie kontrolera (użytkownik jest już zweryfikowany)

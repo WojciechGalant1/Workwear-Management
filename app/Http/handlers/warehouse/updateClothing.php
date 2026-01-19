@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../BaseHandler.php';
-require_once __DIR__ . '/../../auth/SessionManager.php';
+require_once __DIR__ . '/../../BaseHandler.php';
 
 class UpdateClothingHandler extends BaseHandler {
     
@@ -14,8 +13,7 @@ class UpdateClothingHandler extends BaseHandler {
             $this->csrfErrorResponse();
         }
         
-        $sessionManager = new SessionManager();
-        $currentUserId = $sessionManager->getUserId();
+        $currentUserId = $this->getUserId();
         
         $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
         $nazwa = isset($_POST['nazwa']) ? trim($_POST['nazwa']) : '';
@@ -24,7 +22,6 @@ class UpdateClothingHandler extends BaseHandler {
         $iloscMin = isset($_POST['iloscMin']) ? intval($_POST['iloscMin']) : 0;
         $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
         
-        // Walidacja
         if ($id <= 0) {
             http_response_code(400);
             $this->errorResponse('validation_invalid_id');
@@ -40,14 +37,19 @@ class UpdateClothingHandler extends BaseHandler {
             $this->errorResponse('validation_quantity_negative');
         }
         
-        $stanMagazynuRepo = $this->getRepository('WarehouseRepository');
-        $result = $stanMagazynuRepo->updateStanMagazynu($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId);
-        
-        if ($result['success']) {
-            $this->jsonResponse($result);
-        } else {
+        try {
+            $warehouseService = $this->getService('WarehouseService');
+            $result = $warehouseService->updateWarehouseItem($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId);
+            
+            if ($result['success']) {
+                $this->jsonResponse($result);
+            } else {
+                http_response_code(500);
+                $this->jsonResponse($result);
+            }
+        } catch (Exception $e) {
             http_response_code(500);
-            $this->jsonResponse($result);
+            $this->jsonResponse(array('success' => false, 'message' => $e->getMessage()));
         }
     }
 }

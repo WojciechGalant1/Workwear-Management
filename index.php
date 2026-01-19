@@ -62,8 +62,7 @@ $router->setNotFound(function() {
 
 // DISPATCH REQUEST
 try {
-    $uri = $_SERVER['REQUEST_URI'];
-    $router->dispatch($uri);
+    $router->dispatch();
 } catch (Exception $e) {
     error_log($e->getMessage());
     

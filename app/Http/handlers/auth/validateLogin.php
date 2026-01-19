@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../../BaseHandler.php';
 require_once __DIR__ . '/../../../models/User.php';
-require_once __DIR__ . '/../../../core/database/Database.php';
 require_once __DIR__ . '/../../../auth/SessionManager.php';
 
 class ValidateLoginHandler extends BaseHandler {
@@ -15,8 +14,7 @@ class ValidateLoginHandler extends BaseHandler {
         $password = isset($_POST['password']) ? trim($_POST['password']) : '';
         $kodID = isset($_POST['kodID']) ? trim($_POST['kodID']) : '';
         
-        $db = new Database();
-        $pdo = $db->getPdo();
+        $pdo = $this->serviceContainer->getPdo();
         
         if (!empty($username) && !empty($password)) {
             $this->loginWithPassword($pdo, $username, $password);

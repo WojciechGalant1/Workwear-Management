@@ -1,11 +1,10 @@
 <?php
-require_once __DIR__ . '/../../core/ServiceContainer.php';
+require_once __DIR__ . '/BaseController.php';
 
-class OrderController {
+class OrderController extends BaseController {
     
     public function history() {
-        $serviceContainer = ServiceContainer::getInstance();
-        $orderHistoryRepo = $serviceContainer->getRepository('OrderHistoryRepository');
+        $orderHistoryRepo = $this->getRepository('OrderHistoryRepository');
         
         return array(
             'zamowienia' => $orderHistoryRepo->getAll(),

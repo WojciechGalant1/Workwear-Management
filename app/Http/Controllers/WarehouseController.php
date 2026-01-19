@@ -1,11 +1,10 @@
 <?php
-require_once __DIR__ . '/../../core/ServiceContainer.php';
+require_once __DIR__ . '/BaseController.php';
 
-class WarehouseController {
+class WarehouseController extends BaseController {
     
     public function list() {
-        $serviceContainer = ServiceContainer::getInstance();
-        $warehouseRepo = $serviceContainer->getRepository('WarehouseRepository');
+        $warehouseRepo = $this->getRepository('WarehouseRepository');
         
         return array(
             'ubrania' => $warehouseRepo->readAll(),
