@@ -2,8 +2,7 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class GetSizesHandler extends BaseHandler {
-    protected $requireSession = false;
-    protected $requireLocalization = false;
+    protected $requiredStatus = AccessLevels::USER;
     
     public function handle() {
         $ubranieId = isset($_GET['ubranie_id']) ? intval($_GET['ubranie_id']) : 0;

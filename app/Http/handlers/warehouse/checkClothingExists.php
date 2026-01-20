@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class CheckClothingExistsHandler extends BaseHandler {
-    protected $requireSession = false;
+    protected $requiredStatus = AccessLevels::WAREHOUSE;
     
     public function handle() {
         if (!isset($_GET['nazwa']) || !isset($_GET['rozmiar'])) {

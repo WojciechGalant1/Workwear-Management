@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class GetClothingByCodeHandler extends BaseHandler {
-    protected $requireSession = false;
+    protected $requiredStatus = AccessLevels::USER;
     
     public function handle() {
         if (!isset($_GET['kod'])) {

@@ -6,6 +6,7 @@ abstract class BaseHandler {
     protected $serviceContainer;
     protected $requireSession = true;
     protected $requireLocalization = true;
+    protected $requiredStatus = null;
     
     public function __construct() {
         $this->loadDependencies();
@@ -16,6 +17,10 @@ abstract class BaseHandler {
         
         if ($this->requireLocalization) {
             $this->initLocalization();
+        }
+        
+        if ($this->requiredStatus !== null) {
+            $this->checkAccessStatus();
         }
         
         $this->serviceContainer = ServiceContainer::getInstance();
@@ -30,6 +35,8 @@ abstract class BaseHandler {
     private function loadDependencies() {
         require_once __DIR__ . '/../core/ServiceContainer.php';
         require_once __DIR__ . '/../auth/CsrfGuard.php';
+        require_once __DIR__ . '/../auth/AccessGuard.php';
+        require_once __DIR__ . '/../config/AccessLevels.php';
         require_once __DIR__ . '/../helpers/LocalizationHelper.php';
         require_once __DIR__ . '/../helpers/LanguageSwitcher.php';
         require_once __DIR__ . '/../helpers/UrlHelper.php';
@@ -37,6 +44,27 @@ abstract class BaseHandler {
     
     private function initLocalization() {
         LanguageSwitcher::initializeWithRouting();
+    }
+    
+    private function checkAccessStatus() {
+        $guard = new AccessGuard();
+        
+        if (!$guard->isAuthenticated()) {
+            http_response_code(401);
+            $this->jsonResponse(array(
+                'success' => false,
+                'message' => LocalizationHelper::translate('error_session'),
+                'redirect' => '/login'
+            ));
+        }
+        
+        if (!$guard->hasRequiredStatus($this->requiredStatus)) {
+            http_response_code(403);
+            $this->jsonResponse(array(
+                'success' => false,
+                'message' => LocalizationHelper::translate('access_denied')
+            ));
+        }
     }
     
     /**

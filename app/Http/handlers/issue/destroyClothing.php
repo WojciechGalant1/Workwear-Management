@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class DestroyClothingHandler extends BaseHandler {
+    protected $requiredStatus = AccessLevels::SUPERVISOR;
     
     public function handle() {
         if (!$this->isPost()) {

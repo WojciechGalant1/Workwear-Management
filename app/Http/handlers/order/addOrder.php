@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class AddOrderHandler extends BaseHandler {
+    protected $requiredStatus = AccessLevels::WAREHOUSE;
     
     public function handle() {
         if (!$this->isPost()) {

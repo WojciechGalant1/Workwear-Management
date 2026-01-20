@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class IssueClothingHandler extends BaseHandler {
+    protected $requiredStatus = AccessLevels::USER;
     
     public function handle() {
         if (!$this->isPost()) {
