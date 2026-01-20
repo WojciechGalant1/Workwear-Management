@@ -348,4 +348,4 @@ return array(
     'feature_history' => 'Historia',
     'feature_history_desc' => 'Śledź wszystkie aktywności',
 );
-?>
+

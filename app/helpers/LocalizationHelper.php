@@ -117,4 +117,3 @@ class LocalizationHelper {
         return isset($languageNames[$languageCode]) ? $languageNames[$languageCode] : $languageCode;
     }
 }
-?>

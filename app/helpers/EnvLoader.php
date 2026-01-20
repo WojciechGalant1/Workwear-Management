@@ -1,5 +1,4 @@
 <?php
-
 class EnvLoader {
     private static $variables = array();
 
@@ -30,5 +29,4 @@ class EnvLoader {
         return isset(self::$variables[$key]) ? self::$variables[$key] : null;
     }
 
-    
 }

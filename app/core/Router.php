@@ -19,17 +19,6 @@ class Router {
         if (isset($this->routes[$uri])) {
             $route = $this->routes[$uri];
             
-            // Backward compatible: string paths (stare widoki)
-            if (is_string($route)) {
-                if (file_exists($route)) {
-                    include_once $route;
-                    return true;
-                } else {
-                    throw new Exception("View file not found: $route");
-                }
-            }
-            
-            // Nowe kontrolery: array config
             if (is_array($route)) {
                 // Middleware - Auth check (PRZED kontrolerem)
                 if (isset($route['auth'])) {

@@ -38,7 +38,3 @@ class SessionManager {
         return isset($_SESSION['user_status']) ? $_SESSION['user_status'] : 0;
     }
 }
-
-?>
-
-

@@ -1,4 +1,5 @@
 <?php
+include_once __DIR__ . '/SessionManager.php';
 include_once __DIR__ . '/../core/ServiceContainer.php';
 include_once __DIR__ . '/../helpers/UrlHelper.php';
 include_once __DIR__ . '/../helpers/LocalizationHelper.php';
@@ -9,50 +10,31 @@ include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
  */
 class AccessGuard {
     private $serviceContainer;
+    private $sessionManager;
     
     public function __construct() {
-        $this->initSession();
+        $this->sessionManager = new SessionManager();
         $this->serviceContainer = ServiceContainer::getInstance();
     }
     
-    private function initSession() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-    }
-    
-    /**
-     * Sprawdza czy użytkownik jest zalogowany
-     * @return bool
-     */
     public function isAuthenticated() {
-        return isset($_SESSION['user_id']);
+        return $this->sessionManager->isLoggedIn();
     }
     
-    /**
-     * Pobiera ID zalogowanego użytkownika
-     * @return int|null
-     */
     public function getUserId() {
-        return isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+        return $this->sessionManager->getUserId();
     }
     
-    /**
-     * Sprawdza czy użytkownik ma wymagany status
-     * @param int $requiredStatus
-     * @return bool
-     */
     public function hasRequiredStatus($requiredStatus) {
+        $userId = $this->sessionManager->getUserId();
+        if (!$userId) {
+            return false;
+        }
         $userRepo = $this->serviceContainer->getRepository('UserRepository');
-        $user = $userRepo->getUserById($_SESSION['user_id']);
+        $user = $userRepo->getUserById($userId);
         return $user && $user['status'] >= $requiredStatus;
     }
     
-    /**
-     * Wymaga określonego statusu użytkownika
-     * Przekierowuje na login lub wyświetla błąd jeśli brak dostępu
-     * @param int $requiredStatus
-     */
     public function requireStatus($requiredStatus) {
         if (!$this->isAuthenticated()) {
             $this->redirectToLogin();

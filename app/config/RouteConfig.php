@@ -1,132 +1,126 @@
 <?php
+require_once __DIR__ . '/AccessLevels.php';
 
-/**
- * Central configuration for all route mappings in the application
- */
 class RouteConfig {
-    /**
-     * Get routes mapping clean URLs to view files
-     */
+    
+    private static $pageMap = null;
+    private static $urlMap = null;
+    
     public static function getRoutes() {
         return array(
             '/' => array(
                 'controller' => 'IssueController',
                 'action' => 'issue',
                 'view' => './views/issue_clothing.php',
-                'auth' => 1
+                'auth' => AccessLevels::USER
             ),
             '/issue-clothing' => array(
                 'controller' => 'IssueController',
                 'action' => 'issue',
                 'view' => './views/issue_clothing.php',
-                'auth' => 1
+                'auth' => AccessLevels::USER
             ),
             '/order-history' => array(
                 'controller' => 'OrderController',
                 'action' => 'history',
                 'view' => './views/order_history.php',
-                'auth' => 2
+                'auth' => AccessLevels::WAREHOUSE
             ),
             '/clothing-history' => array(
                 'controller' => 'ClothingController',
                 'action' => 'history',
                 'view' => './views/clothing_history.php',
-                'auth' => 5
+                'auth' => AccessLevels::ADMIN
             ),
             '/issue-history' => array(
                 'controller' => 'IssueController',
                 'action' => 'history',
                 'view' => './views/issue_history.php',
-                'auth' => 4
+                'auth' => AccessLevels::SUPERVISOR
             ),
             '/employees' => array(
                 'controller' => 'EmployeeController',
                 'action' => 'list',
                 'view' => './views/employee_list.php',
-                'auth' => 4
+                'auth' => AccessLevels::SUPERVISOR
             ),
             '/warehouse' => array(
                 'controller' => 'WarehouseController',
                 'action' => 'list',
                 'view' => './views/warehouse_list.php',
-                'auth' => 2
+                'auth' => AccessLevels::WAREHOUSE
             ),
             '/add-order' => array(
                 'controller' => 'OrderController',
                 'action' => 'create',
                 'view' => './views/add_order.php',
-                'auth' => 2
+                'auth' => AccessLevels::WAREHOUSE
             ),
             '/report' => array(
                 'controller' => 'ReportController',
                 'action' => 'index',
                 'view' => './views/raport.php',
-                'auth' => 4
+                'auth' => AccessLevels::SUPERVISOR
             ),
             '/add-employee' => array(
                 'controller' => 'EmployeeController',
                 'action' => 'create',
                 'view' => './views/add_employee.php',
-                'auth' => 4
+                'auth' => AccessLevels::SUPERVISOR
             ),
-            '/login' => './views/auth/login.php'
+            '/login' => array(
+                'controller' => 'AuthController',
+                'action' => 'login',
+                'view' => './views/auth/login.php'
+            )
         );
     }
     
-    /**
-     * Get mapping from clean URLs to page filenames (without path)
-     */
     public static function getPageMap() {
-        return array(
-            '/' => 'issue_clothing.php',
-            '/issue-clothing' => 'issue_clothing.php',
-            '/order-history' => 'order_history.php',
-            '/clothing-history' => 'clothing_history.php',
-            '/issue-history' => 'issue_history.php',
-            '/employees' => 'employee_list.php',
-            '/warehouse' => 'warehouse_list.php',
-            '/add-order' => 'add_order.php',
-            '/report' => 'raport.php',
-            '/add-employee' => 'add_employee.php',
-            '/login' => 'login.php'
-        );
+        if (self::$pageMap === null) {
+            self::$pageMap = self::buildPageMap();
+        }
+        return self::$pageMap;
     }
     
-    /**
-     * Get mapping from page filenames to clean URLs
-     */
     public static function getUrlMap() {
-        return array(
-            'issue_history.php' => '/issue-history',
-            'order_history.php' => '/order-history',
-            'clothing_history.php' => '/clothing-history',
-            'employee_list.php' => '/employees',
-            'warehouse_list.php' => '/warehouse',
-            'add_order.php' => '/add-order',
-            'issue_clothing.php' => '/issue-clothing',
-            'raport.php' => '/report',
-            'add_employee.php' => '/add-employee',
-            'login.php' => '/login'
-        );
+        if (self::$urlMap === null) {
+            self::$urlMap = self::buildUrlMap();
+        }
+        return self::$urlMap;
     }
     
-    /**
-     * Get page filename from URI
-     * @param string $uri Clean URI
-     * @return string Page filename
-     */
+    private static function buildPageMap() {
+        $map = array();
+        foreach (self::getRoutes() as $uri => $route) {
+            $view = is_array($route) ? $route['view'] : $route;
+            $map[$uri] = basename($view);
+        }
+        return $map;
+    }
+    
+    private static function buildUrlMap() {
+        $map = array();
+        foreach (self::getRoutes() as $uri => $route) {
+            if ($uri === '/') {
+                continue;
+            }
+            $view = is_array($route) ? $route['view'] : $route;
+            $fileName = basename($view);
+            if (!isset($map[$fileName])) {
+                $map[$fileName] = $uri;
+            }
+        }
+        return $map;
+    }
+    
     public static function getPageFromUri($uri) {
         $pageMap = self::getPageMap();
         return isset($pageMap[$uri]) ? $pageMap[$uri] : basename($_SERVER['PHP_SELF']);
     }
     
-    /**
-     * Get clean URL from page filename
-     * @param string $fileName Page filename
-     * @return string Clean URL
-     */
     public static function getUrlFromPage($fileName) {
         $urlMap = self::getUrlMap();
         return isset($urlMap[$fileName]) ? $urlMap[$fileName] : $fileName;
     }
-} 
+}

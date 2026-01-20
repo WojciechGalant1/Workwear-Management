@@ -349,4 +349,4 @@ return array(
     'feature_history' => 'History',
     'feature_history_desc' => 'Track all activities',
 );
-?>
+

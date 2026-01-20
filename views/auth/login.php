@@ -1,18 +1,13 @@
 <?php
-require_once __DIR__ . '/../../app/helpers/UrlHelper.php';
-require_once __DIR__ . '/../../app/auth/CsrfGuard.php';
 require_once __DIR__ . '/../../app/helpers/LocalizationHelper.php';
 require_once __DIR__ . '/../../app/helpers/LanguageSwitcher.php';
 
-$currentLanguage = LanguageSwitcher::getCurrentLanguage();
-
-$baseUrl = UrlHelper::getBaseUrl();
-
-function __($key, $params = array())
-{
-    $currentLang = LanguageSwitcher::getCurrentLanguage();
-    LocalizationHelper::setLanguage($currentLang);
-    return LocalizationHelper::translate($key, $params);
+if (!function_exists('__')) {
+    function __($key, $params = array()) {
+        $currentLang = LanguageSwitcher::getCurrentLanguage();
+        LocalizationHelper::setLanguage($currentLang);
+        return LocalizationHelper::translate($key, $params);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -23,12 +18,6 @@ function __($key, $params = array())
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="base-url" content="<?php echo $baseUrl; ?>">
     <meta name="current-language" content="<?php echo $currentLanguage; ?>">
-    <?php
-    $csrfToken = CsrfGuard::getToken();
-    if (!$csrfToken) {
-        $csrfToken = CsrfGuard::generateToken();
-    }
-    ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
     <title><?php echo __('login_title'); ?></title>
     <link rel="icon" href="<?php echo $baseUrl; ?>/img/protectve-equipment.png" type="image/png">

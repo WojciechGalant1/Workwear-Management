@@ -1,6 +1,62 @@
 <?php
 
+include_once __DIR__ . '/../app/core/ServiceContainer.php';
+include_once __DIR__ . '/../app/auth/SessionManager.php';
+include_once __DIR__ . '/../app/helpers/UrlHelper.php';
+include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
+include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
+include_once __DIR__ . '/../app/config/RouteConfig.php';
+include_once __DIR__ . '/../app/config/AccessLevels.php';
+
 class NavBuilder {
+
+    const LOGOUT_PATH = '/app/Http/handlers/auth/logout.php';
+    
+    /**
+     * Render the complete navigation bar
+     * @param string $currentPage Current page filename
+     * @param string $currentLanguage Current language code
+     */
+    public static function renderNavBar($currentPage, $currentLanguage = 'en') {
+        $sessionManager = new SessionManager();
+        $userStatus = $sessionManager->getUserStatus();
+        
+        $serviceContainer = ServiceContainer::getInstance();
+        $warehouseRepo = $serviceContainer->getRepository('WarehouseRepository');
+        $hasShortages = $warehouseRepo->checkIlosc();
+        
+        $baseUrl = UrlHelper::getBaseUrl();
+        $activeUri = RouteConfig::getUrlFromPage($currentPage);
+        
+        echo '
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <div class="container-fluid">
+
+                <!-- Logo -->
+                <a class="navbar-brand ms-2" href="' . $baseUrl . '/">
+                    <img src="' . $baseUrl . '/img/protective-equipment.png" class="logo-image" alt="Logo" height="30">
+                </a>
+
+                <!-- Menu toggle for mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Nav links -->
+                <div class="collapse navbar-collapse" id="navbarMenu">
+                    <ul class="navbar-nav me-auto d-flex align-items-center">
+                        ' . self::buildNavGroups($activeUri, $baseUrl, $userStatus, $hasShortages) . '
+                    </ul>
+
+                    <!-- Language switcher (aligned right) -->
+                    <ul class="navbar-nav ms-auto">
+                        ' . self::buildLanguageSwitcher($baseUrl, $currentLanguage) . '
+                    </ul>
+                </div>
+
+            </div>
+        </nav>';
+    }
 
     public static function navItem($url, $label, $activeUri, $baseUrl, $extraClass = '') {
         $isActive = ($activeUri === $url) ? 'active' : '';
@@ -10,38 +66,33 @@ class NavBuilder {
                     <a class="nav-link' . $extraClass . ' ' . $isActive . '" href="' . $baseUrl . $url . '">' . $label . '</a>
                 </li>';
     }
-    
 
     public static function separator() {
         return '<a class="nav-link text-light">|</a>';
     }
-    
 
     public static function buildNavGroups($activeUri, $baseUrl, $userStatus, $hasShortages = false) {
-        include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
-        include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
-        
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
         
         $output = '';
         
-        if ($userStatus >= 3) {
+        if ($userStatus >= AccessLevels::MANAGER) {
             $output .= self::navItem('/add-order', LocalizationHelper::translate('nav_add_order'), $activeUri, $baseUrl);
             $output .= self::navItem('/order-history', LocalizationHelper::translate('nav_history'), $activeUri, $baseUrl);
         }
         
-        if ($userStatus >= 1) {
+        if ($userStatus >= AccessLevels::USER) {
             $output .= self::separator();
             $output .= self::navItem('/issue-clothing', LocalizationHelper::translate('nav_issue_clothing'), $activeUri, $baseUrl);
         }
         
-        if ($userStatus >= 3) {
+        if ($userStatus >= AccessLevels::MANAGER) {
             $shortageCls = $hasShortages ? 'text-danger fw-bold text-uppercase' : '';
             $output .= self::navItem('/warehouse', LocalizationHelper::translate('nav_warehouse'), $activeUri, $baseUrl, $shortageCls);
         }
         
-        if ($userStatus >= 5) {
+        if ($userStatus >= AccessLevels::ADMIN) {
             $output .= self::navItem('/issue-history', LocalizationHelper::translate('nav_issue_history'), $activeUri, $baseUrl);
             $output .= self::navItem('/clothing-history', LocalizationHelper::translate('nav_clothing_history'), $activeUri, $baseUrl);
             $output .= self::navItem('/report', LocalizationHelper::translate('nav_reports'), $activeUri, $baseUrl);
@@ -51,20 +102,20 @@ class NavBuilder {
         }
         
         $output .= self::separator();
-        $output .= '<li class="nav-item">
-                        <a class="nav-link text-warning" href="' . $baseUrl . '/app/http/handlers/auth/logout.php">
-                            ' . LocalizationHelper::translate('nav_logout') . '
-                        </a>
-                    </li>';
+        $output .= self::buildLogoutItem($baseUrl);
         
         return $output;
     }
     
+    private static function buildLogoutItem($baseUrl) {
+        return '<li class="nav-item">
+                    <a class="nav-link text-warning" href="' . $baseUrl . self::LOGOUT_PATH . '">
+                        ' . LocalizationHelper::translate('nav_logout') . '
+                    </a>
+                </li>';
+    }
 
     public static function buildLanguageSwitcher($baseUrl, $currentLanguage) {
-        include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
-        include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
-        
         $availableLanguages = LocalizationHelper::getAvailableLanguages();
         $currentPath = UrlHelper::getCleanUri();
         
@@ -82,7 +133,7 @@ class NavBuilder {
             
             $output .= '<li>';
             $output .= '<a class="dropdown-item ' . $isActive . '" href="' . htmlspecialchars($langUrl) . '">';
-            $output .= self::getLanguageFlag($lang) . ' ' . $langName;
+            $output .= LanguageSwitcher::getLanguageFlag($lang) . ' ' . $langName;
             if ($isActive) {
                 $output .= ' <i class="bi bi-check float-end"></i>';
             }
@@ -96,15 +147,4 @@ class NavBuilder {
         return $output;
     }
     
-    private static function getLanguageFlag($language) {
-        $flags = array(
-            'en' => '🇺🇸',
-            'pl' => '🇵🇱',
-            'de' => '🇩🇪',
-            'fr' => '🇫🇷',
-            'es' => '🇪🇸'
-        );
-        
-        return isset($flags[$language]) ? $flags[$language] : '🌐';
-    }
 }

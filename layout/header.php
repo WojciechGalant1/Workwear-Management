@@ -21,7 +21,6 @@ if (!$csrfToken) {
 }
 
 function __($key, $params = array()) {
-    // current language from session/cookie/URL
     $currentLang = LanguageSwitcher::getCurrentLanguage();
     LocalizationHelper::setLanguage($currentLang);
     return LocalizationHelper::translate($key, $params);
@@ -70,8 +69,7 @@ echo '
 </style>
 ';
 
-include_once 'ClassMenu.php';
-$nav = new ClassMenu();
+include_once 'NavBuilder.php';
 
 $modulesConfig = include __DIR__ . '/../app/config/modules.php';
 $modules = isset($modulesConfig[$current_page]) ? $modulesConfig[$current_page] : $modulesConfig['default'];
@@ -79,7 +77,7 @@ $modules = isset($modulesConfig[$current_page]) ? $modulesConfig[$current_page] 
 $containerId = ($uri === '/issue-history') ? 'id="historia-page"' : '';
 echo "<body data-modules='$modules'>";
 
-$nav->navBar($current_page, $currentLanguage);
+NavBuilder::renderNavBar($current_page, $currentLanguage);
 echo '
 <div ' . $containerId . ' class="container border border-secondary border-opacity-50 mt-5 shadow mb-5 p-4 bg-body rounded">';
 
