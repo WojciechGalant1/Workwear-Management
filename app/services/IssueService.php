@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../models/Issue.php';
-require_once __DIR__ . '/../models/IssuedClothing.php';
+require_once __DIR__ . '/../entities/Issue.php';
+require_once __DIR__ . '/../entities/IssuedClothing.php';
 require_once __DIR__ . '/../helpers/LocalizationHelper.php';
 
 /**

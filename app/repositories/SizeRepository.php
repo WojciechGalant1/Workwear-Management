@@ -1,6 +1,6 @@
 <?php
 include_once __DIR__ . '/BaseRepository.php';
-include_once __DIR__ . '/../models/Size.php';
+include_once __DIR__ . '/../entities/Size.php';
 
 class SizeRepository extends BaseRepository {
 

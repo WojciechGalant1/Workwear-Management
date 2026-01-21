@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../models/Warehouse.php';
-require_once __DIR__ . '/../models/Clothing.php';
-require_once __DIR__ . '/../models/Size.php';
+require_once __DIR__ . '/../entities/Warehouse.php';
+require_once __DIR__ . '/../entities/Clothing.php';
+require_once __DIR__ . '/../entities/Size.php';
 require_once __DIR__ . '/../helpers/LocalizationHelper.php';
 
 /**
@@ -106,8 +106,8 @@ class WarehouseService {
             throw new Exception(LocalizationHelper::translate('error_user_not_found'));
         }
         
-        require_once __DIR__ . '/../models/OrderHistory.php';
-        require_once __DIR__ . '/../models/OrderDetails.php';
+        require_once __DIR__ . '/../entities/OrderHistory.php';
+        require_once __DIR__ . '/../entities/OrderDetails.php';
         
         $zamowienie = new OrderHistory(new DateTime(), $userId, $uwagi, 2); // Status 2 = zmiana magazynu
         

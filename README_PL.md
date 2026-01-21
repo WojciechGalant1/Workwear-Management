@@ -87,7 +87,7 @@ project/
 │   │   ├── EmployeeRepository.php
 │   │   ├── ClothingRepository.php
 │   │   └── ...             # Inne repozytoria
-│   ├── models/             # Modele domenowe (encje)
+│   ├── entities/           # Encje domenowe (Employee, Clothing, etc.)
 │   ├── config/             # Pliki konfiguracyjne
 │   │   ├── RouteConfig.php # Definicje tras z poziomami auth
 │   │   └── translations/   # Pliki i18n (EN/PL)

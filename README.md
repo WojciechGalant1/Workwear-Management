@@ -79,7 +79,7 @@ project/
 │   ├── services/           # Business logic layer
 │   ├── repositories/       # Data access layer (Repository pattern)
 │   │   └── ...             # Other repositories
-│   ├── models/             # Domain entities (Employee, Clothing, etc.)
+│   ├── entities/           # Domain entities (Employee, Clothing, etc.)
 │   ├── config/             # Configuration & translations
 │   │   ├── RouteConfig.php # Route definitions with auth levels
 │   │   └── translations/   # i18n files (EN/PL)

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../BaseHandler.php';
-require_once __DIR__ . '/../../../models/Employee.php';
+require_once __DIR__ . '/../../../entities/Employee.php';
 
 class AddEmployeeHandler extends BaseHandler {
     protected $requiredStatus = AccessLevels::SUPERVISOR;

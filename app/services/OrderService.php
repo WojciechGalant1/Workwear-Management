@@ -1,10 +1,10 @@
 <?php
-require_once __DIR__ . '/../models/OrderHistory.php';
-require_once __DIR__ . '/../models/OrderDetails.php';
-require_once __DIR__ . '/../models/Clothing.php';
-require_once __DIR__ . '/../models/Size.php';
-require_once __DIR__ . '/../models/Code.php';
-require_once __DIR__ . '/../models/Warehouse.php';
+require_once __DIR__ . '/../entities/OrderHistory.php';
+require_once __DIR__ . '/../entities/OrderDetails.php';
+require_once __DIR__ . '/../entities/Clothing.php';
+require_once __DIR__ . '/../entities/Size.php';
+require_once __DIR__ . '/../entities/Code.php';
+require_once __DIR__ . '/../entities/Warehouse.php';
 require_once __DIR__ . '/../helpers/LocalizationHelper.php';
 
 /**

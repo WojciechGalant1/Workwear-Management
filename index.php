@@ -1,7 +1,6 @@
 <?php
 /**
  * Bootstrap/Entry Point
- * Centralna inicjalizacja aplikacji
  */
 
 // ERROR HANDLING CONFIGURATION
