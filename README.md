@@ -64,7 +64,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Performance|Designed for low-resource deployment|
 |Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
 > **Note:**
-> Optimized for performance in PHP 5.6 environments. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading. Authentication uses `AccessGuard` middleware in Router. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection. API responses use consistent `{success: boolean}` format.
+> Optimized for performance in PHP 5.6 environments. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). Application initialization is centralized in `bootstrap.php` (error handling, session, dependencies). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading. Authentication uses `AccessGuard` middleware in Router with centralized `AccessLevels` configuration. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection. API responses use consistent `{success: boolean}` format.
 
 
 ##  Project Structure (Simplified)
@@ -72,15 +72,16 @@ A full-featured web platform designed to manage corporate workwear distribution 
 ```
 project/
 ├── app/                    # Application core
+│   ├── bootstrap.php       # Application initialization (error handling, session, dependencies)
 │   ├── auth/               # Access control and session management
 │   │   ├── AccessGuard.php # Authorization middleware (role-based access)
 │   │   ├── CsrfGuard.php   # CSRF protection
 │   │   └── SessionManager.php
 │   ├── services/           # Business logic layer
 │   ├── repositories/       # Data access layer (Repository pattern)
-│   │   └── ...             # Other repositories
 │   ├── entities/           # Domain entities (Employee, Clothing, etc.)
 │   ├── config/             # Configuration & translations
+│   │   ├── AccessLevels.php # Centralized user access levels
 │   │   ├── RouteConfig.php # Route definitions with auth levels
 │   │   └── translations/   # i18n files (EN/PL)
 │   ├── core/               # Core infrastructure
@@ -90,6 +91,7 @@ project/
 │   ├── Http/               # HTTP layer (request handling)
 │   │   ├── BaseHandler.php # Base class for AJAX handlers
 │   │   ├── Controllers/    # MVC Controllers (presentation logic)
+│   │   │   └── ...         # Domain controllers
 │   │   └── handlers/       # AJAX / API request handlers (domain-grouped)
 │   │       ├── auth/       # Authentication handlers
 │   │       ├── employee/   # Employee management handlers
@@ -98,6 +100,8 @@ project/
 │   │       └── warehouse/  # Warehouse handlers
 │   └── helpers/            # Utility classes (static methods)
 ├── views/                  # View templates (presentation layer)
+│   ├── errors/             # Error pages (404, 500)
+│   └── ...                 # Page views
 ├── layout/                 # Shared layout components (header, footer, menu)
 ├── script/                 # JavaScript modules (ES6)
 │   ├── auth/               # Frontend validation & auth logic
@@ -107,7 +111,7 @@ project/
 ├── img/                    # Image assets
 ├── .htaccess               # Apache configuration
 ├── App.js                  # Frontend entry point / Module loader
-└── index.php               # Application entry point (centralized initialization)
+└── index.php               # Application entry point (loads bootstrap, dispatches router)
 ```
 
 ##  System Modules
@@ -124,7 +128,6 @@ project/
 
 ## Potential Enhancements & Future Development
 - **Codebase Modernization** – Upgrade PHP version and refactor legacy components for modern standards (e.g., PHP 8+, namespaces, Composer)
-- **Mobile Optimization** – Enhance touch interactions and responsive views for tablet/handheld use in warehouse environments
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
 - **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack

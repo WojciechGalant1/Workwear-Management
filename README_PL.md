@@ -65,7 +65,7 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 |Wydajność|Zaprojektowany do wdrożenia w środowiskach o niskich zasobach|
 |Architektura|MVC z Kontrolerami, warstwa Services, wzorzec Repository, Service Container (DI), BaseHandler/BaseController, routing z middleware|
 > **Uwaga:**
-> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading. Autoryzacja używa `AccessGuard` jako middleware w Routerze. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF. Odpowiedzi API używają spójnego formatu `{success: boolean}`.
+> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Inicjalizacja aplikacji jest scentralizowana w `bootstrap.php` (obsługa błędów, sesja, zależności). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading. Autoryzacja używa `AccessGuard` jako middleware w Routerze ze scentralizowaną konfiguracją `AccessLevels`. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF. Odpowiedzi API używają spójnego formatu `{success: boolean}`.
 
 
 ##  Struktura projektu (uproszczona)
@@ -73,6 +73,7 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 ```
 project/
 ├── app/                    # Logika aplikacji
+│   ├── bootstrap.php       # Inicjalizacja aplikacji (error handling, sesja, zależności)
 │   ├── auth/               # Autoryzacja i zarządzanie sesjami
 │   │   ├── AccessGuard.php # Middleware autoryzacji (kontrola ról)
 │   │   ├── CsrfGuard.php   # Ochrona CSRF
@@ -84,11 +85,10 @@ project/
 │   │   └── ClothingExpiryService.php
 │   ├── repositories/       # Warstwa dostępu do danych (wzorzec Repository)
 │   │   ├── BaseRepository.php
-│   │   ├── EmployeeRepository.php
-│   │   ├── ClothingRepository.php
-│   │   └── ...             # Inne repozytoria
+│   │   └── ...             # Repozytoria domenowe
 │   ├── entities/           # Encje domenowe (Employee, Clothing, etc.)
 │   ├── config/             # Pliki konfiguracyjne
+│   │   ├── AccessLevels.php # Scentralizowane poziomy dostępu
 │   │   ├── RouteConfig.php # Definicje tras z poziomami auth
 │   │   └── translations/   # Pliki i18n (EN/PL)
 │   ├── core/               # Infrastruktura rdzenia
@@ -99,9 +99,7 @@ project/
 │   │   ├── BaseHandler.php # Klasa bazowa dla handlerów AJAX
 │   │   ├── Controllers/    # Kontrolery MVC (logika prezentacji)
 │   │   │   ├── BaseController.php
-│   │   │   ├── EmployeeController.php
-│   │   │   ├── IssueController.php
-│   │   │   └── ...         # Inne kontrolery
+│   │   │   └── ...         # Kontrolery domenowe
 │   │   └── handlers/       # Handlery żądań AJAX (pogrupowane domenowo)
 │   │       ├── auth/       # Handlery uwierzytelniania
 │   │       ├── employee/   # Handlery zarządzania pracownikami
@@ -111,10 +109,11 @@ project/
 │   └── helpers/            # Klasy pomocnicze (metody statyczne)
 │       ├── DateHelper.php
 │       ├── LocalizationHelper.php
-│       ├── UrlHelper.php
-│       └── ...
+│       └── UrlHelper.php
 ├── views/                  # Szablony widoków
-├── layout/                 # Szablony układu
+│   ├── errors/             # Strony błędów (404, 500)
+│   └── ...                 # Widoki stron
+├── layout/                 # Szablony układu (header, footer, menu)
 ├── script/                 # Moduły JavaScript (ES6)
 │   ├── auth/               # Walidacja i logika auth po stronie klienta
 │   ├── apiClient.js        # Scentralizowany klient API z walidacją
@@ -123,7 +122,7 @@ project/
 ├── img/                    # Zasoby graficzne
 ├── .htaccess               # Konfiguracja Apache
 ├── App.js                  # Główny plik JavaScript aplikacji (loader modułów)
-└── index.php               # Punkt wejścia aplikacji (centralna inicjalizacja)
+└── index.php               # Punkt wejścia (ładuje bootstrap, uruchamia router)
 ```
 
 ##  Moduły systemu

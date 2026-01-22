@@ -15,5 +15,3 @@ class UserRepository extends BaseRepository{
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
-?>
-

@@ -70,39 +70,5 @@ export const ChangeStatus = (function () {
         }
     };
 
-
-
-    // const updateStatusForModal = async () => {
-    //     const isRaport = selectedButton.getAttribute('data-raport') === 'true';
-    //     const baseUrl = getBaseUrl();
-
-    //     try {
-    //         const requestData = addCsrfToObject({ id: selectedId, currentStatus: 1 });
-            
-    //         const response = await fetch(`${baseUrl}/app/http/handlers/changeStatus.php`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(requestData)
-    //         });
-
-    //         const data = await response.json();
-
-    //         if (data.success) {
-    //             selectedButton.disabled = true;
-    //             selectedButton.textContent = "Usunięto z raportu";
-    //             if (isRaport) {
-    //                 window.location.reload();
-    //             }
-    //         } else {
-    //             alert(data.message || 'Błąd podczas aktualizacji statusu.');
-    //         }
-    //     } catch (error) {
-    //         console.error('Błąd:', error);
-    //         alert('Wystąpił błąd podczas aktualizacji statusu.');
-    //     }
-    // };
-
     return { initialize };
 })();

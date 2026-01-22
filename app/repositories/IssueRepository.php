@@ -29,5 +29,3 @@ class IssueRepository extends BaseRepository {
     }
     
 }
-?>
-

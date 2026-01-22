@@ -49,5 +49,4 @@ class SizeRepository extends BaseRepository {
     }
 
 }
-?>
 

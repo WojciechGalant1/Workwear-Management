@@ -53,5 +53,4 @@ class EmployeeRepository extends BaseRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
-?>
 

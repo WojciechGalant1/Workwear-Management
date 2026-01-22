@@ -1,5 +1,4 @@
 <?php
-
 class Clothing {
     private $id_ubranie;
     private $nazwa_ubrania;
@@ -25,5 +24,5 @@ class Clothing {
     }
 
 }
-?>
+
 

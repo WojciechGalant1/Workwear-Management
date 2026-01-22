@@ -2,6 +2,11 @@
 /**
  * Base class for all HTTP handlers (AJAX/form POST)
  */
+
+// AccessLevels musi być załadowany przed definicją klasy,
+// ponieważ handlery używają AccessLevels::* w deklaracji właściwości
+require_once __DIR__ . '/../config/AccessLevels.php';
+
 abstract class BaseHandler {
     protected $serviceContainer;
     protected $requireSession = true;
@@ -36,7 +41,7 @@ abstract class BaseHandler {
         require_once __DIR__ . '/../core/ServiceContainer.php';
         require_once __DIR__ . '/../auth/CsrfGuard.php';
         require_once __DIR__ . '/../auth/AccessGuard.php';
-        require_once __DIR__ . '/../config/AccessLevels.php';
+        // AccessLevels jest już załadowany na początku pliku
         require_once __DIR__ . '/../helpers/LocalizationHelper.php';
         require_once __DIR__ . '/../helpers/LanguageSwitcher.php';
         require_once __DIR__ . '/../helpers/UrlHelper.php';

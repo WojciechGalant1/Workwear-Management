@@ -62,5 +62,4 @@ class ClothingRepository extends BaseRepository {
     }
         
 }
-?>
 

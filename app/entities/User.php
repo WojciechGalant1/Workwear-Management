@@ -41,4 +41,3 @@ class User {
         $this->u_kod = $u_kod;
     }
 }
-?>
