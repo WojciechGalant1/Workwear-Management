@@ -44,11 +44,6 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 - **Wsparcie wielojęzyczne** - Pełne wsparcie dla języka angielskiego i polskiego z dynamicznym przełączaniem
 - **Ochrona CSRF** - Kompleksowa implementacja zabezpieczeń we wszystkich formularzach i żądaniach AJAX
 - **Scentralizowany klient API** - Ujednolicony klient API (`apiClient`) z automatycznym wstrzykiwaniem CSRF, walidacją odpowiedzi i obsługą błędów
-- **Walidacja odpowiedzi** - Automatyczna walidacja struktury odpowiedzi API z centralną polityką błędów
-- **Wzorzec BaseHandler** - Klasa bazowa dla handlerów HTTP eliminująca duplikację kodu (sesja, CSRF, inicjalizacja lokalizacji)
-- **Architektura Middleware** - Autoryzacja obsługiwana przez middleware w Routerze (przed wykonaniem kontrolerów)
-- **Zoptymalizowane zapytania bazodanowe** - Zapytania oparte na JOIN-ach zapobiegające problemom N+1, pobieranie danych w jednym zapytaniu
-- **Warstwa Kontrolerów** - Kontrolery MVC oddzielają logikę prezentacji od widoków (widoki są "dumb")
 - **Responsywny design** - Interfejs przyjazny dla urządzeń mobilnych, zoptymalizowany dla środowisk magazynowych
 > **Ostrzeżenie:**
 > Czytniki kodów kreskowych muszą być skonfigurowane tak, aby automatycznie dodawać naciśnięcie klawisza "Enter" po każdym skanowaniu, aby zapewnić prawidłowe przesyłanie formularzy i interakcję z systemem.
@@ -65,7 +60,7 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 |Wydajność|Zaprojektowany do wdrożenia w środowiskach o niskich zasobach|
 |Architektura|MVC z Kontrolerami, warstwa Services, wzorzec Repository, Service Container (DI), BaseHandler/BaseController, routing z middleware|
 > **Uwaga:**
-> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Inicjalizacja aplikacji jest scentralizowana w `bootstrap.php` (obsługa błędów, sesja, zależności). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading. Autoryzacja używa `AccessGuard` jako middleware w Routerze ze scentralizowaną konfiguracją `AccessLevels`. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF. Odpowiedzi API używają spójnego formatu `{success: boolean}`.
+> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Inicjalizacja aplikacji jest scentralizowana w `bootstrap.php` (obsługa błędów, sesja, zależności). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading. Autoryzacja używa `AccessGuard` jako middleware w Routerze ze scentralizowaną konfiguracją `AccessLevels`. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF. Odpowiedzi API używają spójnego formatu `{success: boolean}`. Frontend wykorzystuje dynamiczne ładowanie modułów przez atrybut `data-modules` na `<body>`. Formularze z atrybutem `data-ajax-form` są automatycznie obsługiwane przez `FormHandler` dla przesyłania AJAX. `AlertManager` używa wzorca singleton przez `getAlertManager()` aby zapewnić jedną instancję w całej aplikacji.
 
 
 ##  Struktura projektu (uproszczona)
@@ -79,10 +74,6 @@ project/
 │   │   ├── CsrfGuard.php   # Ochrona CSRF
 │   │   └── SessionManager.php
 │   ├── services/           # Warstwa logiki biznesowej
-│   │   ├── IssueService.php
-│   │   ├── OrderService.php
-│   │   ├── WarehouseService.php
-│   │   └── ClothingExpiryService.php
 │   ├── repositories/       # Warstwa dostępu do danych (wzorzec Repository)
 │   │   ├── BaseRepository.php
 │   │   └── ...             # Repozytoria domenowe
@@ -98,7 +89,6 @@ project/
 │   ├── Http/               # Warstwa HTTP (obsługa żądań)
 │   │   ├── BaseHandler.php # Klasa bazowa dla handlerów AJAX
 │   │   ├── Controllers/    # Kontrolery MVC (logika prezentacji)
-│   │   │   ├── BaseController.php
 │   │   │   └── ...         # Kontrolery domenowe
 │   │   └── handlers/       # Handlery żądań AJAX (pogrupowane domenowo)
 │   │       ├── auth/       # Handlery uwierzytelniania
@@ -107,21 +97,20 @@ project/
 │   │       ├── order/      # Handlery zamówień
 │   │       └── warehouse/  # Handlery magazynu
 │   └── helpers/            # Klasy pomocnicze (metody statyczne)
-│       ├── DateHelper.php
-│       ├── LocalizationHelper.php
-│       └── UrlHelper.php
 ├── views/                  # Szablony widoków
 │   ├── errors/             # Strony błędów (404, 500)
 │   └── ...                 # Widoki stron
 ├── layout/                 # Szablony układu (header, footer, menu)
 ├── script/                 # Moduły JavaScript (ES6)
+│   ├── app/                # Moduły poziomu aplikacji
+│   ├── clothing/           # Moduły zarządzania odzieżą
 │   ├── auth/               # Walidacja i logika auth po stronie klienta
 │   ├── apiClient.js        # Scentralizowany klient API z walidacją
-│   └── ...                 
+│   └── ...                 # Moduły specyficzne dla domeny                 
 ├── styl/                   # Arkusze stylów CSS
 ├── img/                    # Zasoby graficzne
 ├── .htaccess               # Konfiguracja Apache
-├── App.js                  # Główny plik JavaScript aplikacji (loader modułów)
+├── App.js                  # Główny plik JavaScript aplikacji (dynamiczny loader modułów, data-modules)
 └── index.php               # Punkt wejścia (ładuje bootstrap, uruchamia router)
 ```
 

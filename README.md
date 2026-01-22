@@ -43,7 +43,6 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **Barcode integration** - Items added/edited via scanner input with auto-form submission
 - **Multilingual Support** - Full English and Polish language support with dynamic switching
 - **CSRF Protection** - Comprehensive security implementation across all forms and AJAX requests
-- **Centralized API Client** - Unified API client (`apiClient`) with automatic CSRF injection, response validation, and error handling
 - **Response Validation** - Automatic validation of API response structure with centralized error policy
 - **BaseHandler Pattern** - Base class for HTTP handlers eliminating code duplication (session, CSRF, localization initialization)
 - **Middleware Architecture** - Authentication handled via middleware in Router (before controllers execute)
@@ -64,7 +63,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Performance|Designed for low-resource deployment|
 |Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
 > **Note:**
-> Optimized for performance in PHP 5.6 environments. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). Application initialization is centralized in `bootstrap.php` (error handling, session, dependencies). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading. Authentication uses `AccessGuard` middleware in Router with centralized `AccessLevels` configuration. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection. API responses use consistent `{success: boolean}` format.
+> Optimized for performance in PHP 5.6 environments. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). Application initialization is centralized in `bootstrap.php` (error handling, session, dependencies). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading. Authentication uses `AccessGuard` middleware in Router with centralized `AccessLevels` configuration. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection. API responses use consistent `{success: boolean}` format. Frontend uses dynamic module loading via `data-modules` attribute on `<body>`. Forms with `data-ajax-form` attribute are automatically handled by `FormHandler` for AJAX submissions. `AlertManager` uses singleton pattern via `getAlertManager()` to ensure single instance across modules.
 
 
 ##  Project Structure (Simplified)
@@ -104,13 +103,15 @@ project/
 │   └── ...                 # Page views
 ├── layout/                 # Shared layout components (header, footer, menu)
 ├── script/                 # JavaScript modules (ES6)
+│   ├── app/                # Application-level modules
+│   ├── clothing/           # Clothing management modules
 │   ├── auth/               # Frontend validation & auth logic
 │   ├── apiClient.js        # Centralized API communication
-│   └── ...                 
+│   └── ...                 # Domain-specific modules                 
 ├── styl/                   # CSS stylesheets
 ├── img/                    # Image assets
 ├── .htaccess               # Apache configuration
-├── App.js                  # Frontend entry point / Module loader
+├── App.js                  # Frontend entry point / Dynamic module loader (data-modules)
 └── index.php               # Application entry point (loads bootstrap, dispatches router)
 ```
 
