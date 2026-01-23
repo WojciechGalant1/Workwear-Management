@@ -92,13 +92,13 @@ class LanguageSwitcher {
     
 
     public static function getLanguageFlag($language) {
-        $flags = array(
+        $flags = [
             'en' => '🇺🇸',
             'pl' => '🇵🇱',
             'de' => '🇩🇪',
             'fr' => '🇫🇷',
             'es' => '🇪🇸'
-        );
+        ];
         
         return isset($flags[$language]) ? $flags[$language] : '🌐';
     }

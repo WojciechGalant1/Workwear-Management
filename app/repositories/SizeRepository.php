@@ -8,7 +8,7 @@ class SizeRepository extends BaseRepository {
         parent::__construct($pdo);
     }
     
-    public function create(Size $rozmiar) {
+    public function create(Size $rozmiar): string|false {
         $stmt = $this->pdo->prepare("INSERT INTO rozmiar (nazwa_rozmiaru) VALUES (:nazwa_rozmiaru)");
         $nazwa_rozmiaru = $rozmiar->getNazwaRozmiaru();
         $stmt->bindParam(':nazwa_rozmiaru', $nazwa_rozmiaru);
@@ -17,7 +17,7 @@ class SizeRepository extends BaseRepository {
         return $this->pdo->lastInsertId(); 
     }
 
-    public function findByName($nazwa) {
+    public function findByName(string $nazwa): ?Size {
         $stmt = $this->pdo->prepare("SELECT id_rozmiar, nazwa_rozmiaru FROM rozmiar WHERE nazwa_rozmiaru = :nazwa_rozmiaru");
         $stmt->bindParam(':nazwa_rozmiaru', $nazwa);
         $stmt->execute();
@@ -31,7 +31,7 @@ class SizeRepository extends BaseRepository {
         return null;
     }
 
-    public function firstOrCreate(Size $rozmiar) {
+    public function firstOrCreate(Size $rozmiar): string|false {
         $rozmiar->setNazwaRozmiaru($rozmiar->getNazwaRozmiaru());
         $existing = $this->findByName($rozmiar->getNazwaRozmiaru());
         if ($existing) {
@@ -40,10 +40,10 @@ class SizeRepository extends BaseRepository {
         return $this->create($rozmiar);
     }
 
-    public function searchByName($query) {
+    public function searchByName(string $query): array {
         $stmt = $this->pdo->prepare('SELECT nazwa_rozmiaru AS rozmiar FROM rozmiar WHERE nazwa_rozmiaru LIKE :query LIMIT 10');
-        $query = "%$query%";
-        $stmt->bindParam(':query', $query);
+        $searchQuery = "%$query%";
+        $stmt->bindParam(':query', $searchQuery);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

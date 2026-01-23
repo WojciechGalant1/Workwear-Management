@@ -3,77 +3,77 @@ require_once __DIR__ . '/AccessLevels.php';
 
 class RouteConfig {
     
-    private static $pageMap = null;
-    private static $urlMap = null;
+    private static ?array $pageMap = null;
+    private static ?array $urlMap = null;
     
     public static function getRoutes() {
-        return array(
-            '/' => array(
+        return [
+            '/' => [
                 'controller' => 'IssueController',
                 'action' => 'issue',
                 'view' => './views/issue_clothing.php',
                 'auth' => AccessLevels::USER
-            ),
-            '/issue-clothing' => array(
+            ],
+            '/issue-clothing' => [
                 'controller' => 'IssueController',
                 'action' => 'issue',
                 'view' => './views/issue_clothing.php',
                 'auth' => AccessLevels::USER
-            ),
-            '/order-history' => array(
+            ],
+            '/order-history' => [
                 'controller' => 'OrderController',
                 'action' => 'history',
                 'view' => './views/order_history.php',
                 'auth' => AccessLevels::WAREHOUSE
-            ),
-            '/clothing-history' => array(
+            ],
+            '/clothing-history' => [
                 'controller' => 'ClothingController',
                 'action' => 'history',
                 'view' => './views/clothing_history.php',
                 'auth' => AccessLevels::ADMIN
-            ),
-            '/issue-history' => array(
+            ],
+            '/issue-history' => [
                 'controller' => 'IssueController',
                 'action' => 'history',
                 'view' => './views/issue_history.php',
                 'auth' => AccessLevels::SUPERVISOR
-            ),
-            '/employees' => array(
+            ],
+            '/employees' => [
                 'controller' => 'EmployeeController',
                 'action' => 'list',
                 'view' => './views/employee_list.php',
                 'auth' => AccessLevels::SUPERVISOR
-            ),
-            '/warehouse' => array(
+            ],
+            '/warehouse' => [
                 'controller' => 'WarehouseController',
                 'action' => 'list',
                 'view' => './views/warehouse_list.php',
                 'auth' => AccessLevels::WAREHOUSE
-            ),
-            '/add-order' => array(
+            ],
+            '/add-order' => [
                 'controller' => 'OrderController',
                 'action' => 'create',
                 'view' => './views/add_order.php',
                 'auth' => AccessLevels::WAREHOUSE
-            ),
-            '/report' => array(
+            ],
+            '/report' => [
                 'controller' => 'ReportController',
                 'action' => 'index',
                 'view' => './views/raport.php',
                 'auth' => AccessLevels::SUPERVISOR
-            ),
-            '/add-employee' => array(
+            ],
+            '/add-employee' => [
                 'controller' => 'EmployeeController',
                 'action' => 'create',
                 'view' => './views/add_employee.php',
                 'auth' => AccessLevels::SUPERVISOR
-            ),
-            '/login' => array(
+            ],
+            '/login' => [
                 'controller' => 'AuthController',
                 'action' => 'login',
                 'view' => './views/auth/login.php'
-            )
-        );
+            ]
+        ];
     }
     
     public static function getPageMap() {
@@ -91,7 +91,7 @@ class RouteConfig {
     }
     
     private static function buildPageMap() {
-        $map = array();
+        $map = [];
         foreach (self::getRoutes() as $uri => $route) {
             $view = is_array($route) ? $route['view'] : $route;
             $map[$uri] = basename($view);
@@ -100,7 +100,7 @@ class RouteConfig {
     }
     
     private static function buildUrlMap() {
-        $map = array();
+        $map = [];
         foreach (self::getRoutes() as $uri => $route) {
             if ($uri === '/') {
                 continue;

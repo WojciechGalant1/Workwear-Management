@@ -1,28 +1,27 @@
 <?php
 class Clothing {
-    private $id_ubranie;
-    private $nazwa_ubrania;
+    private ?int $id_ubranie = null;
+    private string $nazwa_ubrania = '';
 
-    public function __construct($nazwa_ubrania = '') {
+    public function __construct(string $nazwa_ubrania = '') {
         $this->nazwa_ubrania = $nazwa_ubrania;
     }
 
-    public function getIdUbranie() {
+    public function getIdUbranie(): ?int {
         return $this->id_ubranie;
     }
 
-    public function setIdUbranie($id) {
+    public function setIdUbranie(?int $id): void {
         $this->id_ubranie = $id;
     }
 
-    public function getNazwaUbrania() {
+    public function getNazwaUbrania(): string {
         return $this->nazwa_ubrania;
     }
 
-    public function setNazwaUbrania($nazwa_ubrania) {
+    public function setNazwaUbrania(string $nazwa_ubrania): void {
         $this->nazwa_ubrania = $nazwa_ubrania;
     }
-
 }
 
 

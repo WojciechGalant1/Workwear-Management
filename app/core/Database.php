@@ -16,10 +16,10 @@ class Database
     {
         $config = require __DIR__ . '/../config/DbConfig.php';
         
-        $opts = array(
+        $opts = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_EMULATE_PREPARES => false
-        );
+        ];
         
         try {
             return new PDO(

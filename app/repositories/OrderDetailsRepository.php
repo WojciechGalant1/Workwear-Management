@@ -8,7 +8,7 @@ class OrderDetailsRepository extends BaseRepository {
         parent::__construct($pdo);
     }
 
-    public function create(OrderDetails $szczegol) {
+    public function create(OrderDetails $szczegol): bool {
         $stmt = $this->pdo->prepare("INSERT INTO szczegoly_zamowienia (zamowienie_id, id_ubrania, id_rozmiaru, ilosc, iloscMin, firma, sz_kodID) VALUES (:zamowienie_id, :id_ubrania, :id_rozmiaru, :ilosc, :iloscMin, :firma, :sz_kodID)");
         $stmt->bindValue(':zamowienie_id', $szczegol->getZamowienieId());
         $stmt->bindValue(':id_ubrania', $szczegol->getIdUbrania());
@@ -21,7 +21,7 @@ class OrderDetailsRepository extends BaseRepository {
         return $stmt->execute();
     }
 
-    public function getByZamowienieId($zamowienieId) {
+    public function getByZamowienieId(int $zamowienieId): array {
         $stmt = $this->pdo->prepare("SELECT zamowienie_id, id_ubrania, id_rozmiaru, ilosc, iloscMin FROM szczegoly_zamowienia WHERE zamowienie_id = :zamowienie_id");
         $stmt->bindValue(':zamowienie_id', $zamowienieId);
         $stmt->execute();

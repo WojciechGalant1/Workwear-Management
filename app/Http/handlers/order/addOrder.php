@@ -13,7 +13,7 @@ class AddOrderHandler extends BaseHandler {
             $this->errorResponse('error_csrf');
         }
         
-        $ubrania = isset($_POST['ubrania']) ? $_POST['ubrania'] : array();
+        $ubrania = isset($_POST['ubrania']) ? $_POST['ubrania'] : [];
         $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
         $currentUserId = $this->getUserId();
         

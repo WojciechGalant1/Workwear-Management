@@ -9,8 +9,8 @@ include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
  * Klasa odpowiedzialna za kontrolę dostępu (autoryzację)
  */
 class AccessGuard {
-    private $serviceContainer;
-    private $sessionManager;
+    private ServiceContainer $serviceContainer;
+    private SessionManager $sessionManager;
     
     public function __construct() {
         $this->sessionManager = new SessionManager();

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../core/ServiceContainer.php';
 
 abstract class BaseController {
-    protected $serviceContainer;
+    protected ServiceContainer $serviceContainer;
     
     public function __construct() {
         $this->serviceContainer = ServiceContainer::getInstance();

@@ -15,7 +15,7 @@ class CheckClothingExistsHandler extends BaseHandler {
         $stanMagazynuRepo = $this->getRepository('WarehouseRepository');
         $ubranieExists = $stanMagazynuRepo->findByUbranieAndRozmiarByName($nazwa, $rozmiar);
         
-        $this->jsonResponse(array('exists' => (bool)$ubranieExists));
+        $this->jsonResponse(['exists' => (bool)$ubranieExists]);
     }
 }
 

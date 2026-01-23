@@ -27,7 +27,7 @@ class ValidateLoginHandler extends BaseHandler {
     
     private function loginWithPassword($pdo, $username, $password) {
         $stmt = $pdo->prepare('SELECT * FROM uzytkownicy WHERE nazwa = :username LIMIT 1');
-        $stmt->execute(array(':username' => $username));
+        $stmt->execute([':username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user) {
@@ -55,7 +55,7 @@ class ValidateLoginHandler extends BaseHandler {
         }
         
         $stmt = $pdo->prepare('SELECT * FROM uzytkownicy WHERE id_id = :kodID LIMIT 1');
-        $stmt->execute(array(':kodID' => $kodID));
+        $stmt->execute([':kodID' => $kodID]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user) {

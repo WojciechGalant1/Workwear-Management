@@ -6,15 +6,15 @@ class EmployeeController extends BaseController {
     public function list() {
         $employeeRepo = $this->getRepository('EmployeeRepository');
         
-        return array(
+        return [
             'pracownicy' => $employeeRepo->getAll(),
             'pageTitle' => 'employee_title'
-        );
+        ];
     }
     
     public function create() {
-        return array(
+        return [
             'pageTitle' => 'employee_add_title'
-        );
+        ];
     }
 }

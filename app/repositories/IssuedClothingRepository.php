@@ -4,30 +4,27 @@ include_once __DIR__ . '/../entities/IssuedClothing.php';
 
 class IssuedClothingRepository extends BaseRepository {
 
-    private $expiryService;
+    private object $expiryService;
 
-    /**
-     * @param PDO $pdo
-     * @param ClothingExpiryService $expiryService Wstrzyknięta zależność dla reguł dat
-     */
-    public function __construct(PDO $pdo, $expiryService)
+    public function __construct(PDO $pdo, object $expiryService)
     {
         parent::__construct($pdo);
         $this->expiryService = $expiryService;
     }
 
-    public function create(IssuedClothing $wydaneUbrania) {
+    public function create(IssuedClothing $wydaneUbrania): bool {
         $stmt = $this->pdo->prepare("INSERT INTO wydane_ubrania (id_wydania, id_ubrania, id_rozmiaru, ilosc, data_waznosci, status) VALUES (:id_wydania, :id_ubrania, :id_rozmiaru, :ilosc, :data_waznosci, :status)");
         $stmt->bindValue(':id_wydania', $wydaneUbrania->getIdWydania());
         $stmt->bindValue(':id_ubrania', $wydaneUbrania->getIdUbrania());
         $stmt->bindValue(':id_rozmiaru', $wydaneUbrania->getIdRozmiaru());
         $stmt->bindValue(':ilosc', $wydaneUbrania->getIlosc());
-        $stmt->bindValue(':data_waznosci', $wydaneUbrania->getDataWaznosci());
+        $dataWaznosci = $wydaneUbrania->getDataWaznosci();
+        $stmt->bindValue(':data_waznosci', $dataWaznosci ? $dataWaznosci->format('Y-m-d') : null);
         $stmt->bindValue(':status', $wydaneUbrania->getStatus());
         return $stmt->execute();
     }
      
-    public function getUbraniaByWydanieId($id_wydania) {
+    public function getUbraniaByWydanieId(int $id_wydania): array {
         $stmt = $this->pdo->prepare("SELECT wu.id, wu.ilosc, wu.data_waznosci, wu.status, wu.id_ubrania, u.nazwa_ubrania, r.nazwa_rozmiaru,
             CASE 
                 WHEN wu.data_waznosci <= :currentDate THEN 1
@@ -47,14 +44,14 @@ class IssuedClothingRepository extends BaseRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function updateStatus($id, $newStatus) {
+    public function updateStatus(int $id, int $newStatus): bool {
         $stmt = $this->pdo->prepare("UPDATE wydane_ubrania SET status = :newStatus WHERE id = :id");
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':newStatus', $newStatus, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
-    public function destroyStatus($id) {
+    public function destroyStatus(int $id): bool {
         $stmt = $this->pdo->prepare("UPDATE wydane_ubrania SET status = 2, data_waznosci = :current_date WHERE id = :id");
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->bindValue(':current_date', date('Y-m-d'), PDO::PARAM_STR);
@@ -62,13 +59,13 @@ class IssuedClothingRepository extends BaseRepository {
         return $stmt->execute();
     }
 
-    public function deleteWydaneUbranieStatus($id) {
+    public function deleteWydaneUbranieStatus(int $id): bool {
         $stmt = $this->pdo->prepare("UPDATE wydane_ubrania SET status = 3 WHERE id = :id");
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
-    public function getUbraniaPoTerminie() {
+    public function getUbraniaPoTerminie(): array {
         $stmt = $this->pdo->prepare("SELECT ubranie.nazwa_ubrania, rozmiar.nazwa_rozmiaru, SUM(wydane_ubrania.ilosc) AS ilosc,
                    stan_magazynu.ilosc AS ilosc_magazyn, stan_magazynu.iloscMin AS ilosc_min
             FROM wydane_ubrania
@@ -89,7 +86,7 @@ class IssuedClothingRepository extends BaseRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getWydaneUbraniaWithDetails() {    
+    public function getWydaneUbraniaWithDetails(): array {    
         $stmt = $this->pdo->prepare("SELECT wu.id, DATE_FORMAT(wu.data_waznosci, '%Y-%m-%d %H:%i') AS data, 
                    u.nazwa_ubrania AS nazwa_ubrania, r.nazwa_rozmiaru AS rozmiar, wu.ilosc, uz.nazwa AS wydane_przez, 
                    CONCAT(p.imie, ' ', p.nazwisko) AS wydane_dla 
@@ -103,7 +100,7 @@ class IssuedClothingRepository extends BaseRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public function getUbraniaById($id) {
+    public function getUbraniaById(int $id): array|false {
         $stmt = $this->pdo->prepare("SELECT id_wydania, id_ubrania, id_rozmiaru, ilosc FROM wydane_ubrania WHERE id = :id");
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -114,7 +111,7 @@ class IssuedClothingRepository extends BaseRepository {
      * Pobiera historię wydań dla pracownika - jedno zapytanie zamiast N+1
      * Używane w issue_history.php
      */
-    public function getIssueHistoryByEmployeeId($pracownikId) {
+    public function getIssueHistoryByEmployeeId(int $pracownikId): array {
         $stmt = $this->pdo->prepare("SELECT 
                 w.id_wydania,
                 w.data_wydania,
@@ -150,7 +147,7 @@ class IssuedClothingRepository extends BaseRepository {
      * Pobiera wygasające/przeterminowane ubrania dla konkretnego pracownika
      * Używane w issue_clothing.php (fromRaport)
      */
-    public function getExpiringClothingByEmployeeId($pracownikId) {
+    public function getExpiringClothingByEmployeeId(int $pracownikId): array {
         $stmt = $this->pdo->prepare("SELECT 
                 wu.id,
                 wu.ilosc,
@@ -185,7 +182,7 @@ class IssuedClothingRepository extends BaseRepository {
      * Pobiera wszystkie ubrania wygasające/przeterminowane z danymi pracowników
      * Używane w raporcie 
      */
-    public function getExpiringClothingWithEmployeeDetails() {
+    public function getExpiringClothingWithEmployeeDetails(): array {
         $stmt = $this->pdo->prepare("
             SELECT 
                 w.id_wydania,

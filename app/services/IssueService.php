@@ -8,12 +8,12 @@ require_once __DIR__ . '/../helpers/LocalizationHelper.php';
  * Enkapsuluje złożoną logikę z handlerów HTTP
  */
 class IssueService {
-    private $serviceContainer;
-    private $employeeRepo;
-    private $userRepo;
-    private $warehouseRepo;
-    private $issueRepo;
-    private $issuedClothingRepo;
+    private ServiceContainer $serviceContainer;
+    private EmployeeRepository $employeeRepo;
+    private UserRepository $userRepo;
+    private WarehouseRepository $warehouseRepo;
+    private IssueRepository $issueRepo;
+    private IssuedClothingRepository $issuedClothingRepo;
     
     public function __construct($serviceContainer) {
         $this->serviceContainer = $serviceContainer;

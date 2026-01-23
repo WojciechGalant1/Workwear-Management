@@ -11,7 +11,7 @@ class IssueController extends BaseController {
         $clothingRepo = $this->getRepository('ClothingRepository');
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
-        $result = array(
+        $result = [
             'pageTitle' => 'issue_title',
             'ubrania' => $clothingRepo->getAllUnique(),
             'fromRaport' => false,
@@ -19,8 +19,8 @@ class IssueController extends BaseController {
             'imie' => '',
             'nazwisko' => '',
             'stanowisko' => '',
-            'expiredUbrania' => array()
-        );
+            'expiredUbrania' => []
+        ];
         
         if (isset($_GET['fromRaport']) && $_GET['fromRaport'] == '1') {
             $result['fromRaport'] = true;
@@ -47,12 +47,12 @@ class IssueController extends BaseController {
         $pracownikRepo = $this->getRepository('EmployeeRepository');
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
-        $result = array(
+        $result = [
             'pageTitle' => 'history_issue_title',
             'pracownik' => null,
-            'historia' => array(),
+            'historia' => [],
             'pracownikNotFound' => false
-        );
+        ];
         
         if (isset($_GET['pracownikID']) && !empty($_GET['pracownikID'])) {
             $pracownikID = intval($_GET['pracownikID']);

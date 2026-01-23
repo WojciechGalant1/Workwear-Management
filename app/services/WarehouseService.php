@@ -8,10 +8,10 @@ require_once __DIR__ . '/../helpers/LocalizationHelper.php';
  * Serwis obsługujący logikę biznesową magazynu
  */
 class WarehouseService {
-    private $serviceContainer;
-    private $warehouseRepo;
-    private $clothingRepo;
-    private $sizeRepo;
+    private ServiceContainer $serviceContainer;
+    private WarehouseRepository $warehouseRepo;
+    private ClothingRepository $clothingRepo;
+    private SizeRepository $sizeRepo;
     
     public function __construct($serviceContainer) {
         $this->serviceContainer = $serviceContainer;
@@ -59,29 +59,29 @@ class WarehouseService {
             $idUbrania = $existingUbranie ? $existingUbranie->getIdUbranie() : $this->clothingRepo->create(new Clothing($nazwa));
             
             if (!$this->warehouseRepo->updateUbranieId($id, $idUbrania)) {
-                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_clothing_error'));
+                return ['success' => false, 'message' => LocalizationHelper::translate('warehouse_update_clothing_error')];
             }
             
             $existingRozmiar = $this->sizeRepo->findByName($rozmiar);
             $idRozmiaru = $existingRozmiar ? $existingRozmiar->getIdRozmiar() : $this->sizeRepo->create(new Size($rozmiar));
             
             if (!$this->warehouseRepo->updateRozmiarId($id, $idRozmiaru)) {
-                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_size_error'));
+                return ['success' => false, 'message' => LocalizationHelper::translate('warehouse_update_size_error')];
             }
             
             $oldIlosc = $this->warehouseRepo->getIloscById($id);
             $iloscDiff = $ilosc - $oldIlosc;
             
             if (!$this->warehouseRepo->updateIloscAndMin($id, $ilosc, $iloscMin)) {
-                return array('success' => false, 'message' => LocalizationHelper::translate('warehouse_update_error'));
+                return ['success' => false, 'message' => LocalizationHelper::translate('warehouse_update_error')];
             }
             
             if ($iloscDiff !== 0) {
                 $this->createOrderFromWarehouseChange($idUbrania, $idRozmiaru, $iloscDiff, $uwagi, $currentUserId);
             }
-            return array('success' => true, 'message' => LocalizationHelper::translate('warehouse_update_success'));
+            return ['success' => true, 'message' => LocalizationHelper::translate('warehouse_update_success')];
         } catch (Exception $e) {
-            return array('success' => false, 'message' => $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
     

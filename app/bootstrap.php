@@ -22,7 +22,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
 
 register_shutdown_function(function() {
     $error = error_get_last();
-    if ($error !== NULL && in_array($error['type'], array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE))) {
+    if ($error !== NULL && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
         error_log("Fatal Error: {$error['message']} in {$error['file']}:{$error['line']}");
     }
 });

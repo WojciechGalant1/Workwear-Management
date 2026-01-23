@@ -1,13 +1,13 @@
 <?php
 
 abstract class BaseRepository {
-    protected $pdo;
+    protected PDO $pdo;
     
     public function __construct(PDO $pdo) {
         $this->pdo = $pdo;
     }
     
-    protected function getPdo() {
+    protected function getPdo(): PDO {
         return $this->pdo;
     }
 }

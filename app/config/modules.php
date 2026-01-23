@@ -3,7 +3,7 @@
 /**
  * Configuration for JavaScript modules required by each page
  */
-return array(
+return [
     'add_employee.php' => '',  // FormHandler obsługuje automatycznie
     'issue_clothing.php' => 'ClothingManager,WorkerSuggestions,ModalIssueClothing,ChangeStatus',
     'employee_list.php' => 'ModalEditEmployee',
@@ -13,4 +13,4 @@ return array(
     'warehouse_list.php' => 'EditClothing',
     'clothing_history.php' => 'ClothingHistoryDetails',
     'default' => ''
-); 
+]; 

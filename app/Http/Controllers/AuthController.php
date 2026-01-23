@@ -16,10 +16,10 @@ class AuthController extends BaseController {
             $csrfToken = CsrfGuard::generateToken();
         }
         
-        return array(
+        return [
             'currentLanguage' => $currentLanguage,
             'baseUrl' => $baseUrl,
             'csrfToken' => $csrfToken
-        );
+        ];
     }
 }

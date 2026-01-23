@@ -2,7 +2,7 @@
 /**
  * English translations 
  */
-return array(
+return [
 
     // General
     'app_title' => 'Clothing Management System',
@@ -348,5 +348,5 @@ return array(
     'feature_reports_desc' => 'Generate analytics',
     'feature_history' => 'History',
     'feature_history_desc' => 'Track all activities',
-);
+];
 

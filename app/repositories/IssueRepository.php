@@ -8,11 +8,12 @@ class IssueRepository extends BaseRepository {
         parent::__construct($pdo);
     }
     
-    public function create(Issue $wydania) {
+    public function create(Issue $wydania): string|false {
         $stmt = $this->pdo->prepare("INSERT INTO wydania (pracownik_id, user_id, data_wydania) VALUES (:pracownik_id, :user_id, :data_wydania)");
         $stmt->bindValue(':pracownik_id', $wydania->getIdPracownik());
         $stmt->bindValue(':user_id', $wydania->getUserId());
-        $stmt->bindValue(':data_wydania', $wydania->getDataWydania()->format('Y-m-d H:i:s'));
+        $dataWydania = $wydania->getDataWydania();
+        $stmt->bindValue(':data_wydania', $dataWydania ? $dataWydania->format('Y-m-d H:i:s') : null);
         
         try {
             $stmt->execute();
@@ -22,7 +23,7 @@ class IssueRepository extends BaseRepository {
         } 
     }
 
-    public function deleteWydanie($id_wydania) {
+    public function deleteWydanie(int $id_wydania): bool {
         $stmt = $this->pdo->prepare("DELETE FROM wydania WHERE id_wydania = :id_wydania");
         $stmt->bindValue(':id_wydania', $id_wydania, PDO::PARAM_INT);
         return $stmt->execute();

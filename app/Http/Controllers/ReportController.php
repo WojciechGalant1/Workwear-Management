@@ -6,10 +6,10 @@ class ReportController extends BaseController {
     public function index() {
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
-        return array(
+        return [
             'expiringClothing' => $issuedClothingRepo->getExpiringClothingWithEmployeeDetails(),
             'ubraniaPoTerminie' => $issuedClothingRepo->getUbraniaPoTerminie(),
             'pageTitle' => 'reports_issue_title'
-        );
+        ];
     }
 }

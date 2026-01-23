@@ -11,7 +11,7 @@ class FetchProductNamesHandler extends BaseHandler {
         $ubrania = $ubranieRepo->searchByName($query);
         
         if ($ubrania === false) {
-            $this->jsonResponse(array('success' => false, 'error' => 'Failed to fetch data'));
+            $this->jsonResponse(['success' => false, 'error' => 'Failed to fetch data']);
             return;
         }
         

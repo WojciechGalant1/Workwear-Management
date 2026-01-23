@@ -10,13 +10,13 @@ class UrlHelper {
 
     public static function getAppBaseUrl() {
         $basePath = dirname($_SERVER['SCRIPT_NAME']);
-        $segments = array();
+        $segments = [];
         if ($basePath !== '/') {
             $trimmed = trim($basePath, '/');
-            $segments = $trimmed === '' ? array() : explode('/', $trimmed);
+            $segments = $trimmed === '' ? [] : explode('/', $trimmed);
         }
 
-        $stopDirs = array('handlers', 'views', 'log', 'app');
+        $stopDirs = ['handlers', 'views', 'log', 'app'];
         foreach ($stopDirs as $stop) {
             $pos = array_search($stop, $segments);
             if ($pos !== false) {
@@ -59,7 +59,7 @@ class UrlHelper {
      * Get query parameters from current request
      */
     public static function getQueryParams() {
-        $params = array();
+        $params = [];
         if (isset($_SERVER['QUERY_STRING'])) {
             parse_str($_SERVER['QUERY_STRING'], $params);
         }
@@ -69,7 +69,7 @@ class UrlHelper {
     /**
      * Build URL with query parameters
      */
-    public static function buildUrl($path, $params = array()) {
+    public static function buildUrl($path, $params = []) {
         $baseUrl = self::getBaseUrl();
         $url = $baseUrl . $path;
         

@@ -6,9 +6,9 @@ class WarehouseController extends BaseController {
     public function list() {
         $warehouseRepo = $this->getRepository('WarehouseRepository');
         
-        return array(
+        return [
             'ubrania' => $warehouseRepo->readAll(),
             'pageTitle' => 'warehouse_title'
-        );
+        ];
     }
 }

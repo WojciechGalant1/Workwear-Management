@@ -8,10 +8,10 @@
 require_once __DIR__ . '/../config/AccessLevels.php';
 
 abstract class BaseHandler {
-    protected $serviceContainer;
-    protected $requireSession = true;
-    protected $requireLocalization = true;
-    protected $requiredStatus = null;
+    protected ServiceContainer $serviceContainer;
+    protected bool $requireSession = true;
+    protected bool $requireLocalization = true;
+    protected ?int $requiredStatus = null;
     
     public function __construct() {
         $this->loadDependencies();
@@ -56,19 +56,19 @@ abstract class BaseHandler {
         
         if (!$guard->isAuthenticated()) {
             http_response_code(401);
-            $this->jsonResponse(array(
+            $this->jsonResponse([
                 'success' => false,
                 'message' => LocalizationHelper::translate('error_session'),
                 'redirect' => '/login'
-            ));
+            ]);
         }
         
         if (!$guard->hasRequiredStatus($this->requiredStatus)) {
             http_response_code(403);
-            $this->jsonResponse(array(
+            $this->jsonResponse([
                 'success' => false,
                 'message' => LocalizationHelper::translate('access_denied')
-            ));
+            ]);
         }
     }
     
@@ -101,7 +101,7 @@ abstract class BaseHandler {
      */
     protected function errorResponse($message, $translate = true) {
         $msg = $translate ? LocalizationHelper::translate($message) : $message;
-        $this->jsonResponse(array('success' => false, 'message' => $msg));
+        $this->jsonResponse(['success' => false, 'message' => $msg]);
     }
     
     /**
@@ -110,8 +110,8 @@ abstract class BaseHandler {
      * @param array $data Dodatkowe dane
      * @param bool $translate Czy tłumaczyć komunikat
      */
-    protected function successResponse($message = null, $data = array(), $translate = true) {
-        $response = array('success' => true);
+    protected function successResponse($message = null, $data = [], $translate = true) {
+        $response = ['success' => true];
         
         if ($message !== null) {
             $response['message'] = $translate ? LocalizationHelper::translate($message) : $message;

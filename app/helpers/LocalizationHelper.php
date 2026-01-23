@@ -3,10 +3,10 @@
 
 class LocalizationHelper {
     
-    private static $currentLanguage = 'en';
-    private static $translations = array();
-    private static $fallbackLanguage = 'en';
-    private static $initialized = false;
+    private static string $currentLanguage = 'en';
+    private static array $translations = [];
+    private static string $fallbackLanguage = 'en';
+    private static bool $initialized = false;
     
 
     public static function initialize($language = 'en') {
@@ -44,13 +44,13 @@ class LocalizationHelper {
             if (file_exists($fallbackFile)) {
                 self::$translations = include $fallbackFile;
             } else {
-                self::$translations = array();
+                self::$translations = [];
             }
         }
     }
     
 
-    public static function translate($key, $params = array()) {
+    public static function translate($key, $params = []) {
         if (!self::$initialized) {
             self::initialize();
         }
@@ -67,7 +67,7 @@ class LocalizationHelper {
     }
     
 
-    public static function t($key, $params = array()) {
+    public static function t($key, $params = []) {
         return self::translate($key, $params);
     }
     
@@ -91,7 +91,7 @@ class LocalizationHelper {
     
 
     public static function getAvailableLanguages() {
-        $languages = array();
+        $languages = [];
         $translationDir = __DIR__ . '/../config/translations/';
         
         if (is_dir($translationDir)) {
@@ -106,13 +106,13 @@ class LocalizationHelper {
     
 
     public static function getLanguageName($languageCode) {
-        $languageNames = array(
+        $languageNames = [
             'en' => 'English',
             'pl' => 'Polski',
             'de' => 'Deutsch',
             'fr' => 'Français',
             'es' => 'Español'
-        );
+        ];
         
         return isset($languageNames[$languageCode]) ? $languageNames[$languageCode] : $languageCode;
     }

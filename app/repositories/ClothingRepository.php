@@ -8,7 +8,7 @@ class ClothingRepository extends BaseRepository {
         parent::__construct($pdo);
     }
 
-    public function create(Clothing $ubranie) {
+    public function create(Clothing $ubranie): string|false {
         $stmt = $this->pdo->prepare("INSERT INTO ubranie (nazwa_ubrania) VALUES (:nazwa_ubrania)");
         
         $nazwa_ubrania = $ubranie->getNazwaUbrania();
@@ -18,7 +18,7 @@ class ClothingRepository extends BaseRepository {
         return $this->pdo->lastInsertId(); 
     }
 
-    public function firstOrCreate(Clothing $ubranie) {
+    public function firstOrCreate(Clothing $ubranie): string|false {
         $existing = $this->findByName($ubranie->getNazwaUbrania());
         if ($existing) {
             return $existing->getIdUbranie();
@@ -26,7 +26,7 @@ class ClothingRepository extends BaseRepository {
         return $this->create($ubranie);
     }
 
-    public function findByName($nazwa) {
+    public function findByName(string $nazwa): ?Clothing {
         $stmt = $this->pdo->prepare("SELECT * FROM ubranie WHERE nazwa_ubrania = :nazwa_ubrania");
         $stmt->bindParam(':nazwa_ubrania', $nazwa);
         $stmt->execute();
@@ -40,20 +40,20 @@ class ClothingRepository extends BaseRepository {
         return null;
     }
 
-    public function searchByName($query) {
+    public function searchByName(string $query): array {
         $stmt = $this->pdo->prepare('SELECT nazwa_ubrania AS nazwa FROM ubranie WHERE nazwa_ubrania LIKE :query LIMIT 10');
-        $query = "%$query%";
-        $stmt->bindParam(':query', $query);
+        $searchQuery = "%$query%";
+        $stmt->bindParam(':query', $searchQuery);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllUnique() {
+    public function getAllUnique(): array {
         $stmt = $this->pdo->query("SELECT DISTINCT u.id_ubranie AS id, u.nazwa_ubrania AS nazwa FROM ubranie u JOIN stan_magazynu sm ON u.id_ubranie = sm.id_ubrania");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getRozmiaryByUbranieId($ubranieId) {
+    public function getRozmiaryByUbranieId(int $ubranieId): array {
         $stmt = $this->pdo->prepare("SELECT r.id_rozmiar AS id, r.nazwa_rozmiaru AS rozmiar, sm.ilosc AS ilosc 
             FROM rozmiar r INNER JOIN stan_magazynu sm ON r.id_rozmiar = sm.id_rozmiaru WHERE sm.id_ubrania = :ubranieId");
         $stmt->bindParam(':ubranieId', $ubranieId, PDO::PARAM_INT);

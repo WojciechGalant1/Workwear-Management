@@ -22,7 +22,7 @@ class ChangeStatusHandler extends BaseHandler {
         $wydaneUbraniaRepo = $this->getRepository('IssuedClothingRepository');
         
         if ($wydaneUbraniaRepo->updateStatus($id, $newStatus)) {
-            $this->jsonResponse(array('success' => true, 'newStatus' => $newStatus));
+            $this->jsonResponse(['success' => true, 'newStatus' => $newStatus]);
         } else {
             $this->errorResponse('status_update_failed');
         }

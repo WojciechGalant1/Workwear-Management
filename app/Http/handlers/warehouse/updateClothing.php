@@ -50,7 +50,7 @@ class UpdateClothingHandler extends BaseHandler {
             }
         } catch (Exception $e) {
             http_response_code(500);
-            $this->jsonResponse(array('success' => false, 'message' => $e->getMessage()));
+            $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 }

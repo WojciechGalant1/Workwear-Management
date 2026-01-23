@@ -6,9 +6,9 @@ class ClothingController extends BaseController {
     public function history() {
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
-        return array(
+        return [
             'data' => $issuedClothingRepo->getWydaneUbraniaWithDetails(),
             'pageTitle' => 'history_clothing_title'
-        );
+        ];
     }
 }

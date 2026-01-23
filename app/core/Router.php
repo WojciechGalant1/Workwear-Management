@@ -2,8 +2,8 @@
 require_once __DIR__ . '/../helpers/UrlHelper.php';
 
 class Router {
-    private $routes = array();
-    private $notFoundCallback;
+    private array $routes = [];
+    private $notFoundCallback = null;
 
     public function add($path, $routeConfig) {
         $this->routes[$path] = $routeConfig;

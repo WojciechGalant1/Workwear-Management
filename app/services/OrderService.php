@@ -11,14 +11,14 @@ require_once __DIR__ . '/../helpers/LocalizationHelper.php';
  * Serwis obsługujący logikę biznesową zamówień
  */
 class OrderService {
-    private $serviceContainer;
-    private $orderHistoryRepo;
-    private $orderDetailsRepo;
-    private $clothingRepo;
-    private $sizeRepo;
-    private $codeRepo;
-    private $warehouseRepo;
-    private $warehouseService;
+    private ServiceContainer $serviceContainer;
+    private OrderHistoryRepository $orderHistoryRepo;
+    private OrderDetailsRepository $orderDetailsRepo;
+    private ClothingRepository $clothingRepo;
+    private SizeRepository $sizeRepo;
+    private CodeRepository $codeRepo;
+    private WarehouseRepository $warehouseRepo;
+    private WarehouseService $warehouseService;
     
     public function __construct($serviceContainer) {
         $this->serviceContainer = $serviceContainer;

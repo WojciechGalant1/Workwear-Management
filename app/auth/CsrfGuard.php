@@ -78,7 +78,7 @@ class CsrfGuard {
      * @return bool
      */
     public static function requiresValidation() {
-        return in_array($_SERVER['REQUEST_METHOD'], array('POST', 'PUT', 'PATCH', 'DELETE'));
+        return in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'PATCH', 'DELETE']);
     }
     
     /**
@@ -102,10 +102,10 @@ class CsrfGuard {
             LanguageSwitcher::initializeWithRouting();
         }
         
-        return array(
+        return [
             'success' => false,
             'error' => 'CSRF token validation failed',
             'message' => LocalizationHelper::translate('error_csrf')
-        );
+        ];
     }
 }

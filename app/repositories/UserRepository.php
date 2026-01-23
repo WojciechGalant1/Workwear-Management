@@ -8,7 +8,7 @@ class UserRepository extends BaseRepository{
         parent::__construct($pdo);
     }
   
-    public function getUserById($userId) {
+    public function getUserById(int $userId): array|false {
         $stmt = $this->pdo->prepare("SELECT * FROM uzytkownicy WHERE id = :id");
         $stmt->bindValue(':id', $userId, PDO::PARAM_INT);
         $stmt->execute();

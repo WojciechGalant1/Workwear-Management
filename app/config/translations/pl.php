@@ -2,7 +2,7 @@
 /**
  * Polish translations 
  */
-return array(
+return [
     // General
     'app_title' => 'System Zarządzania Ubraniami',
     'loading' => 'Ładowanie...',
@@ -347,5 +347,5 @@ return array(
     'feature_reports_desc' => 'Generuj analitykę',
     'feature_history' => 'Historia',
     'feature_history_desc' => 'Śledź wszystkie aktywności',
-);
+];
 

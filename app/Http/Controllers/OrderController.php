@@ -6,15 +6,15 @@ class OrderController extends BaseController {
     public function history() {
         $orderHistoryRepo = $this->getRepository('OrderHistoryRepository');
         
-        return array(
+        return [
             'zamowienia' => $orderHistoryRepo->getAll(),
             'pageTitle' => 'history_order_title'
-        );
+        ];
     }
     
     public function create() {
-        return array(
+        return [
             'pageTitle' => 'order_add_title'
-        );
+        ];
     }
 }

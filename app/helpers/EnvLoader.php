@@ -1,6 +1,6 @@
 <?php
 class EnvLoader {
-    private static $variables = array();
+    private static array $variables = [];
 
     public static function load($path) {
         if (!file_exists($path)) {

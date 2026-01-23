@@ -1,16 +1,15 @@
 <?php
-
 class OrderDetails {
-    private  $id;
-    private  $zamowienie_id;
-    private  $id_ubrania;
-    private  $id_rozmiaru;
-    private  $ilosc;
-    private $iloscMin;
-    private  $firma;
-    private $sz_kodID;
+    private ?int $id = null;
+    private ?int $zamowienie_id = null;
+    private ?int $id_ubrania = null;
+    private ?int $id_rozmiaru = null;
+    private int $ilosc = 0;
+    private int $iloscMin = 0;
+    private string $firma = '';
+    private int $sz_kodID = 0;
 
-    public function __construct($zamowienie_id = null, $id_ubrania = null, $id_rozmiaru = null, $ilosc = 0, $iloscMin = 0, $firma = '', $sz_kodID=0) {
+    public function __construct(?int $zamowienie_id = null, ?int $id_ubrania = null, ?int $id_rozmiaru = null, int $ilosc = 0, int $iloscMin = 0, string $firma = '', int $sz_kodID = 0) {
         $this->zamowienie_id = $zamowienie_id;
         $this->id_ubrania = $id_ubrania;
         $this->id_rozmiaru = $id_rozmiaru;
@@ -20,65 +19,64 @@ class OrderDetails {
         $this->sz_kodID = $sz_kodID;
     }
 
-    public function getId() {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getZamowienieId() {
+    public function getZamowienieId(): ?int {
         return $this->zamowienie_id;
     }
 
-    public function setZamowienieID($zamowienie_id) {
+    public function setZamowienieID(?int $zamowienie_id): void {
         $this->zamowienie_id = $zamowienie_id;
     }
 
-    public function getIdUbrania() {
+    public function getIdUbrania(): ?int {
         return $this->id_ubrania;
     }
 
-    public function setIdUbrania($id_ubrania) {
+    public function setIdUbrania(?int $id_ubrania): void {
         $this->id_ubrania = $id_ubrania;
     }
 
-    public function getIdRozmiaru() {
+    public function getIdRozmiaru(): ?int {
         return $this->id_rozmiaru;
     }
 
-    public function setIdRozmiaru($id_rozmiaru) {
+    public function setIdRozmiaru(?int $id_rozmiaru): void {
         $this->id_rozmiaru = $id_rozmiaru;
     }
 
-    public function getIlosc() {
+    public function getIlosc(): int {
         return $this->ilosc;
     }
 
-    public function setIlosc($ilosc)  {
+    public function setIlosc(int $ilosc): void {
         $this->ilosc = $ilosc;
     }
 
-    public function getIloscMin() {
+    public function getIloscMin(): int {
         return $this->iloscMin;
     }
 
-    public function setIloscMin($iloscMin)  {
+    public function setIloscMin(int $iloscMin): void {
         $this->iloscMin = $iloscMin;
     }
 
-    public function getFirma() {
+    public function getFirma(): string {
         return $this->firma;
     }
 
-    public function setFirma($firma) {
+    public function setFirma(string $firma): void {
         $this->firma = $firma;
     }
 
-    public function getSzKodID() {
+    public function getSzKodID(): int {
         return $this->sz_kodID;
     }
 
-    public function setSzKodID($sz_kodID) {
+    public function setSzKodID(int $sz_kodID): void {
         $this->sz_kodID = $sz_kodID;
     }
-
 }
 

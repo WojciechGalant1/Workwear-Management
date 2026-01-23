@@ -20,10 +20,10 @@ include_once __DIR__ . '/../services/OrderService.php';
  * Kontener zależności - jedyny właściciel PDO i zarządca cyklu życia obiektów
  */
 class ServiceContainer {
-    private static $instance = null;
-    private $pdo;
-    private $repositories = array();
-    private $services = array();
+    private static ?ServiceContainer $instance = null;
+    private PDO $pdo;
+    private array $repositories = [];
+    private array $services = [];
     
     private function __construct() {
         $this->pdo = Database::createPdo();

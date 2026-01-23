@@ -8,7 +8,7 @@ class CodeRepository extends BaseRepository {
         parent::__construct($pdo);
     }
     
-    public function create(Code $kod) {
+    public function create(Code $kod): string|false {
         $stmt = $this->pdo->prepare("INSERT INTO kod (kod_nazwa, ubranieID, rozmiarID, status) VALUES (:kod_nazwa, :ubranieID, :rozmiarID, :status)");
         $stmt->bindValue(':kod_nazwa', $kod->getNazwaKod());
         $stmt->bindValue(':ubranieID', $kod->getUbranieID());
@@ -18,7 +18,7 @@ class CodeRepository extends BaseRepository {
         return $stmt->execute() ? $this->pdo->lastInsertId() : false;
     }
 
-    public function findByNazwa($kod_nazwa) {
+    public function findByNazwa(string $kod_nazwa): ?array {
         $stmt = $this->pdo->prepare("SELECT k.kod_nazwa, u.nazwa_ubrania, r.nazwa_rozmiaru, k.ubranieID, k.rozmiarID FROM kod k
          JOIN ubranie u ON k.ubranieID = u.id_ubranie JOIN rozmiar r ON k.rozmiarID = r.id_rozmiar WHERE k.kod_nazwa = :kod_nazwa");
         $stmt->bindValue(':kod_nazwa', $kod_nazwa);
@@ -26,17 +26,17 @@ class CodeRepository extends BaseRepository {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
     
         if ($row) {
-            return array(
+            return [
                 'id_ubrania' => $row['ubranieID'],
                 'nazwa_ubrania' => $row['nazwa_ubrania'],
                 'id_rozmiar' => $row['rozmiarID'],
                 'nazwa_rozmiaru' => $row['nazwa_rozmiaru'],
-            );
+            ];
         }
         return null;
     }
 
-    public function findKodByNazwa($kod_nazwa) {
+    public function findKodByNazwa(string $kod_nazwa): Code|false {
         $stmt = $this->pdo->prepare('SELECT id_kod FROM kod WHERE kod_nazwa = :kod_nazwa');
         $stmt->bindValue(':kod_nazwa', $kod_nazwa);
         $stmt->execute();

@@ -4,15 +4,15 @@ include_once __DIR__ . '/LanguageSwitcher.php';
 
 class DateHelper {
     
-    private static $englishMonths = array(
+    private static array $englishMonths = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
-    );
+    ];
     
-    private static $polishMonths = array(
+    private static array $polishMonths = [
         'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec',
         'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'
-    );
+    ];
     
     public static function newExpirationDate($months) {
         self::ensureLanguageInitialized();
