@@ -1,4 +1,5 @@
 <?php
+namespace App\Entities;
 
 class Employee {
     private ?int $id_pracownik = null;

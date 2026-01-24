@@ -1,9 +1,9 @@
 <?php
-include_once __DIR__ . '/../app/helpers/UrlHelper.php';
-include_once __DIR__ . '/../app/config/RouteConfig.php';
-include_once __DIR__ . '/../app/auth/CsrfGuard.php';
-include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
+use App\Helpers\UrlHelper;
+use App\Config\RouteConfig;
+use App\Auth\CsrfGuard;
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
 
 $currentLanguage = LanguageSwitcher::getCurrentLanguage();
 $baseUrl = UrlHelper::getBaseUrl();

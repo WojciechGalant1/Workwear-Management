@@ -31,17 +31,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ===== 3. DEPENDENCIES =====
-require_once __DIR__ . '/helpers/LocalizationHelper.php';
-require_once __DIR__ . '/helpers/LanguageSwitcher.php';
-require_once __DIR__ . '/helpers/UrlHelper.php';
-require_once __DIR__ . '/core/Router.php';
-require_once __DIR__ . '/config/RouteConfig.php';
+// ===== 3. AUTOLOADER =====
+require_once __DIR__ . '/../vendor/autoload.php';
 
-// ===== 4. LOCALIZATION =====
+// ===== 4. USE STATEMENTS =====
+use App\Helpers\LanguageSwitcher;
+use App\Core\Router;
+use App\Config\RouteConfig;
+
+// ===== 5. LOCALIZATION =====
 LanguageSwitcher::initializeWithRouting();
 
-// ===== 5. ROUTER SETUP =====
+// ===== 6. ROUTER SETUP =====
 $router = new Router();
 $routes = RouteConfig::getRoutes();
 

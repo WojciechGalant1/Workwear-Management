@@ -1,4 +1,9 @@
 <?php
+namespace App\Auth;
+
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
+
 class CsrfGuard {
     
     const TOKEN_LENGTH = 32;
@@ -91,9 +96,6 @@ class CsrfGuard {
     }
     
     public static function getErrorResponse(): array {
-        include_once __DIR__ . '/../helpers/LocalizationHelper.php';
-        include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
-        
         if (!isset($_SESSION['current_language'])) {
             LanguageSwitcher::initializeWithRouting();
         }

@@ -1,11 +1,21 @@
 <?php
-require_once __DIR__ . '/../entities/OrderHistory.php';
-require_once __DIR__ . '/../entities/OrderDetails.php';
-require_once __DIR__ . '/../entities/Clothing.php';
-require_once __DIR__ . '/../entities/Size.php';
-require_once __DIR__ . '/../entities/Code.php';
-require_once __DIR__ . '/../entities/Warehouse.php';
-require_once __DIR__ . '/../helpers/LocalizationHelper.php';
+namespace App\Services;
+
+use App\Core\ServiceContainer;
+use App\Entities\OrderHistory;
+use App\Entities\OrderDetails;
+use App\Entities\Clothing;
+use App\Entities\Size;
+use App\Entities\Code;
+use App\Entities\Warehouse;
+use App\Repositories\OrderHistoryRepository;
+use App\Repositories\OrderDetailsRepository;
+use App\Repositories\ClothingRepository;
+use App\Repositories\SizeRepository;
+use App\Repositories\CodeRepository;
+use App\Repositories\WarehouseRepository;
+use App\Helpers\LocalizationHelper;
+use DateTime;
 
 /**
  * Serwis obsługujący logikę biznesową zamówień
@@ -50,14 +60,14 @@ class OrderService {
     public function createOrder(int $userId, array $ubrania, string $uwagi = '', int $status = 1): int {
         // Walidacja danych
         if (empty($ubrania) || !is_array($ubrania)) {
-            throw new Exception(LocalizationHelper::translate('order_no_items'));
+            throw new \Exception(LocalizationHelper::translate('order_no_items'));
         }
         
         // Walidacja użytkownika
         $userRepo = $this->serviceContainer->getRepository('UserRepository');
         $user = $userRepo->getUserById($userId);
         if (!$user) {
-            throw new Exception(LocalizationHelper::translate('error_user_not_found'));
+            throw new \Exception(LocalizationHelper::translate('error_user_not_found'));
         }
         
         // Utwórz zamówienie
@@ -65,7 +75,7 @@ class OrderService {
         $zamowienie = new OrderHistory($dataZamowienia, $userId, $uwagi, $status);
         
         if (!$this->orderHistoryRepo->create($zamowienie)) {
-            throw new Exception(LocalizationHelper::translate('order_create_error'));
+            throw new \Exception(LocalizationHelper::translate('order_create_error'));
         }
         
         $zamowienieId = $this->orderHistoryRepo->getLastInsertId();
@@ -101,7 +111,7 @@ class OrderService {
             
             // Walidacja
             if (empty($nazwa) || empty($rozmiar) || empty($firma) || $ilosc <= 0) {
-                throw new Exception(LocalizationHelper::translate('order_required_fields'));
+                throw new \Exception(LocalizationHelper::translate('order_required_fields'));
             }
             
             // Znajdź lub utwórz ubranie
@@ -124,7 +134,7 @@ class OrderService {
             $szczegol = new OrderDetails($zamowienieId, $idUbrania, $idRozmiaru, $ilosc, $iloscMin, $firma, $kodId);
             
             if (!$this->orderDetailsRepo->create($szczegol)) {
-                throw new Exception(LocalizationHelper::translate('order_details_error'));
+                throw new \Exception(LocalizationHelper::translate('order_details_error'));
             }
         }
     }
@@ -140,7 +150,7 @@ class OrderService {
         $szczegoly = $this->orderDetailsRepo->getByZamowienieId($zamowienie->getId());
         
         if (empty($szczegoly)) {
-            throw new Exception(LocalizationHelper::translate('order_no_items'));
+            throw new \Exception(LocalizationHelper::translate('order_no_items'));
         }
         
         foreach ($szczegoly as $szczegolData) {
@@ -152,7 +162,7 @@ class OrderService {
             $stanMagazynu = new Warehouse($idUbrania, $idRozmiaru, $ilosc, $iloscMin);
             
             if (!$this->warehouseService->addToWarehouse($stanMagazynu)) {
-                throw new Exception(LocalizationHelper::translate('warehouse_update_error'));
+                throw new \Exception(LocalizationHelper::translate('warehouse_update_error'));
             }
         }
     }

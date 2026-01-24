@@ -1,4 +1,6 @@
 <?php
+use App\Auth\CsrfGuard;
+
 include_once __DIR__ . '../../layout/header.php';
 ?>
 

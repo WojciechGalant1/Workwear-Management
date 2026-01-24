@@ -1,20 +1,22 @@
 <?php
-include_once __DIR__ . '/Database.php'; 
-include_once __DIR__ . '/../repositories/BaseRepository.php';
-include_once __DIR__ . '/../repositories/WarehouseRepository.php';
-include_once __DIR__ . '/../repositories/ClothingRepository.php';
-include_once __DIR__ . '/../repositories/SizeRepository.php';
-include_once __DIR__ . '/../repositories/OrderHistoryRepository.php';
-include_once __DIR__ . '/../repositories/OrderDetailsRepository.php';
-include_once __DIR__ . '/../repositories/EmployeeRepository.php';
-include_once __DIR__ . '/../repositories/UserRepository.php';
-include_once __DIR__ . '/../repositories/IssueRepository.php';
-include_once __DIR__ . '/../repositories/IssuedClothingRepository.php';
-include_once __DIR__ . '/../repositories/CodeRepository.php';
-include_once __DIR__ . '/../services/ClothingExpiryService.php';
-include_once __DIR__ . '/../services/WarehouseService.php';
-include_once __DIR__ . '/../services/IssueService.php';
-include_once __DIR__ . '/../services/OrderService.php';
+namespace App\Core;
+
+use App\Core\Database;
+use App\Services\ClothingExpiryService;
+use App\Services\WarehouseService;
+use App\Services\IssueService;
+use App\Services\OrderService;
+use App\Repositories\WarehouseRepository;
+use App\Repositories\ClothingRepository;
+use App\Repositories\SizeRepository;
+use App\Repositories\OrderHistoryRepository;
+use App\Repositories\OrderDetailsRepository;
+use App\Repositories\EmployeeRepository;
+use App\Repositories\UserRepository;
+use App\Repositories\IssueRepository;
+use App\Repositories\IssuedClothingRepository;
+use App\Repositories\CodeRepository;
+use PDO;
 
 /**
  * Kontener zależności - jedyny właściciel PDO i zarządca cyklu życia obiektów
@@ -65,7 +67,7 @@ class ServiceContainer {
             'WarehouseService' => new WarehouseService($this),
             'IssueService' => new IssueService($this),
             'OrderService' => new OrderService($this),
-            default => throw new Exception("Service $serviceName not found")
+            default => throw new \Exception("Service $serviceName not found")
         };
     }
     
@@ -81,7 +83,7 @@ class ServiceContainer {
             'IssueRepository' => new IssueRepository($this->pdo),
             'IssuedClothingRepository' => new IssuedClothingRepository($this->pdo, $this->getService('ClothingExpiryService')),
             'CodeRepository' => new CodeRepository($this->pdo),
-            default => throw new Exception("Repository $repositoryName not found")
+            default => throw new \Exception("Repository $repositoryName not found")
         };
     }
 }

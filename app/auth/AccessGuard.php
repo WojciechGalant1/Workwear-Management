@@ -1,9 +1,11 @@
 <?php
-include_once __DIR__ . '/SessionManager.php';
-include_once __DIR__ . '/../core/ServiceContainer.php';
-include_once __DIR__ . '/../helpers/UrlHelper.php';
-include_once __DIR__ . '/../helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
+namespace App\Auth;
+
+use App\Auth\SessionManager;
+use App\Core\ServiceContainer;
+use App\Helpers\UrlHelper;
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
 
 /**
  * Klasa odpowiedzialna za kontrolę dostępu (autoryzację)

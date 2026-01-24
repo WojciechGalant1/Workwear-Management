@@ -1,6 +1,10 @@
-<?php 
-include_once __DIR__ . '/LocalizationHelper.php';
-include_once __DIR__ . '/LanguageSwitcher.php';
+<?php
+namespace App\Helpers;
+
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
+
+use DateTime;
 
 class DateHelper {
     

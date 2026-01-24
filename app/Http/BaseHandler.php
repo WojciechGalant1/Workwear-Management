@@ -1,21 +1,24 @@
 <?php
+namespace App\Http;
+
+use App\Core\ServiceContainer;
+use App\Auth\AccessGuard;
+use App\Auth\CsrfGuard;
+use App\Config\AccessLevels;
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
+use App\Helpers\UrlHelper;
+
 /**
  * Base class for all HTTP handlers (AJAX/form POST)
  */
-
-// AccessLevels musi być załadowany przed definicją klasy,
-// ponieważ handlery używają AccessLevels::* w deklaracji właściwości
-require_once __DIR__ . '/../config/AccessLevels.php';
-
 abstract class BaseHandler {
     protected ServiceContainer $serviceContainer;
     protected bool $requireSession = true;
     protected bool $requireLocalization = true;
     protected ?int $requiredStatus = null;
-    
+   
     public function __construct() {
-        $this->loadDependencies();
-        
         if ($this->requireSession) {
             $this->initSession();
         }
@@ -35,16 +38,6 @@ abstract class BaseHandler {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-    }
-    
-    private function loadDependencies(): void {
-        require_once __DIR__ . '/../core/ServiceContainer.php';
-        require_once __DIR__ . '/../auth/CsrfGuard.php';
-        require_once __DIR__ . '/../auth/AccessGuard.php';
-        // AccessLevels jest już załadowany na początku pliku
-        require_once __DIR__ . '/../helpers/LocalizationHelper.php';
-        require_once __DIR__ . '/../helpers/LanguageSwitcher.php';
-        require_once __DIR__ . '/../helpers/UrlHelper.php';
     }
     
     private function initLocalization(): void {

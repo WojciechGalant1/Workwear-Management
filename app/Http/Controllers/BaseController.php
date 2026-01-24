@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/../../core/ServiceContainer.php';
+namespace App\Http\Controllers;
+
+use App\Core\ServiceContainer;
 
 abstract class BaseController {
     protected ServiceContainer $serviceContainer;

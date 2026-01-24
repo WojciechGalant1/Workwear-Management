@@ -1,5 +1,10 @@
 <?php
-require_once __DIR__ . '/../../BaseHandler.php';
+namespace App\Http\Handlers\Order;
+
+require_once __DIR__ . '/../../../handler_bootstrap.php';
+
+use App\Http\BaseHandler;
+use App\Config\AccessLevels;
 
 class AddOrderHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
@@ -23,7 +28,7 @@ class AddOrderHandler extends BaseHandler {
             $orderService->createOrder($currentUserId, $ubrania, $uwagi, 1);
             
             $this->successResponse('order_add_success');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errorResponse($e->getMessage(), false);
         }
     }

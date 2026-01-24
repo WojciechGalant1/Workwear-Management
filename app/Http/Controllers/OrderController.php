@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/BaseController.php';
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\BaseController;
 
 class OrderController extends BaseController {
     

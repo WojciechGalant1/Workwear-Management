@@ -1,8 +1,12 @@
 <?php
-require_once __DIR__ . '/../../BaseHandler.php';
-require_once __DIR__ . '/../../../entities/Employee.php';
+namespace App\Http\Handlers\Employee;
 
-class AddEmployeeHandler extends BaseHandler {
+require_once __DIR__ . '/../../../handler_bootstrap.php';
+
+use App\Http\BaseHandler;
+use App\Config\AccessLevels;
+
+class UpdateEmployeeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
     
     public function handle(): void {
@@ -14,24 +18,24 @@ class AddEmployeeHandler extends BaseHandler {
             $this->errorResponse('error_csrf');
         }
         
+        $id = intval($_POST['id'] ?? 0);
         $imie = trim($_POST['imie'] ?? '');
         $nazwisko = trim($_POST['nazwisko'] ?? '');
         $stanowisko = trim($_POST['stanowisko'] ?? '');
-        $status = 1;
+        $status = intval($_POST['status'] ?? -1);
         
-        if (empty($imie) || empty($nazwisko) || empty($stanowisko)) {
-            $this->errorResponse('employee_required_fields');
+        if (empty($id) || empty($imie) || empty($nazwisko) || empty($stanowisko) || $status < 0) {
+            $this->errorResponse('validation_required');
         }
         
-        $pracownik = new Employee($imie, $nazwisko, $stanowisko, $status);
         $pracownikRepo = $this->getRepository('EmployeeRepository');
         
-        if ($pracownikRepo->create($pracownik)) {
-            $this->successResponse('employee_add_success');
+        if ($pracownikRepo->update($id, $imie, $nazwisko, $stanowisko, $status)) {
+            $this->successResponse('employee_update_success');
         } else {
             $this->errorResponse('error_general');
         }
     }
 }
 
-AddEmployeeHandler::run();
+UpdateEmployeeHandler::run();

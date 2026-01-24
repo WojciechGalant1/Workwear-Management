@@ -1,6 +1,6 @@
 <?php
-include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
 
 class ClassModal {
     public function anulujModal(): void {

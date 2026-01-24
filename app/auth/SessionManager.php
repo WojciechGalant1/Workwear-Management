@@ -1,5 +1,7 @@
 <?php
-include_once __DIR__ . '/CsrfGuard.php';
+namespace App\Auth;
+
+use App\Auth\CsrfGuard;
 
 class SessionManager {
     public function __construct() {

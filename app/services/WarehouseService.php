@@ -1,8 +1,18 @@
 <?php
-require_once __DIR__ . '/../entities/Warehouse.php';
-require_once __DIR__ . '/../entities/Clothing.php';
-require_once __DIR__ . '/../entities/Size.php';
-require_once __DIR__ . '/../helpers/LocalizationHelper.php';
+namespace App\Services;
+
+use App\Core\ServiceContainer;
+use App\Entities\Warehouse;
+use App\Entities\Clothing;
+use App\Entities\Size;
+use App\Entities\OrderHistory;
+use App\Entities\OrderDetails;
+use App\Repositories\WarehouseRepository;
+use App\Repositories\ClothingRepository;
+use App\Repositories\SizeRepository;
+use App\Helpers\LocalizationHelper;
+use DateTime;
+use Exception;
 
 /**
  * Serwis obsługujący logikę biznesową magazynu
@@ -103,27 +113,24 @@ class WarehouseService {
         
         $userId = $currentUserId ?? $_SESSION['user_id'] ?? null;
         if (!$userId) {
-            throw new Exception(LocalizationHelper::translate('error_user_not_found'));
+            throw new \Exception(LocalizationHelper::translate('error_user_not_found'));
         }
-        
-        require_once __DIR__ . '/../entities/OrderHistory.php';
-        require_once __DIR__ . '/../entities/OrderDetails.php';
         
         $zamowienie = new OrderHistory(new DateTime(), $userId, $uwagi, 2); // Status 2 = zmiana magazynu
         
         if (!$orderHistoryRepo->create($zamowienie)) {
-            throw new Exception("Nie udało się zapisać historii zamówienia.");
+            throw new \Exception("Nie udało się zapisać historii zamówienia.");
         }
         
         $zamowienieId = $orderHistoryRepo->getLastInsertId();
         if (!$zamowienieId) {
-            throw new Exception("Nie udało się pobrać ID ostatniego zamówienia.");
+            throw new \Exception("Nie udało się pobrać ID ostatniego zamówienia.");
         }
         
         $szczegol = new OrderDetails($zamowienieId, $idUbrania, $idRozmiaru, $iloscDiff, 0, "-", 0);
         
         if (!$orderDetailsRepo->create($szczegol)) {
-            throw new Exception("Nie udało się zapisać szczegółów zamówienia.");
+            throw new \Exception("Nie udało się zapisać szczegółów zamówienia.");
         }
     }
     

@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class IssuedClothing {
     private ?int $id = null;
     private ?int $id_wydania = null;

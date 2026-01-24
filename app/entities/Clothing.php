@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class Clothing {
     private ?int $id_ubranie = null;
     private string $nazwa_ubrania = '';

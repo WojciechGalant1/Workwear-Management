@@ -48,29 +48,29 @@ export const getCsrfHeaders = () => {
  */
 export const API_ENDPOINTS = {
     // Employee endpoints
-    WORKERS: '/app/http/handlers/employee/fetchWorkers.php',
-    ADD_EMPLOYEE: '/app/http/handlers/employee/addEmployee.php',
-    UPDATE_EMPLOYEE: '/app/http/handlers/employee/updateEmployee.php',
+    WORKERS:              '/app/http/handlers/employee/FetchWorkersHandler.php',
+    ADD_EMPLOYEE:         '/app/http/handlers/employee/AddEmployeeHandler.php',
+    UPDATE_EMPLOYEE:      '/app/http/handlers/employee/UpdateEmployeeHandler.php',
     
     // Issue endpoints
-    ISSUE_CLOTHING: '/app/http/handlers/issue/issueClothing.php',
-    CANCEL_ISSUE: '/app/http/handlers/issue/cancelIssue.php',
-    CHANGE_STATUS: '/app/http/handlers/issue/changeStatus.php',
-    DESTROY_CLOTHING: '/app/http/handlers/issue/destroyClothing.php',
+    ISSUE_CLOTHING:       '/app/http/handlers/issue/IssueClothingHandler.php',
+    CANCEL_ISSUE:         '/app/http/handlers/issue/CancelIssueHandler.php',
+    CHANGE_STATUS:        '/app/http/handlers/issue/ChangeStatusHandler.php',
+    DESTROY_CLOTHING:     '/app/http/handlers/issue/DestroyClothingHandler.php',
     
     // Order endpoints
-    ADD_ORDER: '/app/http/handlers/order/addOrder.php',
+    ADD_ORDER:            '/app/http/handlers/order/AddOrderHandler.php',
     
     // Warehouse endpoints
-    UPDATE_CLOTHING: '/app/http/handlers/warehouse/updateClothing.php',
-    GET_CLOTHING_BY_CODE: '/app/http/handlers/warehouse/getClothingByCode.php',
-    CHECK_CLOTHING_EXISTS: '/app/http/handlers/warehouse/checkClothingExists.php',
-    GET_SIZES: '/app/http/handlers/warehouse/getSizes.php',
-    FETCH_PRODUCT_NAMES: '/app/http/handlers/warehouse/fetchProductNames.php',
-    FETCH_SIZES_NAMES: '/app/http/handlers/warehouse/fetchSizesNames.php',
+    UPDATE_CLOTHING:      '/app/http/handlers/warehouse/UpdateClothingHandler.php',
+    GET_CLOTHING_BY_CODE: '/app/http/handlers/warehouse/GetClothingByCodeHandler.php',
+    CHECK_CLOTHING_EXISTS:'/app/http/handlers/warehouse/CheckClothingExistsHandler.php',
+    GET_SIZES:            '/app/http/handlers/warehouse/GetSizesHandler.php',
+    FETCH_PRODUCT_NAMES:  '/app/http/handlers/warehouse/FetchProductNamesHandler.php',
+    FETCH_SIZES_NAMES:    '/app/http/handlers/warehouse/FetchSizesNamesHandler.php',
     
     // Auth endpoints
-    VALIDATE_LOGIN: '/app/http/handlers/auth/validateLogin.php'
+    VALIDATE_LOGIN:       '/app/Http/Handlers/Auth/ValidateLoginHandler.php'
 };
 
 /**

@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class Issue {
     private ?int $id_wydania = null;
     private ?int $pracownik_id = null;

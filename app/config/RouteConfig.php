@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/AccessLevels.php';
+namespace App\Config;
+
+use App\Config\AccessLevels;
 
 class RouteConfig {
     

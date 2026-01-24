@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../helpers/EnvLoader.php';
+use App\Helpers\EnvLoader;
 
 EnvLoader::load(__DIR__ . '/../../.env');
 

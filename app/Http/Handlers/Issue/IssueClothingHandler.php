@@ -1,5 +1,10 @@
 <?php
-require_once __DIR__ . '/../../BaseHandler.php';
+namespace App\Http\Handlers\Issue;
+
+require_once __DIR__ . '/../../../handler_bootstrap.php';
+
+use App\Http\BaseHandler;
+use App\Config\AccessLevels;
 
 class IssueClothingHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
@@ -36,7 +41,7 @@ class IssueClothingHandler extends BaseHandler {
             );
             
             $this->successResponse('issue_success');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errorResponse($e->getMessage(), false);
         }
     }

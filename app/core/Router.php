@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/../helpers/UrlHelper.php';
+namespace App\Core;
+
+use App\Helpers\UrlHelper;
+use App\Auth\AccessGuard;
 
 class Router {
     private array $routes = [];
@@ -27,15 +30,17 @@ class Router {
             if (is_array($route)) {
                 // Middleware - Auth check (PRZED kontrolerem)
                 if (isset($route['auth'])) {
-                    require_once __DIR__ . '/../auth/AccessGuard.php';
                     $guard = new AccessGuard();
                     $guard->requireStatus($route['auth']);
                 }
                 
                 // Wykonanie kontrolera (użytkownik jest już zweryfikowany)
                 if (isset($route['controller']) && isset($route['action'])) {
-                    require_once __DIR__ . '/../Http/Controllers/' . $route['controller'] . '.php';
-                    $controller = new $route['controller']();
+                    $controllerClass = 'App\\Http\\Controllers\\' . $route['controller'];
+                    if (!class_exists($controllerClass)) {
+                        throw new \Exception("Controller {$controllerClass} not found");
+                    }
+                    $controller = new $controllerClass();
                     $controllerResult = $controller->{$route['action']}();
                     
                     // Przekazanie danych do widoku
@@ -49,7 +54,7 @@ class Router {
                     include_once $route['view'];
                     return true;
                 } else {
-                    throw new Exception("View file not found: " . ($route['view'] ?? 'unknown'));
+                    throw new \Exception("View file not found: " . ($route['view'] ?? 'unknown'));
                 }
             }
             

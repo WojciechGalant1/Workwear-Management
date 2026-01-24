@@ -1,6 +1,10 @@
 <?php
-include_once __DIR__ . '/BaseRepository.php';
-include_once __DIR__ . '/../entities/Code.php';
+namespace App\Repositories;
+
+use App\Entities\Code;
+use App\Repositories\BaseRepository;
+
+use PDO;
 
 class CodeRepository extends BaseRepository {
 

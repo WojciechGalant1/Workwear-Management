@@ -1,5 +1,10 @@
 <?php
-require_once __DIR__ . '/../../BaseHandler.php';
+namespace App\Http\Handlers\Warehouse;
+
+require_once __DIR__ . '/../../../handler_bootstrap.php';
+
+use App\Http\BaseHandler;
+use App\Config\AccessLevels;
 
 class UpdateClothingHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
@@ -48,7 +53,7 @@ class UpdateClothingHandler extends BaseHandler {
                 http_response_code(500);
                 $this->jsonResponse($result);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             http_response_code(500);
             $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }

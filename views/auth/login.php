@@ -1,6 +1,7 @@
 <?php
-require_once __DIR__ . '/../../app/helpers/LocalizationHelper.php';
-require_once __DIR__ . '/../../app/helpers/LanguageSwitcher.php';
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
+use App\Helpers\UrlHelper;
 
 if (!function_exists('__')) {
     function __(string $key, array $params = []): string {

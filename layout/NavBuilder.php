@@ -1,12 +1,12 @@
 <?php
 
-include_once __DIR__ . '/../app/core/ServiceContainer.php';
-include_once __DIR__ . '/../app/auth/SessionManager.php';
-include_once __DIR__ . '/../app/helpers/UrlHelper.php';
-include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
-include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
-include_once __DIR__ . '/../app/config/RouteConfig.php';
-include_once __DIR__ . '/../app/config/AccessLevels.php';
+use App\Core\ServiceContainer;
+use App\Auth\SessionManager;
+use App\Helpers\UrlHelper;
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
+use App\Config\RouteConfig;
+use App\Config\AccessLevels;
 
 class NavBuilder {
 

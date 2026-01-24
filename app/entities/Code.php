@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class Code {
     private ?int $id_kod = null;
     private ?string $kod_nazwa = null;

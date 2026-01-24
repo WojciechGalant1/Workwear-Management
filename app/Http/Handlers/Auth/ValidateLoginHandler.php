@@ -1,7 +1,11 @@
 <?php
-require_once __DIR__ . '/../../BaseHandler.php';
-require_once __DIR__ . '/../../../entities/User.php';
-require_once __DIR__ . '/../../../auth/SessionManager.php';
+namespace App\Http\Handlers\Auth;
+
+require_once __DIR__ . '/../../../handler_bootstrap.php';
+
+use App\Http\BaseHandler;
+use App\Auth\SessionManager;
+use \PDO;
 
 class ValidateLoginHandler extends BaseHandler {
     

@@ -1,7 +1,8 @@
 <?php
-include_once __DIR__ . '../../layout/header.php';
+use App\Auth\CsrfGuard;
+use App\Helpers\DateHelper;
 
-include_once __DIR__ . '../../app/helpers/DateHelper.php';
+include_once __DIR__ . '../../layout/header.php';
 
 $expire_date_months = [6, 12, 18, 24];
 ?>

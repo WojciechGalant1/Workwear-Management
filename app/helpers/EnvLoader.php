@@ -1,4 +1,8 @@
 <?php
+namespace App\Helpers;
+
+use Exception;
+
 class EnvLoader {
     private static array $variables = [];
 

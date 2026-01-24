@@ -1,9 +1,11 @@
 <?php
-require_once __DIR__ . '/BaseController.php';
-require_once __DIR__ . '/../../helpers/UrlHelper.php';
-require_once __DIR__ . '/../../auth/CsrfGuard.php';
-require_once __DIR__ . '/../../helpers/LocalizationHelper.php';
-require_once __DIR__ . '/../../helpers/LanguageSwitcher.php';
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\BaseController;
+use App\Helpers\UrlHelper;
+use App\Auth\CsrfGuard;
+use App\Helpers\LocalizationHelper;
+use App\Helpers\LanguageSwitcher;
 
 class AuthController extends BaseController {
     

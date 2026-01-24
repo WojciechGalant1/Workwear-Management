@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class Warehouse
 {
     private ?int $id = null;

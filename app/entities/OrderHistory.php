@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class OrderHistory {
     private ?int $id = null;
     private \DateTime $data_zamowienia;

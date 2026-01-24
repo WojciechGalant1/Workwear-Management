@@ -1,6 +1,8 @@
 <?php
-include_once __DIR__ . '/BaseRepository.php';
-include_once __DIR__ . '/../entities/User.php';
+namespace App\Repositories;
+
+use App\Repositories\BaseRepository;
+use PDO;
 
 class UserRepository extends BaseRepository{
 

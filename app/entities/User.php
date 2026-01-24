@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class User {
     private ?int $u_id = null;
     private string $name = '';

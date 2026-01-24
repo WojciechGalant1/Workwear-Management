@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class OrderDetails {
     private ?int $id = null;
     private ?int $zamowienie_id = null;

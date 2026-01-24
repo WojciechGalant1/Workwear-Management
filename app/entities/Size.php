@@ -1,4 +1,6 @@
 <?php
+namespace App\Entities;
+
 class Size {
     private ?int $id_rozmiar = null;
     private string $nazwa_rozmiaru = '';

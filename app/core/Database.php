@@ -1,4 +1,10 @@
 <?php
+namespace App\Core;
+
+use \PDO;
+use \PDOException;
+use \RuntimeException;
+
 
 /**
  * Factory do tworzenia połączenia PDO
