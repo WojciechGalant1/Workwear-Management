@@ -79,4 +79,3 @@ class OrderDetails {
         $this->sz_kodID = $sz_kodID;
     }
 }
-

@@ -3,7 +3,7 @@ require_once __DIR__ . '/BaseController.php';
 
 class WarehouseController extends BaseController {
     
-    public function list() {
+    public function list(): array {
         $warehouseRepo = $this->getRepository('WarehouseRepository');
         
         return [

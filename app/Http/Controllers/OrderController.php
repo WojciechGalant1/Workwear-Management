@@ -3,7 +3,7 @@ require_once __DIR__ . '/BaseController.php';
 
 class OrderController extends BaseController {
     
-    public function history() {
+    public function history(): array {
         $orderHistoryRepo = $this->getRepository('OrderHistoryRepository');
         
         return [
@@ -12,7 +12,7 @@ class OrderController extends BaseController {
         ];
     }
     
-    public function create() {
+    public function create(): array {
         return [
             'pageTitle' => 'order_add_title'
         ];

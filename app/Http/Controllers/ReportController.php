@@ -3,7 +3,7 @@ require_once __DIR__ . '/BaseController.php';
 
 class ReportController extends BaseController {
     
-    public function index() {
+    public function index(): array {
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
         return [

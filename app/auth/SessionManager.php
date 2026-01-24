@@ -12,7 +12,7 @@ class SessionManager {
         }
     }
 
-    public function login($userId, $status) {
+    public function login(int $userId, int $status): void {
         session_regenerate_id(true); //fixation attack
         
         $_SESSION['user_id'] = $userId;
@@ -21,20 +21,20 @@ class SessionManager {
         CsrfGuard::regenerateToken();
     }
 
-    public function logout() {
+    public function logout(): void {
         session_unset();
         session_destroy();
     }
 
-    public function isLoggedIn() {
+    public function isLoggedIn(): bool {
         return isset($_SESSION['user_id']);
     }
 
-    public function getUserId() {
-        return (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null);
+    public function getUserId(): ?int {
+        return $_SESSION['user_id'] ?? null;
     }
 
-    public function getUserStatus() {
-        return isset($_SESSION['user_status']) ? $_SESSION['user_status'] : 0;
+    public function getUserStatus(): int {
+        return $_SESSION['user_status'] ?? 0;
     }
 }

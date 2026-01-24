@@ -59,4 +59,3 @@ class Warehouse
         $this->iloscMin = $iloscMin;
     }
 }
-

@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class CheckClothingExistsHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::WAREHOUSE;
+    protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
     
-    public function handle() {
+    public function handle(): void {
         if (!isset($_GET['nazwa']) || !isset($_GET['rozmiar'])) {
             $this->errorResponse('validation_required');
         }

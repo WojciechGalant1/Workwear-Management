@@ -2,17 +2,21 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class CancelIssueHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::SUPERVISOR;
+    protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
     
-    public function handle() {
+    public function handle(): void {
         $data = $this->getJsonInput();
-        
+        if (!is_array($data)) {
+            $this->errorResponse('validation_invalid_input');
+            return;
+        }
         if (!$this->validateCsrf($data)) {
             $this->csrfErrorResponse();
+            return;
         }
-        
         if (!isset($data['id']) || !is_numeric($data['id'])) {
             $this->errorResponse('validation_invalid_input');
+            return;
         }
         
         try {

@@ -18,6 +18,10 @@ class Employee {
         return $this->id_pracownik;
     }
 
+    public function setIdPracownik(?int $id_pracownik): void {
+        $this->id_pracownik = $id_pracownik;
+    }
+
     public function getImie(): string {
         return $this->imie;
     }
@@ -50,5 +54,3 @@ class Employee {
         $this->status = $status;
     }
 }
-
-

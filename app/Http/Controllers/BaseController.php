@@ -11,18 +11,18 @@ abstract class BaseController {
     /**
      * Pobiera repozytorium z ServiceContainer
      * @param string $name Nazwa repozytorium
-     * @return mixed
+     * @return object
      */
-    protected function getRepository($name) {
+    protected function getRepository(string $name): object {
         return $this->serviceContainer->getRepository($name);
     }
     
     /**
      * Pobiera serwis z ServiceContainer
      * @param string $name Nazwa serwisu
-     * @return mixed
+     * @return object
      */
-    protected function getService($name) {
+    protected function getService(string $name): object {
         return $this->serviceContainer->getService($name);
     }
 }

@@ -3,7 +3,7 @@ require_once __DIR__ . '/BaseController.php';
 
 class ClothingController extends BaseController {
     
-    public function history() {
+    public function history(): array {
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
         return [

@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class GetClothingByCodeHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::USER;
+    protected ?int $requiredStatus = AccessLevels::USER;
     
-    public function handle() {
+    public function handle(): void {
         if (!isset($_GET['kod'])) {
             $this->jsonResponse(['error' => $this->translate('validation_required')]);
             return;

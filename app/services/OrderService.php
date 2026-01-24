@@ -20,7 +20,7 @@ class OrderService {
     private WarehouseRepository $warehouseRepo;
     private WarehouseService $warehouseService;
     
-    public function __construct($serviceContainer) {
+    public function __construct(ServiceContainer $serviceContainer) {
         $this->serviceContainer = $serviceContainer;
         $this->orderHistoryRepo = $this->serviceContainer->getRepository('OrderHistoryRepository');
         $this->orderDetailsRepo = $this->serviceContainer->getRepository('OrderDetailsRepository');
@@ -47,7 +47,7 @@ class OrderService {
      * @return int ID utworzonego zamówienia
      * @throws Exception Gdy walidacja nie przejdzie lub wystąpi błąd
      */
-    public function createOrder($userId, $ubrania, $uwagi = '', $status = 1) {
+    public function createOrder(int $userId, array $ubrania, string $uwagi = '', int $status = 1): int {
         // Walidacja danych
         if (empty($ubrania) || !is_array($ubrania)) {
             throw new Exception(LocalizationHelper::translate('order_no_items'));
@@ -90,14 +90,14 @@ class OrderService {
      * @param int $status
      * @throws Exception
      */
-    private function createOrderDetails($zamowienieId, $ubrania, $status) {
+    private function createOrderDetails(int $zamowienieId, array $ubrania, int $status): void {
         foreach ($ubrania as $ubranie) {
-            $nazwa = isset($ubranie['nazwa']) ? trim($ubranie['nazwa']) : '';
-            $rozmiar = isset($ubranie['rozmiar']) ? trim($ubranie['rozmiar']) : '';
-            $firma = isset($ubranie['firma']) ? trim($ubranie['firma']) : '';
-            $ilosc = isset($ubranie['ilosc']) ? intval($ubranie['ilosc']) : 0;
-            $iloscMin = isset($ubranie['iloscMin']) ? intval($ubranie['iloscMin']) : 0;
-            $kodNazwa = isset($ubranie['kod']) ? trim($ubranie['kod']) : '';
+            $nazwa = trim($ubranie['nazwa'] ?? '');
+            $rozmiar = trim($ubranie['rozmiar'] ?? '');
+            $firma = trim($ubranie['firma'] ?? '');
+            $ilosc = intval($ubranie['ilosc'] ?? 0);
+            $iloscMin = intval($ubranie['iloscMin'] ?? 0);
+            $kodNazwa = trim($ubranie['kod'] ?? '');
             
             // Walidacja
             if (empty($nazwa) || empty($rozmiar) || empty($firma) || $ilosc <= 0) {
@@ -136,7 +136,7 @@ class OrderService {
      * @param OrderHistory $zamowienie
      * @throws Exception
      */
-    public function addOrderToWarehouse(OrderHistory $zamowienie) {
+    public function addOrderToWarehouse(OrderHistory $zamowienie): void {
         $szczegoly = $this->orderDetailsRepo->getByZamowienieId($zamowienie->getId());
         
         if (empty($szczegoly)) {

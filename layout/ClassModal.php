@@ -3,7 +3,7 @@ include_once __DIR__ . '/../app/helpers/LocalizationHelper.php';
 include_once __DIR__ . '/../app/helpers/LanguageSwitcher.php';
 
 class ClassModal {
-    public function anulujModal() {
+    public function anulujModal(): void {
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
         
@@ -28,7 +28,7 @@ class ClassModal {
 ';
     }
 
-    public function zniszczoneModal() {
+    public function zniszczoneModal(): void {
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
         

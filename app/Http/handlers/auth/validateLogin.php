@@ -5,14 +5,14 @@ require_once __DIR__ . '/../../../auth/SessionManager.php';
 
 class ValidateLoginHandler extends BaseHandler {
     
-    public function handle() {
+    public function handle(): void {
         if ($this->isPost() && !$this->validateCsrf()) {
             $this->csrfErrorResponse();
         }
         
-        $username = isset($_POST['username']) ? trim($_POST['username']) : '';
-        $password = isset($_POST['password']) ? trim($_POST['password']) : '';
-        $kodID = isset($_POST['kodID']) ? trim($_POST['kodID']) : '';
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+        $kodID = trim($_POST['kodID'] ?? '');
         
         $pdo = $this->serviceContainer->getPdo();
         
@@ -25,7 +25,7 @@ class ValidateLoginHandler extends BaseHandler {
         }
     }
     
-    private function loginWithPassword($pdo, $username, $password) {
+    private function loginWithPassword(PDO $pdo, string $username, string $password): void {
         $stmt = $pdo->prepare('SELECT * FROM uzytkownicy WHERE nazwa = :username LIMIT 1');
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -43,12 +43,9 @@ class ValidateLoginHandler extends BaseHandler {
         }
     }
     
-    private function loginWithCode($pdo, $kodID) {
+    private function loginWithCode(PDO $pdo, string $kodID): void {
         // Rate-limit using session
-        if (!isset($_SESSION['login_attempts'])) {
-            $_SESSION['login_attempts'] = 0;
-        }
-        $_SESSION['login_attempts']++;
+        $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
         
         if ($_SESSION['login_attempts'] > 20) {
             usleep(500000); // 0.5s delay
@@ -66,7 +63,7 @@ class ValidateLoginHandler extends BaseHandler {
         }
     }
     
-    private function createSession($user) {
+    private function createSession(array $user): void {
         $sessionManager = new SessionManager();
         $sessionManager->login($user['id'], $user['status']);
     }

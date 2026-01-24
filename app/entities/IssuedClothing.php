@@ -69,4 +69,3 @@ class IssuedClothing {
         $this->status = $status;
     }
 }
-

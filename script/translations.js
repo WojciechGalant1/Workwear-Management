@@ -34,6 +34,7 @@ export const Translations = (() => {
         'server_error': 'Server error occurred',
         'error_general': 'An error occurred while processing the request',
         'error_invalid_response': 'Invalid server response',
+        'validation_name_invalid_characters': 'Name contains invalid characters',
         
         // Status messages
         'status_changed': 'Status changed',
@@ -127,6 +128,7 @@ export const Translations = (() => {
         'server_error': 'Wystąpił błąd serwera',
         'error_general': 'Wystąpił błąd podczas przetwarzania żądania',
         'error_invalid_response': 'Nieprawidłowa odpowiedź serwera',
+        'validation_name_invalid_characters': 'Nazwa zawiera nieprawidłowe znaki',
         
         // Status messages
         'status_changed': 'Status zmieniony',

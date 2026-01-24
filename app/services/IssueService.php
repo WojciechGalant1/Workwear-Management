@@ -15,7 +15,7 @@ class IssueService {
     private IssueRepository $issueRepo;
     private IssuedClothingRepository $issuedClothingRepo;
     
-    public function __construct($serviceContainer) {
+    public function __construct(ServiceContainer $serviceContainer) {
         $this->serviceContainer = $serviceContainer;
         $this->employeeRepo = $this->serviceContainer->getRepository('EmployeeRepository');
         $this->userRepo = $this->serviceContainer->getRepository('UserRepository');
@@ -38,7 +38,7 @@ class IssueService {
      * @return int ID utworzonego wydania
      * @throws Exception Gdy walidacja nie przejdzie lub wystąpi błąd
      */
-    public function issueClothing($pracownikId, $userId, $ubrania, $uwagi = '') {
+    public function issueClothing(int $pracownikId, int $userId, array $ubrania, string $uwagi = ''): int {
         // Walidacja pracownika
         $pracownik = $this->employeeRepo->getById($pracownikId);
         if (!$pracownik) {
@@ -81,11 +81,11 @@ class IssueService {
      * @param array $ubrania Tablica z danymi ubrań
      * @throws Exception Gdy dane są nieprawidłowe
      */
-    private function validateClothingData($ubrania) {
+    private function validateClothingData(array $ubrania): void {
         foreach ($ubrania as $ubranie) {
-            $idUbrania = isset($ubranie['id_ubrania']) ? intval($ubranie['id_ubrania']) : 0;
-            $idRozmiar = isset($ubranie['id_rozmiar']) ? intval($ubranie['id_rozmiar']) : 0;
-            $ilosc = isset($ubranie['ilosc']) ? intval($ubranie['ilosc']) : 0;
+            $idUbrania = intval($ubranie['id_ubrania'] ?? 0);
+            $idRozmiar = intval($ubranie['id_rozmiar'] ?? 0);
+            $ilosc = intval($ubranie['ilosc'] ?? 0);
             
             if ($idUbrania == 0 || $idRozmiar == 0) {
                 throw new Exception(LocalizationHelper::translate('issue_invalid_code'));
@@ -103,7 +103,7 @@ class IssueService {
      * @param array $ubrania Tablica z danymi ubrań
      * @throws Exception Gdy brakuje ubrań w magazynie
      */
-    private function validateStockAvailability($ubrania) {
+    private function validateStockAvailability(array $ubrania): void {
         foreach ($ubrania as $ubranie) {
             $idUbrania = intval($ubranie['id_ubrania']);
             $idRozmiar = intval($ubranie['id_rozmiar']);
@@ -124,15 +124,14 @@ class IssueService {
      * @param array $ubrania Tablica z danymi ubrań
      * @throws Exception Gdy wystąpi błąd podczas dodawania
      */
-    private function addClothingToIssue($idWydania, $ubrania) {
+    private function addClothingToIssue(int $idWydania, array $ubrania): void {
         foreach ($ubrania as $ubranie) {
             $idUbrania = intval($ubranie['id_ubrania']);
             $idRozmiar = intval($ubranie['id_rozmiar']);
             $ilosc = intval($ubranie['ilosc']);
             $status = 1; // Status aktywny
             
-            // Oblicz datę ważności
-            $dataWaznosciMiesiace = isset($ubranie['data_waznosci']) ? intval($ubranie['data_waznosci']) : 0;
+            $dataWaznosciMiesiace = intval($ubranie['data_waznosci'] ?? 0);
             $dataWaznosci = $this->calculateExpiryDate($dataWaznosciMiesiace);
             
             // Utwórz wydane ubranie
@@ -153,7 +152,7 @@ class IssueService {
      * @param int $ubranieId ID wydanego ubrania
      * @throws Exception Gdy ubranie nie zostanie znalezione lub wystąpi błąd
      */
-    public function cancelIssue($ubranieId) {
+    public function cancelIssue(int $ubranieId): void {
         $wydaneUbranie = $this->issuedClothingRepo->getUbraniaById($ubranieId);
         
         if (!$wydaneUbranie) {
@@ -177,11 +176,11 @@ class IssueService {
      * Oblicza datę ważności na podstawie liczby miesięcy
      * 
      * @param int $months Liczba miesięcy
-     * @return string Data ważności w formacie Y-m-d H:i:s
+     * @return DateTime Data ważności
      */
-    private function calculateExpiryDate($months) {
+    private function calculateExpiryDate(int $months): DateTime {
         $date = new DateTime();
         $date->modify("+{$months} months");
-        return $date->format('Y-m-d H:i:s');
+        return $date;
     }
 }

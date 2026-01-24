@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class IssueClothingHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::USER;
+    protected ?int $requiredStatus = AccessLevels::USER;
     
-    public function handle() {
+    public function handle(): void {
         if (!$this->isPost()) {
             $this->errorResponse('error_method_not_allowed');
         }
@@ -13,8 +13,8 @@ class IssueClothingHandler extends BaseHandler {
             $this->errorResponse('error_csrf');
         }
         
-        $pracownikID = isset($_POST['pracownikID']) ? trim($_POST['pracownikID']) : '';
-        $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
+        $pracownikID = trim($_POST['pracownikID'] ?? '');
+        $uwagi = trim($_POST['uwagi'] ?? '');
         
         if (empty($pracownikID)) {
             $this->errorResponse('issue_employee_required');

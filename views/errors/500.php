@@ -13,7 +13,7 @@ include_once __DIR__ . '/../../layout/header.php';
         <h4 class="alert-heading"><?php echo LocalizationHelper::translate('error_occurred'); ?></h4>
         <p><?php echo LocalizationHelper::translate('error_general'); ?></p>
         
-        <?php if (ini_get('display_errors') && isset($exception)): ?>
+        <?php if (ini_get('display_errors') && ($exception ?? null) !== null): ?>
         <hr>
         <details>
             <summary>Debug Info</summary>

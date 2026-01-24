@@ -13,7 +13,7 @@ class WarehouseService {
     private ClothingRepository $clothingRepo;
     private SizeRepository $sizeRepo;
     
-    public function __construct($serviceContainer) {
+    public function __construct(ServiceContainer $serviceContainer) {
         $this->serviceContainer = $serviceContainer;
         $this->warehouseRepo = $this->serviceContainer->getRepository('WarehouseRepository');
         $this->clothingRepo = $this->serviceContainer->getRepository('ClothingRepository');
@@ -27,7 +27,7 @@ class WarehouseService {
      * @return bool
      * @throws Exception
      */
-    public function addToWarehouse(Warehouse $stanMagazynu) {
+    public function addToWarehouse(Warehouse $stanMagazynu): bool {
         $existingStan = $this->warehouseRepo->findByUbranieAndRozmiar(
             $stanMagazynu->getIdUbrania(),
             $stanMagazynu->getIdRozmiaru()
@@ -53,7 +53,7 @@ class WarehouseService {
      * @param int|null $currentUserId ID użytkownika
      * @return array ['success' => bool, 'message' => string]
      */
-    public function updateWarehouseItem($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId = null) {
+    public function updateWarehouseItem(int $id, string $nazwa, string $rozmiar, int $ilosc, int $iloscMin, string $uwagi, ?int $currentUserId = null): array {
         try {
             $existingUbranie = $this->clothingRepo->findByName($nazwa);
             $idUbrania = $existingUbranie ? $existingUbranie->getIdUbranie() : $this->clothingRepo->create(new Clothing($nazwa));
@@ -96,12 +96,12 @@ class WarehouseService {
      * @param int|null $currentUserId
      * @throws Exception
      */
-    private function createOrderFromWarehouseChange($idUbrania, $idRozmiaru, $iloscDiff, $uwagi, $currentUserId = null) {
+    private function createOrderFromWarehouseChange(int $idUbrania, int $idRozmiaru, int $iloscDiff, string $uwagi, ?int $currentUserId = null): void {
         // Używamy repozytoriów bezpośrednio, aby uniknąć cyklicznej zależności z OrderService
         $orderHistoryRepo = $this->serviceContainer->getRepository('OrderHistoryRepository');
         $orderDetailsRepo = $this->serviceContainer->getRepository('OrderDetailsRepository');
         
-        $userId = $currentUserId !== null ? $currentUserId : (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null);
+        $userId = $currentUserId ?? $_SESSION['user_id'] ?? null;
         if (!$userId) {
             throw new Exception(LocalizationHelper::translate('error_user_not_found'));
         }
@@ -136,7 +136,7 @@ class WarehouseService {
      * @param bool $anulowanie Jeśli true, dodaje z powrotem (anulowanie wydania)
      * @return bool
      */
-    public function updateIlosc($idUbrania, $idRozmiaru, $ilosc, $anulowanie = false) {
+    public function updateIlosc(int $idUbrania, int $idRozmiaru, int $ilosc, bool $anulowanie = false): bool {
         return $this->warehouseRepo->updateIlosc($idUbrania, $idRozmiaru, $ilosc, $anulowanie);
     }
     
@@ -145,7 +145,7 @@ class WarehouseService {
      * 
      * @return bool
      */
-    public function hasShortages() {
+    public function hasShortages(): bool {
         return $this->warehouseRepo->checkIlosc();
     }
 }

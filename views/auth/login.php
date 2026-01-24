@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../app/helpers/LocalizationHelper.php';
 require_once __DIR__ . '/../../app/helpers/LanguageSwitcher.php';
 
 if (!function_exists('__')) {
-    function __($key, $params = array()) {
+    function __(string $key, array $params = []): string {
         $currentLang = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLang);
         return LocalizationHelper::translate($key, $params);
@@ -93,7 +93,7 @@ if (!function_exists('__')) {
                             </div>
                         </div>
                         <div class="text-center mt-4">
-                            <p class="text-muted small"><?php echo __('copyright', array('year' => date('Y'))); ?></p>
+                            <p class="text-muted small"><?php echo __('copyright', ['year' => date('Y')]); ?></p>
 
 
                             <div class="mt-3">
@@ -103,7 +103,7 @@ if (!function_exists('__')) {
                                 foreach ($availableLanguages as $lang) {
                                     $isActive = $lang === $currentLanguage ? 'btn-primary' : 'btn-outline-secondary';
                                     $langName = LocalizationHelper::getLanguageName($lang);
-                                    $langUrl = UrlHelper::buildUrl($currentPath, array('lang' => $lang));
+                                    $langUrl = UrlHelper::buildUrl($currentPath, ['lang' => $lang]);
                                     echo '<a href="' . htmlspecialchars($langUrl) . '" class="btn btn-sm ' . $isActive . ' me-1">';
                                     echo $langName;
                                     echo '</a>';

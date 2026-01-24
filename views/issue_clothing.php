@@ -3,7 +3,7 @@ include_once __DIR__ . '../../layout/header.php';
 
 include_once __DIR__ . '../../app/helpers/DateHelper.php';
 
-$expire_date_months = array(6, 12, 18, 24);
+$expire_date_months = [6, 12, 18, 24];
 ?>
 
 <div id="alertContainer"></div>

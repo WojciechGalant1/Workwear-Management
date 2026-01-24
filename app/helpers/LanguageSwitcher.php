@@ -8,7 +8,7 @@ class LanguageSwitcher {
     const COOKIE_EXPIRE = 31536000; // 1 year
     
     
-    public static function initializeWithRouting() {
+    public static function initializeWithRouting(): string {
         $language = self::DEFAULT_LANGUAGE;
         
         // Check URL parameter first (highest priority)
@@ -42,7 +42,7 @@ class LanguageSwitcher {
     }
     
 
-    public static function setLanguage($language) {
+    public static function setLanguage(string $language): void {
         if (!self::isValidLanguage($language)) {
             $language = self::DEFAULT_LANGUAGE;
         }
@@ -58,18 +58,18 @@ class LanguageSwitcher {
     }
     
 
-    public static function getCurrentLanguage() {
-        return isset($_SESSION[self::SESSION_KEY]) ? $_SESSION[self::SESSION_KEY] : self::DEFAULT_LANGUAGE;
+    public static function getCurrentLanguage(): string {
+        return $_SESSION[self::SESSION_KEY] ?? self::DEFAULT_LANGUAGE;
     }
     
 
-    public static function isValidLanguage($language) {
+    public static function isValidLanguage(string $language): bool {
         $availableLanguages = LocalizationHelper::getAvailableLanguages();
         return in_array($language, $availableLanguages);
     }
     
 
-    public static function detectBrowserLanguage() {
+    public static function detectBrowserLanguage(): ?string {
         if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             return null;
         }
@@ -91,7 +91,7 @@ class LanguageSwitcher {
     
     
 
-    public static function getLanguageFlag($language) {
+    public static function getLanguageFlag(string $language): string {
         $flags = [
             'en' => '🇺🇸',
             'pl' => '🇵🇱',
@@ -100,8 +100,6 @@ class LanguageSwitcher {
             'es' => '🇪🇸'
         ];
         
-        return isset($flags[$language]) ? $flags[$language] : '🌐';
+        return $flags[$language] ?? '🌐';
     }
-    
 }
-

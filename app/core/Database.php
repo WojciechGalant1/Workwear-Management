@@ -12,7 +12,7 @@ class Database
      * @return PDO
      * @throws RuntimeException
      */
-    public static function createPdo()
+    public static function createPdo(): PDO
     {
         $config = require __DIR__ . '/../config/DbConfig.php';
         

@@ -2,13 +2,13 @@
 
 class UrlHelper {
 
-    public static function getBaseUrl() {
+    public static function getBaseUrl(): string {
         $basePath = dirname($_SERVER['SCRIPT_NAME']);
         return $basePath === '/' ? '' : $basePath;
     }
 
 
-    public static function getAppBaseUrl() {
+    public static function getAppBaseUrl(): string {
         $basePath = dirname($_SERVER['SCRIPT_NAME']);
         $segments = [];
         if ($basePath !== '/') {
@@ -33,8 +33,8 @@ class UrlHelper {
     }
     
 
-    public static function getCleanUri() {
-        $uri = $_SERVER['REQUEST_URI'];
+    public static function getCleanUri(): string {
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
         
         // Remove query string
         if (($pos = strpos($uri, '?')) !== false) {
@@ -42,7 +42,7 @@ class UrlHelper {
         }
         
         // Remove basePath if it exists
-        $basePath = dirname($_SERVER['SCRIPT_NAME']);
+        $basePath = dirname($_SERVER['SCRIPT_NAME'] ?? '/');
         if ($basePath !== '/' && strpos($uri, $basePath) === 0) {
             $uri = substr($uri, strlen($basePath));
         }
@@ -58,10 +58,11 @@ class UrlHelper {
     /**
      * Get query parameters from current request
      */
-    public static function getQueryParams() {
+    public static function getQueryParams(): array {
         $params = [];
-        if (isset($_SERVER['QUERY_STRING'])) {
-            parse_str($_SERVER['QUERY_STRING'], $params);
+        $queryString = $_SERVER['QUERY_STRING'] ?? '';
+        if ($queryString !== '') {
+            parse_str($queryString, $params);
         }
         return $params;
     }
@@ -69,7 +70,7 @@ class UrlHelper {
     /**
      * Build URL with query parameters
      */
-    public static function buildUrl($path, $params = []) {
+    public static function buildUrl(string $path, array $params = []): string {
         $baseUrl = self::getBaseUrl();
         $url = $baseUrl . $path;
         
@@ -79,5 +80,4 @@ class UrlHelper {
         
         return $url;
     }
-    
 } 

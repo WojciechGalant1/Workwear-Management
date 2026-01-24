@@ -18,7 +18,7 @@ class ClothingExpiryService {
      * 
      * @return DateTime
      */
-    public function getExpiryWarningDate() {
+    public function getExpiryWarningDate(): DateTime {
         $date = new DateTime();
         $date->modify('+' . self::EXPIRY_WARNING_MONTHS . ' months');
         return $date;
@@ -29,10 +29,20 @@ class ClothingExpiryService {
      * 
      * @return DateTime
      */
-    public function getHistoryStartDate() {
+    public function getHistoryStartDate(): DateTime {
         $date = new DateTime();
         $date->modify('-' . self::HISTORY_MONTHS . ' months');
         return $date;
+    }
+    
+    /**
+     * Normalizuje datę do obiektu DateTime
+     * 
+     * @param string|DateTime $date Data jako string lub DateTime
+     * @return DateTime
+     */
+    private function normalizeDateTime(string|DateTime $date): DateTime {
+        return is_string($date) ? new DateTime($date) : $date;
     }
     
     /**
@@ -41,11 +51,8 @@ class ClothingExpiryService {
      * @param string|DateTime $expiryDate Data wygaśnięcia
      * @return bool
      */
-    public function isExpired($expiryDate) {
-        if (is_string($expiryDate)) {
-            $expiryDate = new DateTime($expiryDate);
-        }
-        return $expiryDate <= new DateTime();
+    public function isExpired(string|DateTime $expiryDate): bool {
+        return $this->normalizeDateTime($expiryDate) <= new DateTime();
     }
     
     /**
@@ -54,10 +61,8 @@ class ClothingExpiryService {
      * @param string|DateTime $expiryDate Data wygaśnięcia
      * @return bool
      */
-    public function isExpiringSoon($expiryDate) {
-        if (is_string($expiryDate)) {
-            $expiryDate = new DateTime($expiryDate);
-        }
+    public function isExpiringSoon(string|DateTime $expiryDate): bool {
+        $expiryDate = $this->normalizeDateTime($expiryDate);
         $now = new DateTime();
         $warningDate = $this->getExpiryWarningDate();
         return $expiryDate > $now && $expiryDate <= $warningDate;
@@ -69,18 +74,14 @@ class ClothingExpiryService {
      * @param string|DateTime $expiryDate Data wygaśnięcia
      * @return string 'Przeterminowane', 'Koniec ważności', lub 'Brak danych'
      */
-    public function getStatusText($expiryDate) {
-        if (is_string($expiryDate)) {
-            $expiryDate = new DateTime($expiryDate);
-        }
+    public function getStatusText(string|DateTime $expiryDate): string {
+        $expiryDate = $this->normalizeDateTime($expiryDate);
         
-        if ($this->isExpired($expiryDate)) {
-            return 'Przeterminowane';
-        } elseif ($this->isExpiringSoon($expiryDate)) {
-            return 'Koniec ważności';
-        } else {
-            return 'Brak danych';
-        }
+        return match(true) {
+            $this->isExpired($expiryDate) => 'Przeterminowane',
+            $this->isExpiringSoon($expiryDate) => 'Koniec ważności',
+            default => 'Brak danych'
+        };
     }
     
     /**
@@ -90,7 +91,7 @@ class ClothingExpiryService {
      * @param string|DateTime $expiryDate Data wygaśnięcia
      * @return int 1 jeśli może być zgłoszone, 0 jeśli nie
      */
-    public function canBeReported($expiryDate) {
+    public function canBeReported(string|DateTime $expiryDate): int {
         return ($this->isExpired($expiryDate) || $this->isExpiringSoon($expiryDate)) ? 1 : 0;
     }
     
@@ -99,7 +100,7 @@ class ClothingExpiryService {
      * 
      * @return string Data w formacie Y-m-d
      */
-    public function getExpiryWarningDateFormatted() {
+    public function getExpiryWarningDateFormatted(): string {
         return $this->getExpiryWarningDate()->format('Y-m-d');
     }
     
@@ -108,7 +109,7 @@ class ClothingExpiryService {
      * 
      * @return string Data w formacie Y-m-d
      */
-    public function getHistoryStartDateFormatted() {
+    public function getHistoryStartDateFormatted(): string {
         return $this->getHistoryStartDate()->format('Y-m-d');
     }
     
@@ -117,7 +118,7 @@ class ClothingExpiryService {
      * 
      * @return string Data w formacie Y-m-d
      */
-    public function getCurrentDateFormatted() {
+    public function getCurrentDateFormatted(): string {
         return (new DateTime())->format('Y-m-d');
     }
 }

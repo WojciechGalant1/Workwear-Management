@@ -3,16 +3,21 @@ require_once __DIR__ . '/../helpers/UrlHelper.php';
 
 class Router {
     private array $routes = [];
+    /** @var callable|null */
     private $notFoundCallback = null;
 
-    public function add($path, $routeConfig) {
+    public function add(string $path, array|string $routeConfig): void {
         $this->routes[$path] = $routeConfig;
     }
 
-    public function setNotFound($callback) {
+    public function setNotFound(callable $callback): void {
         $this->notFoundCallback = $callback;
     }
 
+    /**
+     * Dispatches the route based on the current URI
+     * @return mixed Returns true on success, result of callback, or false on failure
+     */
     public function dispatch() {
         $uri = UrlHelper::getCleanUri();
         
@@ -44,9 +49,11 @@ class Router {
                     include_once $route['view'];
                     return true;
                 } else {
-                    throw new Exception("View file not found: " . (isset($route['view']) ? $route['view'] : 'unknown'));
+                    throw new Exception("View file not found: " . ($route['view'] ?? 'unknown'));
                 }
             }
+            
+            return false;
         } else {
             if (is_callable($this->notFoundCallback)) {
                 return call_user_func($this->notFoundCallback);
@@ -54,6 +61,7 @@ class Router {
             
             header("HTTP/1.0 404 Not Found");
             echo "Page not found";
+            return false;
         }
     }
 } 

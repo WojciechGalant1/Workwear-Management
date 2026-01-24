@@ -74,13 +74,15 @@ class IssuedClothingRepository extends BaseRepository {
             JOIN stan_magazynu ON wydane_ubrania.id_ubrania = stan_magazynu.id_ubrania
                AND wydane_ubrania.id_rozmiaru = stan_magazynu.id_rozmiaru
             WHERE (wydane_ubrania.data_waznosci <= :currentDate
-                   OR (wydane_ubrania.data_waznosci > :currentDateDup AND wydane_ubrania.data_waznosci <= :twoMonthsAhead))
+                   OR (wydane_ubrania.data_waznosci > :currentDate AND wydane_ubrania.data_waznosci <= :twoMonthsAhead))
               AND wydane_ubrania.status = 1
             GROUP BY ubranie.nazwa_ubrania, rozmiar.nazwa_rozmiaru");
 
-        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
-        $stmt->bindValue(':currentDateDup', $this->expiryService->getCurrentDateFormatted());
-        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
+        $currentDate = $this->expiryService->getCurrentDateFormatted();
+        $twoMonthsAhead = $this->expiryService->getExpiryWarningDateFormatted();
+        
+        $stmt->bindValue(':currentDate', $currentDate);
+        $stmt->bindValue(':twoMonthsAhead', $twoMonthsAhead);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -165,14 +167,15 @@ class IssuedClothingRepository extends BaseRepository {
             JOIN rozmiar r ON wu.id_rozmiaru = r.id_rozmiar
             WHERE w.pracownik_id = :pracownik_id
               AND wu.status = 1 
-              AND (wu.data_waznosci <= :currentDateDup OR wu.data_waznosci <= :twoMonthsAheadDup)
+              AND (wu.data_waznosci <= :currentDate OR wu.data_waznosci <= :twoMonthsAhead)
             ORDER BY wu.data_waznosci ASC");
         
+        $currentDate = $this->expiryService->getCurrentDateFormatted();
+        $twoMonthsAhead = $this->expiryService->getExpiryWarningDateFormatted();
+        
         $stmt->bindValue(':pracownik_id', $pracownikId, PDO::PARAM_INT);
-        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
-        $stmt->bindValue(':currentDateDup', $this->expiryService->getCurrentDateFormatted());
-        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
-        $stmt->bindValue(':twoMonthsAheadDup', $this->expiryService->getExpiryWarningDateFormatted());
+        $stmt->bindValue(':currentDate', $currentDate);
+        $stmt->bindValue(':twoMonthsAhead', $twoMonthsAhead);
         
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -206,14 +209,15 @@ class IssuedClothingRepository extends BaseRepository {
             JOIN ubranie u ON wu.id_ubrania = u.id_ubranie
             JOIN rozmiar r ON wu.id_rozmiaru = r.id_rozmiar
             WHERE wu.status = 1 
-              AND (wu.data_waznosci <= :currentDateDup OR wu.data_waznosci <= :twoMonthsAheadDup)
+              AND (wu.data_waznosci <= :currentDate OR wu.data_waznosci <= :twoMonthsAhead)
             ORDER BY wu.data_waznosci ASC
         ");
         
-        $stmt->bindValue(':currentDate', $this->expiryService->getCurrentDateFormatted());
-        $stmt->bindValue(':currentDateDup', $this->expiryService->getCurrentDateFormatted());
-        $stmt->bindValue(':twoMonthsAhead', $this->expiryService->getExpiryWarningDateFormatted());
-        $stmt->bindValue(':twoMonthsAheadDup', $this->expiryService->getExpiryWarningDateFormatted());
+        $currentDate = $this->expiryService->getCurrentDateFormatted();
+        $twoMonthsAhead = $this->expiryService->getExpiryWarningDateFormatted();
+        
+        $stmt->bindValue(':currentDate', $currentDate);
+        $stmt->bindValue(':twoMonthsAhead', $twoMonthsAhead);
         
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

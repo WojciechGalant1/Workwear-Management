@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="PHP" src="https://img.shields.io/badge/PHP-777BB4.svg?style=for-the-badge&logo=PHP&logoColor=white">
+  <img alt="PHP 8.3" src="https://img.shields.io/badge/PHP-8.3-777BB4.svg?style=for-the-badge&logo=PHP&logoColor=white">
   <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black">
   <img alt="MySQL" src="https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white">
   <img alt="Bootstrap" src="https://img.shields.io/badge/Bootstrap-7952B3.svg?style=for-the-badge&logo=Bootstrap&logoColor=white">
@@ -23,6 +23,7 @@
 - [Opis](#Opis)
 - [Kluczowe funkcje](#kluczowe-funkcje)
 - [Stos technologiczny](#stos-technologiczny)
+- [Wyróżnienia architektury](#wyróżnienia-architektury)
 - [Struktura projektu (uproszczona)](#struktura-projektu-uproszczona)
 - [Moduły systemu](#moduły-systemu)
 - [Moja rola i odpowiedzialności](#moja-rola-i-odpowiedzialności)
@@ -44,6 +45,8 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 - **Wsparcie wielojęzyczne** - Pełne wsparcie dla języka angielskiego i polskiego z dynamicznym przełączaniem
 - **Ochrona CSRF** - Kompleksowa implementacja zabezpieczeń we wszystkich formularzach i żądaniach AJAX
 - **Scentralizowany klient API** - Ujednolicony klient API (`apiClient`) z automatycznym wstrzykiwaniem CSRF, walidacją odpowiedzi i obsługą błędów
+- **Modularny Frontend** - Moduły ES6 z jasnym podziałem odpowiedzialności (ClothingManager zmodyfikowany na factory, UI, loader i config)
+- **Zoptymalizowane pod PHP 8.3** - Nowoczesne funkcje PHP: type hints, deklaracje właściwości, wyrażenia match, operator null coalescing
 - **Responsywny design** - Interfejs przyjazny dla urządzeń mobilnych, zoptymalizowany dla środowisk magazynowych
 > **Ostrzeżenie:**
 > Czytniki kodów kreskowych muszą być skonfigurowane tak, aby automatycznie dodawać naciśnięcie klawisza "Enter" po każdym skanowaniu, aby zapewnić prawidłowe przesyłanie formularzy i interakcję z systemem.
@@ -59,9 +62,42 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 |Lokalizacja|Niestandardowy system i18n (angielski/polski)|
 |Wydajność|Zaprojektowany do wdrożenia w środowiskach o niskich zasobach|
 |Architektura|MVC z Kontrolerami, warstwa Services, wzorzec Repository, Service Container (DI), BaseHandler/BaseController, routing z middleware|
+|Jakość kodu|Zoptymalizowane pod PHP 8.3: type hints, deklaracje właściwości, wyrażenia match, operator null coalescing, nowoczesna składnia tablic|
 > **Uwaga:**
-> Zoptymalizowany pod kątem wydajności w środowiskach PHP 5.6. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Inicjalizacja aplikacji jest scentralizowana w `bootstrap.php` (obsługa błędów, sesja, zależności). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading. Autoryzacja używa `AccessGuard` jako middleware w Routerze ze scentralizowaną konfiguracją `AccessLevels`. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF. Odpowiedzi API używają spójnego formatu `{success: boolean}`. Frontend wykorzystuje dynamiczne ładowanie modułów przez atrybut `data-modules` na `<body>`. Formularze z atrybutem `data-ajax-form` są automatycznie obsługiwane przez `FormHandler` dla przesyłania AJAX. `AlertManager` używa wzorca singleton przez `getAlertManager()` aby zapewnić jedną instancję w całej aplikacji.
+> **Wymaga PHP 8.3+.** Zoptymalizowany pod kątem PHP 8.3 z wykorzystaniem nowoczesnych funkcji: jawne type hints na wszystkich metodach, deklaracje typów właściwości, wyrażenia `match` zamiast `switch`, operator null coalescing (`??`), krótka składnia tablic (`[]`), oraz `JSON_THROW_ON_ERROR` dla solidnej obsługi błędów. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Inicjalizacja aplikacji jest scentralizowana w `bootstrap.php` (obsługa błędów, sesja, zależności). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading i wyrażeniami `match`. Autoryzacja używa `AccessGuard` jako middleware w Routerze ze scentralizowaną konfiguracją `AccessLevels`. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF, walidacją błędów HTTP i błędów biznesowych. Odpowiedzi API używają spójnego formatu `{success: boolean}`. Frontend wykorzystuje moduły ES6 z dynamicznym ładowaniem przez atrybut `data-modules` na `<body>`. Formularze z atrybutem `data-ajax-form` są automatycznie obsługiwane przez `FormHandler` dla przesyłania AJAX. `AlertManager` używa wzorca singleton przez `getAlertManager()` aby zapewnić jedną instancję w całej aplikacji. `ClothingManager` jest zmodyfikowany na moduły: `ClothingRowFactory`, `ClothingRowUI`, `ClothingSizesLoader` i `clothingConfig` dla lepszej utrzymywalności.
 
+
+## Wyróżnienia architektury
+
+### Architektura Backend
+- **Warstwowy MVC** - Jasny podział: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych)
+- **Service Container** - Wstrzykiwanie zależności z lazy loading, używa wyrażeń `match` do tworzenia serwisów
+- **Wzorzec BaseHandler** - Eliminuje duplikację kodu dla handlerów HTTP (sesja, CSRF, lokalizacja, kontrola dostępu)
+- **Routing z middleware** - Autoryzacja obsługiwana przed wykonaniem kontrolerów
+- **Wzorzec Repository** - Abstrakcja dostępu do danych z zoptymalizowanymi zapytaniami (JOIN-y zapobiegają problemom N+1)
+
+### Architektura Frontend
+- **Moduły ES6** - Modułowy JavaScript z jasnym podziałem odpowiedzialności
+- **Scentralizowany klient API** - `apiClient.js` obsługuje wstrzykiwanie CSRF, walidację błędów HTTP i błędów biznesowych
+- **Modularny ClothingManager** - Zrefaktoryzowany na `ClothingRowFactory`, `ClothingRowUI`, `ClothingSizesLoader` i `clothingConfig`
+- **Dynamiczne ładowanie modułów** - Moduły ładowane przez atrybut `data-modules` na `<body>`
+- **FormHandler** - Automatyczne przesyłanie formularzy AJAX dla formularzy z atrybutem `data-ajax-form`
+- **AlertManager Singleton** - Spójny system alertów w całej aplikacji
+
+### Optymalizacje PHP 8.3
+- ✅ **Type Hints** - Wszystkie metody mają jawne deklaracje typów parametrów i zwracanych wartości
+- ✅ **Deklaracje właściwości** - Wszystkie właściwości klas jawnie typowane (nullable gdzie odpowiednie)
+- ✅ **Wyrażenia Match** - `match` używane zamiast `switch` w `ServiceContainer` i `ClothingExpiryService`
+- ✅ **Null Coalescing** - Operator `??` używany zamiast `isset()` gdzie możliwe
+- ✅ **Nowoczesna składnia tablic** - Krótka składnia `[]` w całym kodzie
+- ✅ **Obsługa błędów JSON** - Flaga `JSON_THROW_ON_ERROR` używana dla solidnej obsługi błędów
+- ✅ **Nowoczesne funkcje string** - `str_contains()` i `str_starts_with()` używane gdzie możliwe
+- ✅ **Array Destructuring** - Używane w `EnvLoader` dla czystszego kodu
+
+### Statystyki kodu
+- **~60 klas PHP** - Dobrze zorganizowane w warstwach (Entities, Repositories, Services, Controllers, Handlers)
+- **~25 modułów JavaScript** - Moduły ES6 z jasnymi odpowiedzialnościami
+- **Zero zewnętrznych zależności PHP** - Czysty vanilla PHP (gotowe na Composer jeśli potrzeba)
 
 ##  Struktura projektu (uproszczona)
 
@@ -103,9 +139,17 @@ project/
 ├── layout/                 # Szablony układu (header, footer, menu)
 ├── script/                 # Moduły JavaScript (ES6)
 │   ├── app/                # Moduły poziomu aplikacji
-│   ├── clothing/           # Moduły zarządzania odzieżą
+│   │   ├── FormHandler.js  # Handler przesyłania formularzy AJAX
+│   │   └── getAlertManager.js # Factory singleton AlertManager
+│   ├── clothing/           # Moduły zarządzania odzieżą (zmodyfikowane)
+│   │   ├── ClothingManager.js # Warstwa orkiestracji
+│   │   ├── ClothingRowFactory.js # Klonowanie DOM i indeksowanie
+│   │   ├── ClothingRowUI.js # Radio buttons i logika show/hide
+│   │   ├── ClothingSizesLoader.js # API: ładowanie rozmiarów
+│   │   └── clothingConfig.js # Konfiguracja (ISSUE vs ORDER)
 │   ├── auth/               # Walidacja i logika auth po stronie klienta
-│   ├── apiClient.js        # Scentralizowany klient API z walidacją
+│   ├── apiClient.js        # Scentralizowany klient API (CSRF, walidacja, obsługa błędów)
+│   ├── AlertManager.js     # Niestandardowy system alertów
 │   └── ...                 # Moduły specyficzne dla domeny                 
 ├── styl/                   # Arkusze stylów CSS
 ├── img/                    # Zasoby graficzne
@@ -127,20 +171,20 @@ project/
 
 
 ## Potencjalne ulepszenia i przyszły rozwój
-- **Modernizacja bazy kodu** – Aktualizacja wersji PHP i refaktoryzacja starszych komponentów do nowoczesnych standardów (np. PHP 8+, przestrzenie nazw, Composer)
+- **Przestrzenie nazw i Autoloader** – Migracja do PSR-4 namespaces z autoloaderem Composer dla lepszej organizacji kodu
 - **Optymalizacja mobilna** – Ulepszenie interakcji dotykowych i responsywnych widoków dla użycia na tabletach/urządzeniach przenośnych w środowiskach magazynowych
 - **Integracja API** – Wprowadzenie punktów końcowych REST API dla synchronizacji z systemami zewnętrznymi (np. oprogramowanie ERP lub HR)
 - **Przetwarzanie wsadowe** – Umożliwienie zbiorczego importu/eksportu danych magazynowych przez CSV
-- **Solidna obsługa błędów** – Implementacja globalnego handlera błędów i odpowiednich granic błędów w całym stosie
 - **Dodatkowe usprawnienia bezpieczeństwa**:
   - Ograniczanie częstotliwości, aby zapobiec atakom brute-force na formularze
   - Throttling żądań API w celu łagodzenia nadużyć i utrzymania wydajności
 - **Optymalizacje wydajności**:
   - Cachowanie zapytań bazodanowych dla często używanych danych
   - Minifikacja i kompresja zasobów
-  - Integracja CDN dla zasobów statycznych
-- **Testowanie** – Implementacja automatycznych zestawów testów w celu poprawy przyszłej łatwości konserwacji i zmniejszenia ryzyka regresji
+  - CDN integration dla zasobów statycznych
+- **Testowanie** – Implementacja automatycznych zestawów testów (PHPUnit) w celu poprawy przyszłej łatwości konserwacji i zmniejszenia ryzyka regresji
 - **Dokumentacja** – Dokumentacja API dla integracji zewnętrznych
+- **Migracja na Enum** – Rozważenie migracji `AccessLevels` na PHP 8.1+ Enum dla bezpieczeństwa typów (wymaga refaktoryzacji)
 
 
 ## Moja rola i odpowiedzialności

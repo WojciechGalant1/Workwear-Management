@@ -49,4 +49,3 @@ class Issue {
         $this->uwagi = $uwagi;
     }
 }
-

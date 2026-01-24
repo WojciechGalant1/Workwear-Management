@@ -9,7 +9,7 @@ class LocalizationHelper {
     private static bool $initialized = false;
     
 
-    public static function initialize($language = 'en') {
+    public static function initialize(string $language = 'en'): void {
         if (self::$initialized) {
             return;
         }
@@ -20,7 +20,7 @@ class LocalizationHelper {
     }
     
 
-    public static function setLanguage($language) {
+    public static function setLanguage(string $language): void {
         if (self::$currentLanguage !== $language) {
             self::$currentLanguage = $language;
             self::loadTranslations();
@@ -28,12 +28,12 @@ class LocalizationHelper {
     }
     
 
-    public static function getCurrentLanguage() {
+    public static function getCurrentLanguage(): string {
         return self::$currentLanguage;
     }
     
 
-    private static function loadTranslations() {
+    private static function loadTranslations(): void {
         $translationFile = __DIR__ . '/../config/translations/' . self::$currentLanguage . '.php';
         
         if (file_exists($translationFile)) {
@@ -50,12 +50,12 @@ class LocalizationHelper {
     }
     
 
-    public static function translate($key, $params = []) {
+    public static function translate(string $key, array $params = []): string {
         if (!self::$initialized) {
             self::initialize();
         }
         
-        $translation = isset(self::$translations[$key]) ? self::$translations[$key] : $key;
+        $translation = self::$translations[$key] ?? $key;
         
         if (!empty($params)) {
             foreach ($params as $param => $value) {
@@ -67,12 +67,12 @@ class LocalizationHelper {
     }
     
 
-    public static function t($key, $params = []) {
+    public static function t(string $key, array $params = []): string {
         return self::translate($key, $params);
     }
     
 
-    public static function getAllTranslations() {
+    public static function getAllTranslations(): array {
         if (!self::$initialized) {
             self::initialize();
         }
@@ -81,7 +81,7 @@ class LocalizationHelper {
     }
     
 
-    public static function hasTranslation($key) {
+    public static function hasTranslation(string $key): bool {
         if (!self::$initialized) {
             self::initialize();
         }
@@ -90,7 +90,7 @@ class LocalizationHelper {
     }
     
 
-    public static function getAvailableLanguages() {
+    public static function getAvailableLanguages(): array {
         $languages = [];
         $translationDir = __DIR__ . '/../config/translations/';
         
@@ -105,7 +105,7 @@ class LocalizationHelper {
     }
     
 
-    public static function getLanguageName($languageCode) {
+    public static function getLanguageName(string $languageCode): string {
         $languageNames = [
             'en' => 'English',
             'pl' => 'Polski',
@@ -114,6 +114,6 @@ class LocalizationHelper {
             'es' => 'Español'
         ];
         
-        return isset($languageNames[$languageCode]) ? $languageNames[$languageCode] : $languageCode;
+        return $languageNames[$languageCode] ?? $languageCode;
     }
 }

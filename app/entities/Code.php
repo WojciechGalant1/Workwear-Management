@@ -53,5 +53,3 @@ class Code {
         $this->status = $status;
     }
 }
-
-

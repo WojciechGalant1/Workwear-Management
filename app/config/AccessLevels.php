@@ -36,23 +36,23 @@ class AccessLevels {
         ]
     ];
     
-    public static function getName($level) {
-        return isset(self::$levels[$level]) ? self::$levels[$level]['name'] : 'unknown';
+    public static function getName(int $level): string {
+        return self::$levels[$level]['name'] ?? 'unknown';
     }
     
-    public static function getLabel($level) {
-        return isset(self::$levels[$level]) ? self::$levels[$level]['label'] : 'Nieznany';
+    public static function getLabel(int $level): string {
+        return self::$levels[$level]['label'] ?? 'Nieznany';
     }
     
-    public static function getDescription($level) {
-        return isset(self::$levels[$level]) ? self::$levels[$level]['description'] : '';
+    public static function getDescription(int $level): string {
+        return self::$levels[$level]['description'] ?? '';
     }
     
-    public static function getAll() {
+    public static function getAll(): array {
         return self::$levels;
     }
     
-    public static function isValid($level) {
+    public static function isValid(int $level): bool {
         return isset(self::$levels[$level]);
     }
 }

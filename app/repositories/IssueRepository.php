@@ -15,12 +15,8 @@ class IssueRepository extends BaseRepository {
         $dataWydania = $wydania->getDataWydania();
         $stmt->bindValue(':data_wydania', $dataWydania ? $dataWydania->format('Y-m-d H:i:s') : null);
         
-        try {
-            $stmt->execute();
-            return $this->pdo->lastInsertId();
-        } catch (PDOException $e) {
-            throw $e;
-        } 
+        $stmt->execute();
+        return $this->pdo->lastInsertId();
     }
 
     public function deleteWydanie(int $id_wydania): bool {

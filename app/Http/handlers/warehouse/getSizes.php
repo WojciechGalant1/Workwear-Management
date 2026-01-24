@@ -2,10 +2,10 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class GetSizesHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::USER;
+    protected ?int $requiredStatus = AccessLevels::USER;
     
-    public function handle() {
-        $ubranieId = isset($_GET['ubranie_id']) ? intval($_GET['ubranie_id']) : 0;
+    public function handle(): void {
+        $ubranieId = intval($_GET['ubranie_id'] ?? 0);
         
         $ubranieRepo = $this->getRepository('ClothingRepository');
         $rozmiary = $ubranieRepo->getRozmiaryByUbranieId($ubranieId);

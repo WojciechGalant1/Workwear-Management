@@ -7,7 +7,7 @@ class IssueController extends BaseController {
      * Formularz wydawania ubrań
      * Obsługuje GET params: ?fromRaport=1&pracownikId=X&imie=...&nazwisko=...&stanowisko=...
      */
-    public function issue() {
+    public function issue(): array {
         $clothingRepo = $this->getRepository('ClothingRepository');
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
@@ -22,12 +22,12 @@ class IssueController extends BaseController {
             'expiredUbrania' => []
         ];
         
-        if (isset($_GET['fromRaport']) && $_GET['fromRaport'] == '1') {
+        if (($_GET['fromRaport'] ?? '') == '1') {
             $result['fromRaport'] = true;
-            $result['pracownikId'] = isset($_GET['pracownikId']) ? htmlspecialchars($_GET['pracownikId']) : '';
-            $result['imie'] = isset($_GET['imie']) ? htmlspecialchars($_GET['imie']) : '';
-            $result['nazwisko'] = isset($_GET['nazwisko']) ? htmlspecialchars($_GET['nazwisko']) : '';
-            $result['stanowisko'] = isset($_GET['stanowisko']) ? htmlspecialchars($_GET['stanowisko']) : '';
+            $result['pracownikId'] = htmlspecialchars($_GET['pracownikId'] ?? '');
+            $result['imie'] = htmlspecialchars($_GET['imie'] ?? '');
+            $result['nazwisko'] = htmlspecialchars($_GET['nazwisko'] ?? '');
+            $result['stanowisko'] = htmlspecialchars($_GET['stanowisko'] ?? '');
             
             if ($result['pracownikId']) {
                 $result['expiredUbrania'] = $issuedClothingRepo->getExpiringClothingByEmployeeId(
@@ -43,7 +43,7 @@ class IssueController extends BaseController {
      * Historia wydań dla pracownika
      * Obsługuje GET parameter ?pracownikID=X
      */
-    public function history() {
+    public function history(): array {
         $pracownikRepo = $this->getRepository('EmployeeRepository');
         $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
         
@@ -54,7 +54,7 @@ class IssueController extends BaseController {
             'pracownikNotFound' => false
         ];
         
-        if (isset($_GET['pracownikID']) && !empty($_GET['pracownikID'])) {
+        if (!empty($_GET['pracownikID'] ?? '')) {
             $pracownikID = intval($_GET['pracownikID']);
             $pracownik = $pracownikRepo->getById($pracownikID);
             

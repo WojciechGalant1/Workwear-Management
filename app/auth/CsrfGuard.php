@@ -5,7 +5,7 @@ class CsrfGuard {
     const SESSION_KEY = 'csrf_token';
     const FORM_FIELD_NAME = 'csrf_token';
     
-    public static function generateToken() {
+    public static function generateToken(): string {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -16,19 +16,15 @@ class CsrfGuard {
         return $token;
     }
     
-    public static function getToken() {
+    public static function getToken(): ?string {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
-        if (isset($_SESSION[self::SESSION_KEY])) {
-            return $_SESSION[self::SESSION_KEY];
-        }
-        
-        return null;
+        return $_SESSION[self::SESSION_KEY] ?? null;
     }
     
-    public static function getTokenField() {
+    public static function getTokenField(): string {
         $token = self::getToken();
         if (!$token) {
             $token = self::generateToken();
@@ -37,17 +33,17 @@ class CsrfGuard {
         return '<input type="hidden" name="' . self::FORM_FIELD_NAME . '" value="' . htmlspecialchars($token, ENT_QUOTES, 'UTF-8') . '">';
     }
     
-    public static function validateToken($token = null) {
+    public static function validateToken(?string $token = null): bool {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
         if ($token === null) {
-            $token = isset($_POST[self::FORM_FIELD_NAME]) ? $_POST[self::FORM_FIELD_NAME] : null;
+            $token = $_POST[self::FORM_FIELD_NAME] ?? null;
         }
         
-        if (!isset($_SESSION[self::SESSION_KEY])) {
-            error_log('CSRF validation failed: No token in session');
+        if (!isset($_SESSION[self::SESSION_KEY]) || $token === null) {
+            error_log('CSRF validation failed: No token in session or request');
             return false;
         }
         
@@ -61,7 +57,7 @@ class CsrfGuard {
         return true;
     }
     
-    public static function validateTokenFromJson($data) {
+    public static function validateTokenFromJson(array $data): bool {
         if (!isset($data[self::FORM_FIELD_NAME])) {
             return false;
         }
@@ -69,7 +65,7 @@ class CsrfGuard {
         return self::validateToken($data[self::FORM_FIELD_NAME]);
     }
     
-    public static function regenerateToken() {
+    public static function regenerateToken(): string {
         return self::generateToken();
     }
     
@@ -77,8 +73,8 @@ class CsrfGuard {
      * Check if the current request method requires CSRF validation
      * @return bool
      */
-    public static function requiresValidation() {
-        return in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'PATCH', 'DELETE']);
+    public static function requiresValidation(): bool {
+        return in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['POST', 'PUT', 'PATCH', 'DELETE']);
     }
     
     /**
@@ -86,7 +82,7 @@ class CsrfGuard {
      * Only validates if the request method requires it (POST, PUT, PATCH, DELETE)
      * @return bool
      */
-    public static function validateCurrentRequest() {
+    public static function validateCurrentRequest(): bool {
         if (!self::requiresValidation()) {
             return true;
         }
@@ -94,7 +90,7 @@ class CsrfGuard {
         return self::validateToken();
     }
     
-    public static function getErrorResponse() {
+    public static function getErrorResponse(): array {
         include_once __DIR__ . '/../helpers/LocalizationHelper.php';
         include_once __DIR__ . '/../helpers/LanguageSwitcher.php';
         

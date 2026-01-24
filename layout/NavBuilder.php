@@ -17,7 +17,7 @@ class NavBuilder {
      * @param string $currentPage Current page filename
      * @param string $currentLanguage Current language code
      */
-    public static function renderNavBar($currentPage, $currentLanguage = 'en') {
+    public static function renderNavBar(string $currentPage, string $currentLanguage = 'en'): void {
         $sessionManager = new SessionManager();
         $userStatus = $sessionManager->getUserStatus();
         
@@ -58,7 +58,7 @@ class NavBuilder {
         </nav>';
     }
 
-    public static function navItem($url, $label, $activeUri, $baseUrl, $extraClass = '') {
+    public static function navItem(string $url, string $label, string $activeUri, string $baseUrl, string $extraClass = ''): string {
         $isActive = ($activeUri === $url) ? 'active' : '';
         $extraClass = $extraClass ? ' ' . $extraClass : '';
         
@@ -67,11 +67,11 @@ class NavBuilder {
                 </li>';
     }
 
-    public static function separator() {
+    public static function separator(): string {
         return '<a class="nav-link text-light">|</a>';
     }
 
-    public static function buildNavGroups($activeUri, $baseUrl, $userStatus, $hasShortages = false) {
+    public static function buildNavGroups(string $activeUri, string $baseUrl, int $userStatus, bool $hasShortages = false): string {
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         LocalizationHelper::setLanguage($currentLanguage);
         
@@ -107,7 +107,7 @@ class NavBuilder {
         return $output;
     }
     
-    private static function buildLogoutItem($baseUrl) {
+    private static function buildLogoutItem(string $baseUrl): string {
         return '<li class="nav-item">
                     <a class="nav-link text-warning" href="' . $baseUrl . self::LOGOUT_PATH . '">
                         ' . LocalizationHelper::translate('nav_logout') . '
@@ -115,7 +115,7 @@ class NavBuilder {
                 </li>';
     }
 
-    public static function buildLanguageSwitcher($baseUrl, $currentLanguage) {
+    public static function buildLanguageSwitcher(string $baseUrl, string $currentLanguage): string {
         $availableLanguages = LocalizationHelper::getAvailableLanguages();
         $currentPath = UrlHelper::getCleanUri();
         
@@ -129,7 +129,7 @@ class NavBuilder {
         foreach ($availableLanguages as $lang) {
             $isActive = $lang === $currentLanguage ? 'active' : '';
             $langName = LocalizationHelper::getLanguageName($lang);
-            $langUrl = UrlHelper::buildUrl($currentPath, array('lang' => $lang));
+            $langUrl = UrlHelper::buildUrl($currentPath, ['lang' => $lang]);
             
             $output .= '<li>';
             $output .= '<a class="dropdown-item ' . $isActive . '" href="' . htmlspecialchars($langUrl) . '">';

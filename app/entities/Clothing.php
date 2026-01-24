@@ -23,5 +23,3 @@ class Clothing {
         $this->nazwa_ubrania = $nazwa_ubrania;
     }
 }
-
-

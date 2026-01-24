@@ -23,4 +23,3 @@ class Size {
         $this->nazwa_rozmiaru = strtoupper($nazwa_rozmiaru);
     }
 }
-

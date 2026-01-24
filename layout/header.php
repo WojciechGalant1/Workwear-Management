@@ -10,7 +10,7 @@ $baseUrl = UrlHelper::getBaseUrl();
 $uri = UrlHelper::getCleanUri();
 $current_page = RouteConfig::getPageFromUri($uri);
 
-if (!isset($_SESSION['user_id'])) {
+if (($_SESSION['user_id'] ?? null) === null) {
     header("Location: " . $baseUrl . "/login");
     exit;
 }
@@ -20,7 +20,7 @@ if (!$csrfToken) {
     $csrfToken = CsrfGuard::generateToken();
 }
 
-function __($key, $params = array()) {
+function __(string $key, array $params = []): string {
     $currentLang = LanguageSwitcher::getCurrentLanguage();
     LocalizationHelper::setLanguage($currentLang);
     return LocalizationHelper::translate($key, $params);
@@ -72,7 +72,7 @@ echo '
 include_once 'NavBuilder.php';
 
 $modulesConfig = include __DIR__ . '/../app/config/modules.php';
-$modules = isset($modulesConfig[$current_page]) ? $modulesConfig[$current_page] : $modulesConfig['default'];
+$modules = $modulesConfig[$current_page] ?? $modulesConfig['default'];
 
 $containerId = ($uri === '/issue-history') ? 'id="historia-page"' : '';
 echo "<body data-modules='$modules'>";

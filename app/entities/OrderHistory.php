@@ -53,4 +53,3 @@ class OrderHistory {
         $this->status = $status;
     }
 }
-

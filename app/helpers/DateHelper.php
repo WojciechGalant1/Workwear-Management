@@ -14,7 +14,7 @@ class DateHelper {
         'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'
     ];
     
-    public static function newExpirationDate($months) {
+    public static function newExpirationDate(int $months): string {
         self::ensureLanguageInitialized();
         
         $date = new DateTime();
@@ -24,20 +24,20 @@ class DateHelper {
         return self::translateMonths($formatDate);
     }
     
-    public static function formatForLanguage($dateString, $format = 'Y-m-d H:i') {
+    public static function formatForLanguage(string $dateString, string $format = 'Y-m-d H:i'): string {
         self::ensureLanguageInitialized();
         
         $date = new DateTime($dateString);
         $formattedDate = $date->format($format);
         
-        if (strpos($format, 'F') !== false) {
+        if (str_contains($format, 'F')) {
             return self::translateMonths($formattedDate);
         }
         
         return $formattedDate;
     }
     
-    private static function translateMonths($date) {
+    private static function translateMonths(string $date): string {
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         
         if ($currentLanguage === 'pl') {
@@ -47,7 +47,7 @@ class DateHelper {
         return $date;
     }
     
-    private static function ensureLanguageInitialized() {
+    private static function ensureLanguageInitialized(): void {
         if (!isset($_SESSION['current_language'])) {
             LanguageSwitcher::initializeWithRouting();
         }

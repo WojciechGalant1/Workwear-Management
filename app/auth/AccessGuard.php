@@ -17,15 +17,15 @@ class AccessGuard {
         $this->serviceContainer = ServiceContainer::getInstance();
     }
     
-    public function isAuthenticated() {
+    public function isAuthenticated(): bool {
         return $this->sessionManager->isLoggedIn();
     }
     
-    public function getUserId() {
+    public function getUserId(): ?int {
         return $this->sessionManager->getUserId();
     }
     
-    public function hasRequiredStatus($requiredStatus) {
+    public function hasRequiredStatus(int $requiredStatus): bool {
         $userId = $this->sessionManager->getUserId();
         if (!$userId) {
             return false;
@@ -35,7 +35,7 @@ class AccessGuard {
         return $user && $user['status'] >= $requiredStatus;
     }
     
-    public function requireStatus($requiredStatus) {
+    public function requireStatus(int $requiredStatus): void {
         if (!$this->isAuthenticated()) {
             $this->redirectToLogin();
         }
@@ -45,19 +45,19 @@ class AccessGuard {
         }
     }
     
-    private function redirectToLogin() {
+    private function redirectToLogin(): void {
         $baseUrl = UrlHelper::getBaseUrl();
         header('Location: ' . $baseUrl . '/login');
         exit();
     }
     
-    private function denyAccess() {
+    private function denyAccess(): void {
         $this->initLocalization();
         echo '<div class="alert alert-danger text-center">' . LocalizationHelper::translate('access_denied') . '</div>';
         die();
     }
     
-    private function initLocalization() {
+    private function initLocalization(): void {
         if (!isset($_SESSION['current_language'])) {
             LanguageSwitcher::initializeWithRouting();
         }

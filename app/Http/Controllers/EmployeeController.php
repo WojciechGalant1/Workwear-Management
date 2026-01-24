@@ -3,7 +3,7 @@ require_once __DIR__ . '/BaseController.php';
 
 class EmployeeController extends BaseController {
     
-    public function list() {
+    public function list(): array {
         $employeeRepo = $this->getRepository('EmployeeRepository');
         
         return [
@@ -12,7 +12,7 @@ class EmployeeController extends BaseController {
         ];
     }
     
-    public function create() {
+    public function create(): array {
         return [
             'pageTitle' => 'employee_add_title'
         ];

@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class AddOrderHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::WAREHOUSE;
+    protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
     
-    public function handle() {
+    public function handle(): void {
         if (!$this->isPost()) {
             $this->errorResponse('error_general');
         }
@@ -13,8 +13,8 @@ class AddOrderHandler extends BaseHandler {
             $this->errorResponse('error_csrf');
         }
         
-        $ubrania = isset($_POST['ubrania']) ? $_POST['ubrania'] : [];
-        $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
+        $ubrania = $_POST['ubrania'] ?? [];
+        $uwagi = trim($_POST['uwagi'] ?? '');
         $currentUserId = $this->getUserId();
         
         try {

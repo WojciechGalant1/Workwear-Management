@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../helpers/LanguageSwitcher.php';
 
 class AuthController extends BaseController {
     
-    public function login() {
+    public function login(): array {
         $currentLanguage = LanguageSwitcher::getCurrentLanguage();
         $baseUrl = UrlHelper::getBaseUrl();
         

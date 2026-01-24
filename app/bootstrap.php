@@ -12,7 +12,7 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/../error_log.txt');
 
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
+set_error_handler(function(int $errno, string $errstr, string $errfile, int $errline): bool {
     if (!(error_reporting() & $errno)) {
         return false;
     }
@@ -20,9 +20,9 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
     return false;
 });
 
-register_shutdown_function(function() {
+register_shutdown_function(function(): void {
     $error = error_get_last();
-    if ($error !== NULL && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE])) {
         error_log("Fatal Error: {$error['message']} in {$error['file']}:{$error['line']}");
     }
 });

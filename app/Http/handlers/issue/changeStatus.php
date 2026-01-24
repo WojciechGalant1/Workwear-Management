@@ -2,19 +2,22 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class ChangeStatusHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::SUPERVISOR;
+    protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
     
-    public function handle() {
+    public function handle(): void {
         $data = $this->getJsonInput();
-        
+        if (!is_array($data)) {
+            $this->errorResponse('validation_invalid_input');
+            return;
+        }
         if (!isset($data['id'], $data['currentStatus'])) {
             $this->errorResponse('validation_invalid_input');
+            return;
         }
-        
         if (!$this->validateCsrf($data)) {
             $this->csrfErrorResponse();
+            return;
         }
-        
         $id = intval($data['id']);
         $currentStatus = intval($data['currentStatus']);
         $newStatus = ($currentStatus == 1) ? 0 : 1;

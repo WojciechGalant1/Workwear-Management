@@ -6,7 +6,7 @@ class RouteConfig {
     private static ?array $pageMap = null;
     private static ?array $urlMap = null;
     
-    public static function getRoutes() {
+    public static function getRoutes(): array {
         return [
             '/' => [
                 'controller' => 'IssueController',
@@ -76,21 +76,21 @@ class RouteConfig {
         ];
     }
     
-    public static function getPageMap() {
+    public static function getPageMap(): array {
         if (self::$pageMap === null) {
             self::$pageMap = self::buildPageMap();
         }
         return self::$pageMap;
     }
     
-    public static function getUrlMap() {
+    public static function getUrlMap(): array {
         if (self::$urlMap === null) {
             self::$urlMap = self::buildUrlMap();
         }
         return self::$urlMap;
     }
     
-    private static function buildPageMap() {
+    private static function buildPageMap(): array {
         $map = [];
         foreach (self::getRoutes() as $uri => $route) {
             $view = is_array($route) ? $route['view'] : $route;
@@ -99,7 +99,7 @@ class RouteConfig {
         return $map;
     }
     
-    private static function buildUrlMap() {
+    private static function buildUrlMap(): array {
         $map = [];
         foreach (self::getRoutes() as $uri => $route) {
             if ($uri === '/') {
@@ -114,13 +114,13 @@ class RouteConfig {
         return $map;
     }
     
-    public static function getPageFromUri($uri) {
+    public static function getPageFromUri(string $uri): string {
         $pageMap = self::getPageMap();
-        return isset($pageMap[$uri]) ? $pageMap[$uri] : basename($_SERVER['PHP_SELF']);
+        return $pageMap[$uri] ?? basename($_SERVER['PHP_SELF'] ?? 'index.php');
     }
     
-    public static function getUrlFromPage($fileName) {
+    public static function getUrlFromPage(string $fileName): string {
         $urlMap = self::getUrlMap();
-        return isset($urlMap[$fileName]) ? $urlMap[$fileName] : $fileName;
+        return $urlMap[$fileName] ?? $fileName;
     }
 }

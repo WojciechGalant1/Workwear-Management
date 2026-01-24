@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="PHP" src="https://img.shields.io/badge/PHP-777BB4.svg?style=for-the-badge&logo=PHP&logoColor=white">
+  <img alt="PHP 8.3" src="https://img.shields.io/badge/PHP-8.3-777BB4.svg?style=for-the-badge&logo=PHP&logoColor=white">
   <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black">
   <img alt="MySQL" src="https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white">
   <img alt="Bootstrap" src="https://img.shields.io/badge/Bootstrap-7952B3.svg?style=for-the-badge&logo=Bootstrap&logoColor=white">
@@ -23,6 +23,7 @@
 - [Overview](#overview)
 - [Key Features](#key-features)
 - [Technology Stack](#technology-stack)
+- [Architecture Highlights](#architecture-highlights)
 - [Project Structure (Simplified)](#project-structure-simplified)
 - [System Modules](#system-modules)
 - [My Role & Responsibilities](#my-role--responsibilities)
@@ -47,6 +48,8 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **BaseHandler Pattern** - Base class for HTTP handlers eliminating code duplication (session, CSRF, localization initialization)
 - **Middleware Architecture** - Authentication handled via middleware in Router (before controllers execute)
 - **Controller Layer** - MVC Controllers separate presentation logic from views (views are "dumb")
+- **Modular Frontend** - ES6 modules with clear separation of concerns (ClothingManager modularized into factory, UI, loader, and config)
+- **PHP 8.3 Optimized** - Modern PHP features: type hints, property declarations, match expressions, null coalescing operator
 - **Responsive Design** - Mobile-friendly interface optimized for warehouse environments
 > **Warning:**
 > Barcode scanners must be configured to automatically append an "Enter" keystroke after each scan for proper form submission and system interaction.
@@ -63,8 +66,40 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Performance|Designed for low-resource deployment|
 |Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
 > **Note:**
-> Optimized for performance in PHP 5.6 environments. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). Application initialization is centralized in `bootstrap.php` (error handling, session, dependencies). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading. Authentication uses `AccessGuard` middleware in Router with centralized `AccessLevels` configuration. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection. API responses use consistent `{success: boolean}` format. Frontend uses dynamic module loading via `data-modules` attribute on `<body>`. Forms with `data-ajax-form` attribute are automatically handled by `FormHandler` for AJAX submissions. `AlertManager` uses singleton pattern via `getAlertManager()` to ensure single instance across modules.
+> **Requires PHP 8.3+.** Optimized for PHP 8.3 with modern features: explicit type hints on all methods, property type declarations, `match` expressions instead of `switch`, null coalescing operator (`??`), short array syntax (`[]`), and `JSON_THROW_ON_ERROR` for robust error handling. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). Application initialization is centralized in `bootstrap.php` (error handling, session, dependencies). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading and `match` expressions. Authentication uses `AccessGuard` middleware in Router with centralized `AccessLevels` configuration. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection, HTTP error validation, and business error validation. API responses use consistent `{success: boolean}` format. Frontend uses ES6 modules with dynamic loading via `data-modules` attribute on `<body>`. Forms with `data-ajax-form` attribute are automatically handled by `FormHandler` for AJAX submissions. `AlertManager` uses singleton pattern via `getAlertManager()` to ensure single instance across modules. `ClothingManager` is modularized into `ClothingRowFactory`, `ClothingRowUI`, `ClothingSizesLoader`, and `clothingConfig` for better maintainability.
 
+
+## Architecture Highlights
+
+### Backend Architecture
+- **Layered MVC** - Clear separation: Controllers (presentation), Services (business logic), Repositories (data access)
+- **Service Container** - Dependency injection with lazy loading, uses `match` expressions for service creation
+- **BaseHandler Pattern** - Eliminates code duplication for HTTP handlers (session, CSRF, localization, access control)
+- **Middleware-based Routing** - Authentication handled before controllers execute
+- **Repository Pattern** - Data access abstraction with optimized queries (JOINs prevent N+1 problems)
+
+### Frontend Architecture
+- **ES6 Modules** - Modular JavaScript with clear separation of concerns
+- **Centralized API Client** - `apiClient.js` handles CSRF injection, HTTP error validation, business error validation
+- **Modular ClothingManager** - Refactored into `ClothingRowFactory`, `ClothingRowUI`, `ClothingSizesLoader`, and `clothingConfig`
+- **Dynamic Module Loading** - Modules loaded via `data-modules` attribute on `<body>`
+- **FormHandler** - Automatic AJAX form submission for forms with `data-ajax-form` attribute
+- **AlertManager Singleton** - Consistent alert system across all modules
+
+### PHP 8.3 Optimizations
+- ✅ **Type Hints** - All methods have explicit parameter and return type declarations
+- ✅ **Property Declarations** - All class properties explicitly typed (nullable where appropriate)
+- ✅ **Match Expressions** - `match` used instead of `switch` in `ServiceContainer` and `ClothingExpiryService`
+- ✅ **Null Coalescing** - Operator `??` used instead of `isset()` where applicable
+- ✅ **Modern Array Syntax** - Short array syntax `[]` throughout the codebase
+- ✅ **JSON Error Handling** - `JSON_THROW_ON_ERROR` flag used for robust error handling
+- ✅ **Modern String Functions** - `str_contains()` and `str_starts_with()` used where applicable
+- ✅ **Array Destructuring** - Used in `EnvLoader` for cleaner code
+
+### Code Statistics
+- **~60 PHP Classes** - Well-organized across layers (Entities, Repositories, Services, Controllers, Handlers)
+- **~25 JavaScript Modules** - ES6 modules with clear responsibilities
+- **Zero External PHP Dependencies** - Pure vanilla PHP (ready for Composer if needed)
 
 ##  Project Structure (Simplified)
 
@@ -104,9 +139,9 @@ project/
 ├── layout/                 # Shared layout components (header, footer, menu)
 ├── script/                 # JavaScript modules (ES6)
 │   ├── app/                # Application-level modules
-│   ├── clothing/           # Clothing management modules
+│   ├── clothing/           # Clothing management modules 
 │   ├── auth/               # Frontend validation & auth logic
-│   ├── apiClient.js        # Centralized API communication
+│   ├── apiClient.js        # Centralized API communication 
 │   └── ...                 # Domain-specific modules                 
 ├── styl/                   # CSS stylesheets
 ├── img/                    # Image assets
@@ -128,10 +163,9 @@ project/
 
 
 ## Potential Enhancements & Future Development
-- **Codebase Modernization** – Upgrade PHP version and refactor legacy components for modern standards (e.g., PHP 8+, namespaces, Composer)
+- **Namespaces & Autoloader** – Migrate to PSR-4 namespaces with Composer autoloader for better code organization
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
-- **Robust Error Handling** – Implement a global error handler and proper error boundaries across the stack
 - **Additional Security Enhancements**:
   - Rate limiting to prevent brute-force form submissions
   - API request throttling to mitigate abuse and maintain performance
@@ -139,8 +173,9 @@ project/
   - Database query caching for frequently accessed data
   - Asset minification and compression
   - CDN integration for static resources
-- **Testing** – Implementation of automated test suites to improve future maintainability and reduce regression risk
+- **Testing** – Implementation of automated test suites (PHPUnit) to improve future maintainability and reduce regression risk
 - **Documentation** – API documentation for external integrations
+- **Enum Migration** – Consider migrating `AccessLevels` to PHP 8.1+ Enum for type safety (requires refactoring)
 
 
 ## My Role & Responsibilities

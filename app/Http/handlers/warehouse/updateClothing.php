@@ -2,9 +2,9 @@
 require_once __DIR__ . '/../../BaseHandler.php';
 
 class UpdateClothingHandler extends BaseHandler {
-    protected $requiredStatus = AccessLevels::WAREHOUSE;
+    protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
     
-    public function handle() {
+    public function handle(): void {
         if (!$this->isPost()) {
             http_response_code(405);
             $this->errorResponse('error_method_not_allowed');
@@ -16,12 +16,12 @@ class UpdateClothingHandler extends BaseHandler {
         
         $currentUserId = $this->getUserId();
         
-        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-        $nazwa = isset($_POST['nazwa']) ? trim($_POST['nazwa']) : '';
-        $rozmiar = isset($_POST['rozmiar']) ? trim($_POST['rozmiar']) : '';
-        $ilosc = isset($_POST['ilosc']) ? intval($_POST['ilosc']) : 0;
-        $iloscMin = isset($_POST['iloscMin']) ? intval($_POST['iloscMin']) : 0;
-        $uwagi = isset($_POST['uwagi']) ? trim($_POST['uwagi']) : '';
+        $id = intval($_POST['id'] ?? 0);
+        $nazwa = trim($_POST['nazwa'] ?? '');
+        $rozmiar = trim($_POST['rozmiar'] ?? '');
+        $ilosc = intval($_POST['ilosc'] ?? 0);
+        $iloscMin = intval($_POST['iloscMin'] ?? 0);
+        $uwagi = trim($_POST['uwagi'] ?? '');
         
         if ($id <= 0) {
             http_response_code(400);

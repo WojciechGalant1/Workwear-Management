@@ -2,18 +2,21 @@
 class EnvLoader {
     private static array $variables = [];
 
-    public static function load($path) {
+    public static function load(string $path): void {
         if (!file_exists($path)) {
             throw new Exception('.env file not found');
         }
 
         $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
-            if (strpos($line, '#') === 0) {
+            if (str_starts_with($line, '#')) {
                 continue;
             }
-
-            list($name, $value) = explode('=', $line, 2);
+            $parts = explode('=', $line, 2);
+            if (count($parts) !== 2) {
+                continue;
+            }
+            [$name, $value] = $parts;
             $name = trim($name);
             $value = trim($value);
             
@@ -25,8 +28,8 @@ class EnvLoader {
         }
     }
 
-    public static function get($key) {
-        return isset(self::$variables[$key]) ? self::$variables[$key] : null;
+    public static function get(string $key): ?string {
+        return self::$variables[$key] ?? null;
     }
 
 }
