@@ -3,7 +3,6 @@
  * Application Bootstrap
  * 
  * Inicjalizuje aplikację i zwraca Router.
- * Wydzielone z index.php dla lepszej organizacji kodu.
  */
 
 // ===== 1. ERROR HANDLING =====
