@@ -66,8 +66,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Performance|Designed for low-resource deployment|
 |Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
 > **Note:**
-> **Requires PHP 8.3+.** Optimized for PHP 8.3 with modern features: explicit type hints on all methods, property type declarations, `match` expressions instead of `switch`, null coalescing operator (`??`), short array syntax (`[]`), and `JSON_THROW_ON_ERROR` for robust error handling. The project follows layered architecture: Controllers (presentation), Services (business logic), Repositories (data access), and Views ("dumb" templates). Application initialization is centralized in `bootstrap.php` (error handling, session, dependencies). HTTP handlers extend `BaseHandler`, Controllers extend `BaseController`. All dependencies are managed via `ServiceContainer` with lazy loading and `match` expressions. Authentication uses `AccessGuard` middleware in Router with centralized `AccessLevels` configuration. Database queries are optimized with JOINs to prevent N+1 problems. All API requests use centralized `apiClient` with automatic CSRF injection, HTTP error validation, and business error validation. API responses use consistent `{success: boolean}` format. Frontend uses ES6 modules with dynamic loading via `data-modules` attribute on `<body>`. Forms with `data-ajax-form` attribute are automatically handled by `FormHandler` for AJAX submissions. `AlertManager` uses singleton pattern via `getAlertManager()` to ensure single instance across modules. `ClothingManager` is modularized into `ClothingRowFactory`, `ClothingRowUI`, `ClothingSizesLoader`, and `clothingConfig` for better maintainability.
-
+> **Requires PHP 8.3+.** 
 
 ## Architecture Highlights
 
