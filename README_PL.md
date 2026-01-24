@@ -64,7 +64,7 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 |Architektura|MVC z Kontrolerami, warstwa Services, wzorzec Repository, Service Container (DI), BaseHandler/BaseController, routing z middleware|
 |Jakość kodu|Zoptymalizowane pod PHP 8.3: type hints, deklaracje właściwości, wyrażenia match, operator null coalescing, nowoczesna składnia tablic|
 > **Uwaga:**
-> **Wymaga PHP 8.3+.** Zoptymalizowany pod kątem PHP 8.3 z wykorzystaniem nowoczesnych funkcji: jawne type hints na wszystkich metodach, deklaracje typów właściwości, wyrażenia `match` zamiast `switch`, operator null coalescing (`??`), krótka składnia tablic (`[]`), oraz `JSON_THROW_ON_ERROR` dla solidnej obsługi błędów. Projekt wykorzystuje architekturę warstwową: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych), Widoki ("dumb" szablony). Inicjalizacja aplikacji jest scentralizowana w `bootstrap.php` (obsługa błędów, sesja, zależności). Handlery HTTP rozszerzają `BaseHandler`, Kontrolery rozszerzają `BaseController`. Wszystkie zależności zarządzane przez `ServiceContainer` z lazy loading i wyrażeniami `match`. Autoryzacja używa `AccessGuard` jako middleware w Routerze ze scentralizowaną konfiguracją `AccessLevels`. Zapytania bazodanowe zoptymalizowane z JOIN-ami zapobiegającymi problemom N+1. Wszystkie żądania API wykorzystują scentralizowany `apiClient` z automatycznym wstrzykiwaniem CSRF, walidacją błędów HTTP i błędów biznesowych. Odpowiedzi API używają spójnego formatu `{success: boolean}`. Frontend wykorzystuje moduły ES6 z dynamicznym ładowaniem przez atrybut `data-modules` na `<body>`. Formularze z atrybutem `data-ajax-form` są automatycznie obsługiwane przez `FormHandler` dla przesyłania AJAX. `AlertManager` używa wzorca singleton przez `getAlertManager()` aby zapewnić jedną instancję w całej aplikacji. `ClothingManager` jest zmodyfikowany na moduły: `ClothingRowFactory`, `ClothingRowUI`, `ClothingSizesLoader` i `clothingConfig` dla lepszej utrzymywalności.
+> **Wymaga PHP 8.3+.** 
 
 
 ## Wyróżnienia architektury
@@ -197,3 +197,4 @@ project/
 - Współpraca z pracownikami firmy w celu kształtowania przepływów pracy systemu
 - Przeprowadzenie testów i walidacji we współpracy z pracownikami firmy
 - Wdrożenie i dokumentacja systemu do długoterminowego użytku wewnętrznego
+
