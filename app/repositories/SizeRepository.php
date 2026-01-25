@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Entities\Size;
@@ -12,13 +13,13 @@ class SizeRepository extends BaseRepository {
         parent::__construct($pdo);
     }
     
-    public function create(Size $rozmiar): string|false {
+    public function create(Size $rozmiar): int {
         $stmt = $this->pdo->prepare("INSERT INTO rozmiar (nazwa_rozmiaru) VALUES (:nazwa_rozmiaru)");
         $nazwa_rozmiaru = $rozmiar->getNazwaRozmiaru();
         $stmt->bindParam(':nazwa_rozmiaru', $nazwa_rozmiaru);
         
         $stmt->execute();
-        return $this->pdo->lastInsertId(); 
+        return (int) $this->pdo->lastInsertId(); 
     }
 
     public function findByName(string $nazwa): ?Size {
@@ -35,7 +36,7 @@ class SizeRepository extends BaseRepository {
         return null;
     }
 
-    public function firstOrCreate(Size $rozmiar): string|false {
+    public function firstOrCreate(Size $rozmiar): int {
         $rozmiar->setNazwaRozmiaru($rozmiar->getNazwaRozmiaru());
         $existing = $this->findByName($rozmiar->getNazwaRozmiaru());
         if ($existing) {

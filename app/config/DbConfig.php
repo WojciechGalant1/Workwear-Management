@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 use App\Helpers\EnvLoader;
 
 EnvLoader::load(__DIR__ . '/../../.env');

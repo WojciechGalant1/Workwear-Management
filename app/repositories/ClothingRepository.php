@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Entities\Clothing;
@@ -12,17 +13,17 @@ class ClothingRepository extends BaseRepository {
         parent::__construct($pdo);
     }
 
-    public function create(Clothing $ubranie): string|false {
+    public function create(Clothing $ubranie): int {
         $stmt = $this->pdo->prepare("INSERT INTO ubranie (nazwa_ubrania) VALUES (:nazwa_ubrania)");
         
         $nazwa_ubrania = $ubranie->getNazwaUbrania();
         $stmt->bindParam(':nazwa_ubrania', $nazwa_ubrania);
         
         $stmt->execute();
-        return $this->pdo->lastInsertId(); 
+        return (int) $this->pdo->lastInsertId(); 
     }
 
-    public function firstOrCreate(Clothing $ubranie): string|false {
+    public function firstOrCreate(Clothing $ubranie): int {
         $existing = $this->findByName($ubranie->getNazwaUbrania());
         if ($existing) {
             return $existing->getIdUbranie();

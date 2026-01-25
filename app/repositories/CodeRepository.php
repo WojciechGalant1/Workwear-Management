@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Entities\Code;
@@ -12,14 +13,17 @@ class CodeRepository extends BaseRepository {
         parent::__construct($pdo);
     }
     
-    public function create(Code $kod): string|false {
+    public function create(Code $kod): int {
         $stmt = $this->pdo->prepare("INSERT INTO kod (kod_nazwa, ubranieID, rozmiarID, status) VALUES (:kod_nazwa, :ubranieID, :rozmiarID, :status)");
         $stmt->bindValue(':kod_nazwa', $kod->getNazwaKod());
         $stmt->bindValue(':ubranieID', $kod->getUbranieID());
         $stmt->bindValue(':rozmiarID', $kod->getRozmiarID());
         $stmt->bindValue(':status', $kod->getStatus());
 
-        return $stmt->execute() ? $this->pdo->lastInsertId() : false;
+        if ($stmt->execute()) {
+            return (int) $this->pdo->lastInsertId();
+        }
+        return 0; // Return 0 on failure
     }
 
     public function findByNazwa(string $kod_nazwa): ?array {
@@ -44,7 +48,7 @@ class CodeRepository extends BaseRepository {
         $stmt = $this->pdo->prepare('SELECT id_kod FROM kod WHERE kod_nazwa = :kod_nazwa');
         $stmt->bindValue(':kod_nazwa', $kod_nazwa);
         $stmt->execute();
-        $stmt->setFetchMode(PDO::FETCH_CLASS, 'Code');
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Code::class);
         return $stmt->fetch(); 
     }
     

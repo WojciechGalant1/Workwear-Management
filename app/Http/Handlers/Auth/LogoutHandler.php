@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace App\Http\Handlers\Auth;
 
 require_once __DIR__ . '/../../../handler_bootstrap.php';

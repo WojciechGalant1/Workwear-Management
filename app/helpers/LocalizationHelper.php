@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace App\Helpers;
 
 class LocalizationHelper {
@@ -46,7 +47,7 @@ class LocalizationHelper {
             $translations = include $translationFile;
             if (is_array($translations)) {
                 self::$translations = $translations;
-                error_log("LocalizationHelper: Loaded " . count($translations) . " keys for " . self::$currentLanguage);
+                // error_log("LocalizationHelper: Loaded " . count($translations) . " keys for " . self::$currentLanguage);
             } else {
                 error_log("LocalizationHelper: Invalid translations file format for language: " . self::$currentLanguage . " (Not an array)");
                 self::$translations = [];
