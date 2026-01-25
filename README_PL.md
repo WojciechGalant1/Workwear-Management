@@ -53,26 +53,27 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 
 |Warstwa|Technologia|
 |:-|:-|
-|Backend|PHP (niestandardowy MVC), punkty końcowe w stylu REST, wzorzec Repository|
+|Backend|PHP 8.3 (niestandardowy MVC), endpointy REST-style, Wzorzec Repository|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
-|Baza danych|MySQL (relacyjna, zoptymalizowane zapytania)|
-|Bezpieczeństwo|Ochrona CSRF, zapobieganie XSS, dostęp oparty na rolach, middleware auth|
-|Lokalizacja|Niestandardowy system i18n (angielski/polski)|
-|Wydajność|Zaprojektowany do wdrożenia w środowiskach o niskich zasobach|
-|Architektura|MVC z Kontrolerami, warstwa Services, wzorzec Repository, Service Container (DI), BaseHandler/BaseController, routing z middleware|
+|Baza danych|MySQL (relacyjna)|
+|Bezpieczeństwo|Ochrona CSRF, Rate Limiting (Ochrona przed Brute-Force), XSS, Bezpieczne Sesje, Nagłówki Bezpieczeństwa (CSP)|
+|Lokalizacja|Własny system i18n (Angielski/Polski)|
+|Wydajność|Zoptymalizowany pod kątem niskiego zużycia zasobów|
+|Architektura|MVC z Kontrolerami, Warstwa Serwisów, Wzorzec Repository, Kontener Serwisów (DI), BaseHandler/BaseController, routing z middleware|
 |Jakość kodu|Zoptymalizowane pod PHP 8.3: type hints, deklaracje właściwości, wyrażenia match, operator null coalescing, nowoczesna składnia tablic|
 > **Uwaga:**
-> **Wymaga PHP 8.3+.** 
+> **Wymagane PHP 8.3+.** 
 
 
 ## Wyróżnienia architektury
 
 ### Architektura Backend
-- **Warstwowy MVC** - Jasny podział: Kontrolery (prezentacja), Services (logika biznesowa), Repozytoria (dostęp do danych)
-- **Service Container** - Wstrzykiwanie zależności z lazy loading, używa wyrażeń `match` do tworzenia serwisów
+- **Warstwowe MVC** - Czysty podział: Kontrolery (prezentacja), Serwisy (logika biznesowa), Repozytoria (dostęp do danych)
+- **Kontener Serwisów** - Wstrzykiwanie zależności (DI) z leniwym ładowaniem (lazy loading), używa wyrażeń `match`
 - **Wzorzec BaseHandler** - Eliminuje duplikację kodu dla handlerów HTTP (sesja, CSRF, lokalizacja, kontrola dostępu)
-- **Routing z middleware** - Autoryzacja obsługiwana przed wykonaniem kontrolerów
-- **Wzorzec Repository** - Abstrakcja dostępu do danych z zoptymalizowanymi zapytaniami (JOIN-y zapobiegają problemom N+1)
+- **Centralna Obsługa Wyjątków** - Dedykowane wyjątki (`ValidationException`, `AuthorizationException`) obsługiwane globalnie w `BaseHandler`
+- **Routing z Middleware** - Uwierzytelnianie obsługiwane przed uruchomieniem kontrolerów
+- **Wzorzec Repository** - Abstrakcja dostępu do danych ze zoptymalizowanymi zapytaniami (JOINy zapobiegają problemom N+1)
 
 ### Architektura Frontend
 - **Moduły ES6** - Modułowy JavaScript z jasnym podziałem odpowiedzialności

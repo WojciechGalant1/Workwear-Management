@@ -53,12 +53,12 @@ A full-featured web platform designed to manage corporate workwear distribution 
 
 |Layer|Tech|
 |:-|:-|
-|Backend|PHP (custom MVC), REST-style endpoints, Repository pattern|
+|Backend|PHP 8.3 (custom MVC), REST-style endpoints, Repository pattern|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
 |Database|MySQL (relational)|
-|Security|CSRF protection, XSS prevention, role-based access, middleware auth|
+|Security|CSRF protection, Rate Limiting (Brute-force protection), XSS prevention, Secure Sessions, Security Headers (CSP)|
 |Localization|Custom i18n system (English/Polish)|
-|Performance|Designed for low-resource deployment|
+|Performance|Designed for low-resource deployment, Asset optimization|
 |Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
 > **Note:**
 > **Requires PHP 8.3+.** 
@@ -69,6 +69,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **Layered MVC** - Clear separation: Controllers (presentation), Services (business logic), Repositories (data access)
 - **Service Container** - Dependency injection with lazy loading, uses `match` expressions for service creation
 - **BaseHandler Pattern** - Eliminates code duplication for HTTP handlers (session, CSRF, localization, access control)
+- **Centralized Exception Handling** - Custom Exceptions (`ValidationException`, `AuthorizationException`) managed globally in `BaseHandler`
 - **Middleware-based Routing** - Authentication handled before controllers execute
 - **Repository Pattern** - Data access abstraction with optimized queries (JOINs prevent N+1 problems)
 
