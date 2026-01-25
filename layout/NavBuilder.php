@@ -10,7 +10,7 @@ use App\Config\AccessLevels;
 
 class NavBuilder {
 
-    const LOGOUT_PATH = '/app/Http/handlers/auth/logout.php';
+    const LOGOUT_PATH = '/logout';
     
     /**
      * Render the complete navigation bar

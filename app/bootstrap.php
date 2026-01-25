@@ -34,15 +34,19 @@ if (session_status() === PHP_SESSION_NONE) {
 // ===== 3. AUTOLOADER =====
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// ===== 4. USE STATEMENTS =====
+// ===== 4. GLOBAL HELPER FUNCTIONS =====
+// Load global helper functions
+require_once __DIR__ . '/Helpers/functions.php';
+
+// ===== 5. USE STATEMENTS =====
 use App\Helpers\LanguageSwitcher;
 use App\Core\Router;
 use App\Config\RouteConfig;
 
-// ===== 5. LOCALIZATION =====
+// ===== 6. LOCALIZATION =====
 LanguageSwitcher::initializeWithRouting();
 
-// ===== 6. ROUTER SETUP =====
+// ===== 7. ROUTER SETUP =====
 $router = new Router();
 $routes = RouteConfig::getRoutes();
 

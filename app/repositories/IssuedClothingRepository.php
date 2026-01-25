@@ -78,15 +78,12 @@ class IssuedClothingRepository extends BaseRepository {
             JOIN rozmiar ON wydane_ubrania.id_rozmiaru = rozmiar.id_rozmiar
             JOIN stan_magazynu ON wydane_ubrania.id_ubrania = stan_magazynu.id_ubrania
                AND wydane_ubrania.id_rozmiaru = stan_magazynu.id_rozmiaru
-            WHERE (wydane_ubrania.data_waznosci <= :currentDate
-                   OR (wydane_ubrania.data_waznosci > :currentDate AND wydane_ubrania.data_waznosci <= :twoMonthsAhead))
+            WHERE wydane_ubrania.data_waznosci <= :twoMonthsAhead
               AND wydane_ubrania.status = 1
             GROUP BY ubranie.nazwa_ubrania, rozmiar.nazwa_rozmiaru");
 
-        $currentDate = $this->expiryService->getCurrentDateFormatted();
         $twoMonthsAhead = $this->expiryService->getExpiryWarningDateFormatted();
         
-        $stmt->bindValue(':currentDate', $currentDate);
         $stmt->bindValue(':twoMonthsAhead', $twoMonthsAhead);
         $stmt->execute();
 
@@ -204,8 +201,8 @@ class IssuedClothingRepository extends BaseRepository {
                 u.nazwa_ubrania,
                 r.nazwa_rozmiaru,
                 CASE 
-                    WHEN wu.data_waznosci <= :currentDate THEN 'Przeterminowane'
-                    WHEN wu.data_waznosci <= :twoMonthsAhead THEN 'Koniec ważności'
+                    WHEN wu.data_waznosci <= :currentDateCase THEN 'Przeterminowane'
+                    WHEN wu.data_waznosci <= :twoMonthsAheadCase THEN 'Koniec ważności'
                     ELSE 'Brak danych'
                 END AS statusText
             FROM wydane_ubrania wu
@@ -214,15 +211,16 @@ class IssuedClothingRepository extends BaseRepository {
             JOIN ubranie u ON wu.id_ubrania = u.id_ubranie
             JOIN rozmiar r ON wu.id_rozmiaru = r.id_rozmiar
             WHERE wu.status = 1 
-              AND (wu.data_waznosci <= :currentDate OR wu.data_waznosci <= :twoMonthsAhead)
+              AND wu.data_waznosci <= :twoMonthsAheadWhere
             ORDER BY wu.data_waznosci ASC
         ");
         
         $currentDate = $this->expiryService->getCurrentDateFormatted();
         $twoMonthsAhead = $this->expiryService->getExpiryWarningDateFormatted();
         
-        $stmt->bindValue(':currentDate', $currentDate);
-        $stmt->bindValue(':twoMonthsAhead', $twoMonthsAhead);
+        $stmt->bindValue(':currentDateCase', $currentDate);
+        $stmt->bindValue(':twoMonthsAheadCase', $twoMonthsAhead);
+        $stmt->bindValue(':twoMonthsAheadWhere', $twoMonthsAhead);
         
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

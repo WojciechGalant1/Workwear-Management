@@ -49,13 +49,13 @@ export const WorkerSuggestions = (() => {
                 currentController.abort();
             }
             currentController = new AbortController();
-            
+
             const data = await apiClient.get(
                 API_ENDPOINTS.WORKERS,
                 { query },
                 { signal: currentController.signal }
             );
-            
+
             cache[query] = data;
 
             if (data.length === 0) {

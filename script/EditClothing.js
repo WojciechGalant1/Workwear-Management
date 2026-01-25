@@ -41,7 +41,7 @@ export const EditClothing = (() => {
 
             try {
                 await apiClient.postForm(API_ENDPOINTS.UPDATE_CLOTHING, formData);
-                
+
                 if (alertManager) {
                     alertManager.createAlert(Translations.translate('edit_success'), 'success');
                 }
@@ -58,4 +58,3 @@ export const EditClothing = (() => {
 
     return { initialize };
 })();
-

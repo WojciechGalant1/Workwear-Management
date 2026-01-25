@@ -7,11 +7,11 @@ include_once __DIR__ . '/../../layout/header.php';
 
 <div class="container mt-5">
     <div class="alert alert-danger" role="alert">
-        <h4 class="alert-heading"><?php echo LocalizationHelper::translate('error_not_found'); ?></h4>
-        <p><?php echo LocalizationHelper::translate('error_page_not_found'); ?></p>
+        <h4 class="alert-heading"><?php echo __('error_not_found'); ?></h4>
+        <p><?php echo __('error_page_not_found'); ?></p>
         <hr>
         <p class="mb-0">
-            <a href="/" class="btn btn-primary"><?php echo LocalizationHelper::translate('back_to_home'); ?></a>
+            <a href="/" class="btn btn-primary"><?php echo __('back_to_home'); ?></a>
         </p>
     </div>
 </div>

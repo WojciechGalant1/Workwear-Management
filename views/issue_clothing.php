@@ -16,7 +16,7 @@ $expire_date_months = [6, 12, 18, 24];
     </div>
 </div>
 
-<form id="wydajUbranieForm" action="<?php echo $baseUrl; ?>/app/http/handlers/issue/issueClothing.php" method="post" autocomplete="off" data-ajax-form>
+<form id="wydajUbranieForm" action="<?php echo $baseUrl; ?>/app/Http/Handlers/Issue/IssueClothingHandler.php" method="post" autocomplete="off" data-ajax-form>
     <?php echo CsrfGuard::getTokenField(); ?>
     <div class="mb-3 col-md-6">
         <div class="d-flex justify-content-between">

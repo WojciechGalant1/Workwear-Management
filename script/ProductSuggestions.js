@@ -24,7 +24,7 @@ export const ProductSuggestions = (function () {
                 currentController.abort();
             }
             currentController = new AbortController();
-            
+
             const data = await apiClient.get(endpoint, { query }, { signal: currentController.signal });
             cache[cacheKey] = data;
             showSuggestions(data, suggestionsList, inputField);

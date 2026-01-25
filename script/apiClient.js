@@ -106,7 +106,7 @@ const postFormData = async (endpoint, formData, signal = null) => {
         url = buildApiUrl(endpoint);
     }
     const csrfToken = getCsrfToken();
-    
+
     // Only add CSRF token if it's not already in FormData
     if (csrfToken && !formData.has('csrf_token')) {
         formData.append('csrf_token', csrfToken);
@@ -173,7 +173,7 @@ const postFormData = async (endpoint, formData, signal = null) => {
 const postForm = async (endpoint, data, signal = null) => {
     const url = buildApiUrl(endpoint);
     const csrfToken = getCsrfToken();
-    
+
     let body;
     if (typeof data === 'string') {
         body = csrfToken ? `${data}&csrf_token=${encodeURIComponent(csrfToken)}` : data;

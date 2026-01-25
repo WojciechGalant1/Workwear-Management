@@ -10,20 +10,9 @@ $baseUrl = UrlHelper::getBaseUrl();
 $uri = UrlHelper::getCleanUri();
 $current_page = RouteConfig::getPageFromUri($uri);
 
-if (($_SESSION['user_id'] ?? null) === null) {
-    header("Location: " . $baseUrl . "/login");
-    exit;
-}
-
 $csrfToken = CsrfGuard::getToken();
 if (!$csrfToken) {
     $csrfToken = CsrfGuard::generateToken();
-}
-
-function __(string $key, array $params = []): string {
-    $currentLang = LanguageSwitcher::getCurrentLanguage();
-    LocalizationHelper::setLanguage($currentLang);
-    return LocalizationHelper::translate($key, $params);
 }
 
 echo '

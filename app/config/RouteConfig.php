@@ -70,6 +70,10 @@ class RouteConfig {
                 'view' => './views/add_employee.php',
                 'auth' => AccessLevels::SUPERVISOR
             ],
+            '/logout' => [
+                'controller' => 'AuthController',
+                'action' => 'logout'
+            ],
             '/login' => [
                 'controller' => 'AuthController',
                 'action' => 'login',
@@ -95,6 +99,9 @@ class RouteConfig {
     private static function buildPageMap(): array {
         $map = [];
         foreach (self::getRoutes() as $uri => $route) {
+            if (is_array($route) && !isset($route['view'])) {
+                continue;
+            }
             $view = is_array($route) ? $route['view'] : $route;
             $map[$uri] = basename($view);
         }
@@ -105,6 +112,9 @@ class RouteConfig {
         $map = [];
         foreach (self::getRoutes() as $uri => $route) {
             if ($uri === '/') {
+                continue;
+            }
+            if (is_array($route) && !isset($route['view'])) {
                 continue;
             }
             $view = is_array($route) ? $route['view'] : $route;

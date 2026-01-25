@@ -24,4 +24,8 @@ class AuthController extends BaseController {
             'csrfToken' => $csrfToken
         ];
     }
+
+    public function logout(): void {
+        \App\Http\Handlers\Auth\LogoutHandler::run();
+    }
 }

@@ -7,7 +7,7 @@ include_once __DIR__ . '../../layout/header.php';
 <div id="alertContainer"></div>
 
 <h2 class="mb-4"><?php echo __('employee_add_title'); ?></h2>
-<form id="pracownikForm" action="<?php echo $baseUrl; ?>/app/http/handlers/employee/addEmployee.php" method="post" class="needs-validation" data-ajax-form>
+<form id="pracownikForm" action="<?php echo $baseUrl; ?>/app/Http/Handlers/Employee/AddEmployeeHandler.php" method="post" class="needs-validation" data-ajax-form>
     <?php echo CsrfGuard::getTokenField(); ?>
     <div class="mb-3 col-md-5">
         <label for="imie" class="form-label"><?php echo __('employee_first_name'); ?>:</label>

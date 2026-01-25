@@ -22,6 +22,7 @@ class LanguageSwitcher {
         
         elseif (isset($_SESSION[self::SESSION_KEY])) {
             $language = $_SESSION[self::SESSION_KEY];
+            LocalizationHelper::setLanguage($language);
         }
 
         elseif (isset($_COOKIE[self::COOKIE_KEY])) {
@@ -92,8 +93,6 @@ class LanguageSwitcher {
         return null;
     }
     
-    
-
     public static function getLanguageFlag(string $language): string {
         $flags = [
             'en' => '🇺🇸',

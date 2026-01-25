@@ -15,10 +15,10 @@ export const ModalIssueClothing = (function () {
 
         form.addEventListener('custom-submit', (event) => {
             const { success, message } = event.detail;
-        
+
             if (success) {
                 if (window.fromRaport) {
-                    modal.show();  
+                    modal.show();
                 } else {
                     location.reload();
                 }

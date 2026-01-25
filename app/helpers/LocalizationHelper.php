@@ -21,10 +21,11 @@ class LocalizationHelper {
     
 
     public static function setLanguage(string $language): void {
-        if (self::$currentLanguage !== $language) {
+        if (self::$currentLanguage !== $language || empty(self::$translations)) {
             self::$currentLanguage = $language;
             self::loadTranslations();
         }
+        self::$initialized = true;
     }
     
 
@@ -34,16 +35,32 @@ class LocalizationHelper {
     
 
     private static function loadTranslations(): void {
-        $translationFile = __DIR__ . '/../config/translations/' . self::$currentLanguage . '.php';
+        $translationFile = __DIR__ . '/../Config/translations/' . self::$currentLanguage . '.php';
+        
+        // Debugging
+        // error_log("LocalizationHelper: Attempting to load: " . $translationFile);
+        // error_log("LocalizationHelper: Realpath: " . realpath($translationFile));
+        // error_log("LocalizationHelper: Current Language: " . self::$currentLanguage);
         
         if (file_exists($translationFile)) {
-            self::$translations = include $translationFile;
+            $translations = include $translationFile;
+            if (is_array($translations)) {
+                self::$translations = $translations;
+                error_log("LocalizationHelper: Loaded " . count($translations) . " keys for " . self::$currentLanguage);
+            } else {
+                error_log("LocalizationHelper: Invalid translations file format for language: " . self::$currentLanguage . " (Not an array)");
+                self::$translations = [];
+            }
         } else {
+            error_log("LocalizationHelper: Translation file not found: " . $translationFile);
+            
             // Fallback to English if translation file doesn't exist
-            $fallbackFile = __DIR__ . '/../config/translations/' . self::$fallbackLanguage . '.php';
+            $fallbackFile = __DIR__ . '/../Config/translations/' . self::$fallbackLanguage . '.php';
             if (file_exists($fallbackFile)) {
                 self::$translations = include $fallbackFile;
+                error_log("LocalizationHelper: Loaded fallback " . count(self::$translations) . " keys");
             } else {
+                error_log("LocalizationHelper: Fallback file not found!");
                 self::$translations = [];
             }
         }
@@ -117,3 +134,5 @@ class LocalizationHelper {
         return $languageNames[$languageCode] ?? $languageCode;
     }
 }
+
+

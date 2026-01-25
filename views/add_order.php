@@ -8,7 +8,7 @@ include_once __DIR__ . '../../layout/header.php';
 
 <h2 class="mb-4"><?php echo __('order_add_title'); ?></h2>
 
-<form id="zamowienieForm" action="<?php echo $baseUrl; ?>/app/http/handlers/order/addOrder.php" method="post" class="needs-validation" autocomplete="off" data-ajax-form>
+<form id="zamowienieForm" action="<?php echo $baseUrl; ?>/app/Http/Handlers/Order/AddOrderHandler.php" method="post" class="needs-validation" autocomplete="off" data-ajax-form>
     <?php echo CsrfGuard::getTokenField(); ?>
     <div class="mb-3 p-3" id="ubraniaContainer">
         <div class="row ubranieRow mt-3 mb-3 border border-2 p-3 bg-body rounded">

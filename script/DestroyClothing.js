@@ -38,4 +38,3 @@ export const DestroyClothing = (function () {
 
     return { initialize };
 })();
-

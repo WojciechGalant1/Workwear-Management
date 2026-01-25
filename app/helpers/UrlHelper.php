@@ -44,8 +44,16 @@ class UrlHelper {
         
         // Remove basePath if it exists
         $basePath = dirname($_SERVER['SCRIPT_NAME'] ?? '/');
-        if ($basePath !== '/' && strpos($uri, $basePath) === 0) {
+        // Normalize slashes for Windows/XAMPP
+        $basePath = str_replace('\\', '/', $basePath);
+        
+        if ($basePath !== '/' && $basePath !== '.' && strpos($uri, $basePath) === 0) {
             $uri = substr($uri, strlen($basePath));
+        }
+        
+        // Ensure uri starts with /
+        if (empty($uri) || substr($uri, 0, 1) !== '/') {
+            $uri = '/' . $uri;
         }
         
         // Default path for home page

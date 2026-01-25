@@ -2,14 +2,6 @@
 use App\Helpers\LocalizationHelper;
 use App\Helpers\LanguageSwitcher;
 use App\Helpers\UrlHelper;
-
-if (!function_exists('__')) {
-    function __(string $key, array $params = []): string {
-        $currentLang = LanguageSwitcher::getCurrentLanguage();
-        LocalizationHelper::setLanguage($currentLang);
-        return LocalizationHelper::translate($key, $params);
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $currentLanguage; ?>">
