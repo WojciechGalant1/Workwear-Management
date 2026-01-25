@@ -44,11 +44,6 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **Barcode integration** - Items added/edited via scanner input with auto-form submission
 - **Multilingual Support** - Full English and Polish language support with dynamic switching
 - **CSRF Protection** - Comprehensive security implementation across all forms and AJAX requests
-- **Response Validation** - Automatic validation of API response structure with centralized error policy
-- **BaseHandler Pattern** - Base class for HTTP handlers eliminating code duplication (session, CSRF, localization initialization)
-- **Middleware Architecture** - Authentication handled via middleware in Router (before controllers execute)
-- **Controller Layer** - MVC Controllers separate presentation logic from views (views are "dumb")
-- **Modular Frontend** - ES6 modules with clear separation of concerns (ClothingManager modularized into factory, UI, loader, and config)
 - **PHP 8.3 Optimized** - Modern PHP features: type hints, property declarations, match expressions, null coalescing operator
 - **Responsive Design** - Mobile-friendly interface optimized for warehouse environments
 > **Warning:**
@@ -87,7 +82,9 @@ A full-featured web platform designed to manage corporate workwear distribution 
 
 ### PHP 8.3 Optimizations
 - ✅ **Type Hints** - All methods have explicit parameter and return type declarations
+- ✅ **Strict Types** - `declare(strict_types=1)` enforced across the `app/` directory
 - ✅ **Property Declarations** - All class properties explicitly typed (nullable where appropriate)
+- ✅ **Composer Autoloading** - PSR-4 autoloading via Composer replaces manual `require` calls
 - ✅ **Match Expressions** - `match` used instead of `switch` in `ServiceContainer` and `ClothingExpiryService`
 - ✅ **Null Coalescing** - Operator `??` used instead of `isset()` where applicable
 - ✅ **Modern Array Syntax** - Short array syntax `[]` throughout the codebase
@@ -96,7 +93,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - ✅ **Array Destructuring** - Used in `EnvLoader` for cleaner code
 
 ### Code Statistics
-- **~60 PHP Classes** - Well-organized across layers (Entities, Repositories, Services, Controllers, Handlers)
+- **~60 PHP Classes** - Fully namespaced (PSR-4) and organized across layers
 - **~25 JavaScript Modules** - ES6 modules with clear responsibilities
 - **Zero External PHP Dependencies** - Pure vanilla PHP (ready for Composer if needed)
 
@@ -106,18 +103,18 @@ A full-featured web platform designed to manage corporate workwear distribution 
 project/
 ├── app/                    # Application core
 │   ├── bootstrap.php       # Application initialization (error handling, session, dependencies)
-│   ├── auth/               # Access control and session management
+│   ├── Auth/               # Access control and session management
 │   │   ├── AccessGuard.php # Authorization middleware (role-based access)
 │   │   ├── CsrfGuard.php   # CSRF protection
 │   │   └── SessionManager.php
-│   ├── services/           # Business logic layer
-│   ├── repositories/       # Data access layer (Repository pattern)
-│   ├── entities/           # Domain entities (Employee, Clothing, etc.)
-│   ├── config/             # Configuration & translations
+│   ├── Services/           # Business logic layer
+│   ├── Repositories/       # Data access layer (Repository pattern)
+│   ├── Entities/           # Domain entities (Employee, Clothing, etc.)
+│   ├── Config/             # Configuration & translations
 │   │   ├── AccessLevels.php # Centralized user access levels
 │   │   ├── RouteConfig.php # Route definitions with auth levels
 │   │   └── translations/   # i18n files (EN/PL)
-│   ├── core/               # Core infrastructure
+│   ├── Core/               # Core infrastructure
 │   │   ├── Database.php    # PDO factory
 │   │   ├── Router.php      # URL routing with middleware support
 │   │   └── ServiceContainer.php # Dependency injection container
@@ -125,13 +122,15 @@ project/
 │   │   ├── BaseHandler.php # Base class for AJAX handlers
 │   │   ├── Controllers/    # MVC Controllers (presentation logic)
 │   │   │   └── ...         # Domain controllers
-│   │   └── handlers/       # AJAX / API request handlers (domain-grouped)
-│   │       ├── auth/       # Authentication handlers
-│   │       ├── employee/   # Employee management handlers
-│   │       ├── issue/      # Issue clothing handlers
-│   │       ├── order/      # Order handlers
-│   │       └── warehouse/  # Warehouse handlers
-│   └── helpers/            # Utility classes (static methods)
+│   │   └── Handlers/       # AJAX / API request handlers (domain-grouped)
+│   │       ├── Auth/       # Authentication handlers
+│   │       ├── Employee/   # Employee management handlers
+│   │       ├── Issue/      # Issue clothing handlers
+│   │       ├── Order/      # Order handlers
+│   │       └── Warehouse/  # Warehouse handlers
+│   └── Helpers/            # Utility classes (static methods)
+├── vendor/                 # Composer dependencies (autoloader, PHPUnit)
+├── tests/                  # Automated tests (PHPUnit)
 ├── views/                  # View templates (presentation layer)
 │   ├── errors/             # Error pages (404, 500)
 │   └── ...                 # Page views
@@ -162,7 +161,6 @@ project/
 
 
 ## Potential Enhancements & Future Development
-- **Namespaces & Autoloader** – Migrate to PSR-4 namespaces with Composer autoloader for better code organization
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
 - **Additional Security Enhancements**:
@@ -172,7 +170,6 @@ project/
   - Database query caching for frequently accessed data
   - Asset minification and compression
   - CDN integration for static resources
-- **Testing** – Implementation of automated test suites (PHPUnit) to improve future maintainability and reduce regression risk
 - **Documentation** – API documentation for external integrations
 - **Enum Migration** – Consider migrating `AccessLevels` to PHP 8.1+ Enum for type safety (requires refactoring)
 

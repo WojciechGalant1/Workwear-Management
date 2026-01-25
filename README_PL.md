@@ -44,8 +44,6 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 - **Integracja z czytnikiem kodów kreskowych** - Dodawanie/edycja elementów poprzez wejście ze skanera z automatycznym przesyłaniem formularza
 - **Wsparcie wielojęzyczne** - Pełne wsparcie dla języka angielskiego i polskiego z dynamicznym przełączaniem
 - **Ochrona CSRF** - Kompleksowa implementacja zabezpieczeń we wszystkich formularzach i żądaniach AJAX
-- **Scentralizowany klient API** - Ujednolicony klient API (`apiClient`) z automatycznym wstrzykiwaniem CSRF, walidacją odpowiedzi i obsługą błędów
-- **Modularny Frontend** - Moduły ES6 z jasnym podziałem odpowiedzialności (ClothingManager zmodyfikowany na factory, UI, loader i config)
 - **Zoptymalizowane pod PHP 8.3** - Nowoczesne funkcje PHP: type hints, deklaracje właściwości, wyrażenia match, operator null coalescing
 - **Responsywny design** - Interfejs przyjazny dla urządzeń mobilnych, zoptymalizowany dla środowisk magazynowych
 > **Ostrzeżenie:**
@@ -86,7 +84,9 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 
 ### Optymalizacje PHP 8.3
 - ✅ **Type Hints** - Wszystkie metody mają jawne deklaracje typów parametrów i zwracanych wartości
+- ✅ **Strict Types** - `declare(strict_types=1)` wymuszone w katalogu `app/`
 - ✅ **Deklaracje właściwości** - Wszystkie właściwości klas jawnie typowane (nullable gdzie odpowiednie)
+- ✅ **Autoloader Composer** - Automatyczne ładowanie klas PSR-4 zamiast ręcznych `include`
 - ✅ **Wyrażenia Match** - `match` używane zamiast `switch` w `ServiceContainer` i `ClothingExpiryService`
 - ✅ **Null Coalescing** - Operator `??` używany zamiast `isset()` gdzie możliwe
 - ✅ **Nowoczesna składnia tablic** - Krótka składnia `[]` w całym kodzie
@@ -95,8 +95,7 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 - ✅ **Array Destructuring** - Używane w `EnvLoader` dla czystszego kodu
 
 ### Statystyki kodu
-- **~60 klas PHP** - Dobrze zorganizowane w warstwach (Entities, Repositories, Services, Controllers, Handlers)
-- **~25 modułów JavaScript** - Moduły ES6 z jasnymi odpowiedzialnościami
+- **~60 klas PHP** - W pełni oparte na namespace (PSR-4) i uporządkowane warstwowo
 - **Zero zewnętrznych zależności PHP** - Czysty vanilla PHP (gotowe na Composer jeśli potrzeba)
 
 ##  Struktura projektu (uproszczona)
@@ -105,20 +104,20 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 project/
 ├── app/                    # Logika aplikacji
 │   ├── bootstrap.php       # Inicjalizacja aplikacji (error handling, sesja, zależności)
-│   ├── auth/               # Autoryzacja i zarządzanie sesjami
+│   ├── Auth/               # Autoryzacja i zarządzanie sesjami
 │   │   ├── AccessGuard.php # Middleware autoryzacji (kontrola ról)
 │   │   ├── CsrfGuard.php   # Ochrona CSRF
 │   │   └── SessionManager.php
-│   ├── services/           # Warstwa logiki biznesowej
-│   ├── repositories/       # Warstwa dostępu do danych (wzorzec Repository)
+│   ├── Services/           # Warstwa logiki biznesowej
+│   ├── Repositories/       # Warstwa dostępu do danych (wzorzec Repository)
 │   │   ├── BaseRepository.php
 │   │   └── ...             # Repozytoria domenowe
-│   ├── entities/           # Encje domenowe (Employee, Clothing, etc.)
-│   ├── config/             # Pliki konfiguracyjne
+│   ├── Entities/           # Encje domenowe (Employee, Clothing, etc.)
+│   ├── Config/             # Pliki konfiguracyjne
 │   │   ├── AccessLevels.php # Scentralizowane poziomy dostępu
 │   │   ├── RouteConfig.php # Definicje tras z poziomami auth
 │   │   └── translations/   # Pliki i18n (EN/PL)
-│   ├── core/               # Infrastruktura rdzenia
+│   ├── Core/               # Infrastruktura rdzenia
 │   │   ├── Database.php    # Factory PDO
 │   │   ├── Router.php      # Routing URL z obsługą middleware
 │   │   └── ServiceContainer.php # Kontener wstrzykiwania zależności
@@ -126,13 +125,15 @@ project/
 │   │   ├── BaseHandler.php # Klasa bazowa dla handlerów AJAX
 │   │   ├── Controllers/    # Kontrolery MVC (logika prezentacji)
 │   │   │   └── ...         # Kontrolery domenowe
-│   │   └── handlers/       # Handlery żądań AJAX (pogrupowane domenowo)
-│   │       ├── auth/       # Handlery uwierzytelniania
-│   │       ├── employee/   # Handlery zarządzania pracownikami
-│   │       ├── issue/      # Handlery wydawania odzieży
-│   │       ├── order/      # Handlery zamówień
-│   │       └── warehouse/  # Handlery magazynu
-│   └── helpers/            # Klasy pomocnicze (metody statyczne)
+│   │   └── Handlers/       # Handlery żądań AJAX (pogrupowane domenowo)
+│   │       ├── Auth/       # Handlery uwierzytelniania
+│   │       ├── Employee/   # Handlery zarządzania pracownikami
+│   │       ├── Issue/      # Handlery wydawania odzieży
+│   │       ├── Order/      # Handlery zamówień
+│   │       └── Warehouse/  # Handlery magazynu
+│   └── Helpers/            # Klasy pomocnicze (metody statyczne)
+├── vendor/                 # Zależności Composera (autoloader, PHPUnit)
+├── tests/                  # Testy automatyczne (PHPUnit)
 ├── views/                  # Szablony widoków
 │   ├── errors/             # Strony błędów (404, 500)
 │   └── ...                 # Widoki stron
@@ -171,7 +172,6 @@ project/
 
 
 ## Potencjalne ulepszenia i przyszły rozwój
-- **Przestrzenie nazw i Autoloader** – Migracja do PSR-4 namespaces z autoloaderem Composer dla lepszej organizacji kodu
 - **Optymalizacja mobilna** – Ulepszenie interakcji dotykowych i responsywnych widoków dla użycia na tabletach/urządzeniach przenośnych w środowiskach magazynowych
 - **Integracja API** – Wprowadzenie punktów końcowych REST API dla synchronizacji z systemami zewnętrznymi (np. oprogramowanie ERP lub HR)
 - **Przetwarzanie wsadowe** – Umożliwienie zbiorczego importu/eksportu danych magazynowych przez CSV
@@ -182,7 +182,6 @@ project/
   - Cachowanie zapytań bazodanowych dla często używanych danych
   - Minifikacja i kompresja zasobów
   - CDN integration dla zasobów statycznych
-- **Testowanie** – Implementacja automatycznych zestawów testów (PHPUnit) w celu poprawy przyszłej łatwości konserwacji i zmniejszenia ryzyka regresji
 - **Dokumentacja** – Dokumentacja API dla integracji zewnętrznych
 - **Migracja na Enum** – Rozważenie migracji `AccessLevels` na PHP 8.1+ Enum dla bezpieczeństwa typów (wymaga refaktoryzacji)
 
