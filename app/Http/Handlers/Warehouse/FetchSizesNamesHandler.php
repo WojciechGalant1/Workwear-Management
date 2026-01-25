@@ -11,6 +11,8 @@ class FetchSizesNamesHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
     
     public function handle(): void {
+        $this->throttle('search:size_names', 60, 60);
+        
         $query = $_GET['query'] ?? '';
         
         $rozmiarRepo = $this->getRepository('SizeRepository');

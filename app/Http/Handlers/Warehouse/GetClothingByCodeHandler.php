@@ -11,6 +11,8 @@ class GetClothingByCodeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
     
     public function handle(): void {
+        $this->throttle('search:clothing_by_code', 60, 60);
+        
         if (!isset($_GET['kod'])) {
             $this->jsonResponse(['error' => $this->translate('validation_required')]);
             return;

@@ -6,17 +6,21 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
+use App\Exceptions\ValidationException;
+use App\Exceptions\AuthorizationException;
 
 class UpdateEmployeeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
     
     public function handle(): void {
+        $this->throttle('modify:update_employee', 30, 60);
+        
         if (!$this->isPost()) {
-            $this->errorResponse('error_general');
+            throw new ValidationException('error_general');
         }
         
         if (!$this->validateCsrf()) {
-            $this->errorResponse('error_csrf');
+            throw new AuthorizationException('error_csrf');
         }
         
         $id = intval($_POST['id'] ?? 0);
@@ -26,7 +30,11 @@ class UpdateEmployeeHandler extends BaseHandler {
         $status = intval($_POST['status'] ?? -1);
         
         if (empty($id) || empty($imie) || empty($nazwisko) || empty($stanowisko) || $status < 0) {
-            $this->errorResponse('validation_required');
+            throw new ValidationException('validation_required');
+        }
+        
+        if (!preg_match('/^[\p{L}\s-]+$/u', $imie) || !preg_match('/^[\p{L}\s-]+$/u', $nazwisko)) {
+            throw new ValidationException('validation_name_invalid_characters');
         }
         
         $pracownikRepo = $this->getRepository('EmployeeRepository');
@@ -34,7 +42,7 @@ class UpdateEmployeeHandler extends BaseHandler {
         if ($pracownikRepo->update($id, $imie, $nazwisko, $stanowisko, $status)) {
             $this->successResponse('employee_update_success');
         } else {
-            $this->errorResponse('error_general');
+            throw new \Exception('Failed to update employee');
         }
     }
 }

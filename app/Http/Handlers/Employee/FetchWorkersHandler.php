@@ -11,6 +11,8 @@ class FetchWorkersHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
     
     public function handle(): void {
+        $this->throttle('search:workers', 60, 60);
+        
         $query = $_GET['query'] ?? '';
         
         $pracownikRepo = $this->getRepository('EmployeeRepository');

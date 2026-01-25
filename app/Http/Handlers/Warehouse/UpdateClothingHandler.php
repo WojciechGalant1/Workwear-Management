@@ -6,18 +6,23 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
+use App\Exceptions\ValidationException;
+use App\Exceptions\AuthorizationException;
+use Exception;
 
 class UpdateClothingHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
     
     public function handle(): void {
+        $this->throttle('modify:update_clothing', 30, 60);
+        
         if (!$this->isPost()) {
             http_response_code(405);
-            $this->errorResponse('error_method_not_allowed');
+            throw new ValidationException('error_method_not_allowed');
         }
         
         if (!$this->validateCsrf()) {
-            $this->csrfErrorResponse();
+            throw new AuthorizationException('error_csrf');
         }
         
         $currentUserId = $this->getUserId();
@@ -30,18 +35,15 @@ class UpdateClothingHandler extends BaseHandler {
         $uwagi = trim($_POST['uwagi'] ?? '');
         
         if ($id <= 0) {
-            http_response_code(400);
-            $this->errorResponse('validation_invalid_id');
+            throw new ValidationException('validation_invalid_id');
         }
         
         if (empty($nazwa) || empty($rozmiar)) {
-            http_response_code(400);
-            $this->errorResponse('validation_name_size_required');
+            throw new ValidationException('validation_name_size_required');
         }
         
         if ($ilosc < 0 || $iloscMin < 0) {
-            http_response_code(400);
-            $this->errorResponse('validation_quantity_negative');
+            throw new ValidationException('validation_quantity_negative');
         }
         
         try {
@@ -51,12 +53,10 @@ class UpdateClothingHandler extends BaseHandler {
             if ($result['success']) {
                 $this->jsonResponse($result);
             } else {
-                http_response_code(500);
-                $this->jsonResponse($result);
+                throw new Exception($result['message'] ?? 'Unknown error');
             }
-        } catch (\Exception $e) {
-            http_response_code(500);
-            $this->jsonResponse(['success' => false, 'message' => $e->getMessage()]);
+        } catch (Exception $e) {
+            throw new ValidationException($e->getMessage(), 0, $e);
         }
     }
 }

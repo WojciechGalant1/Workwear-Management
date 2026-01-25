@@ -7,17 +7,21 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 use App\Entities\Employee;
+use App\Exceptions\ValidationException;
+use App\Exceptions\AuthorizationException;
 
 class AddEmployeeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
     
     public function handle(): void {
+        $this->throttle('modify:add_employee', 30, 60);
+        
         if (!$this->isPost()) {
-            $this->errorResponse('error_general');
+            throw new ValidationException('error_general');
         }
         
         if (!$this->validateCsrf()) {
-            $this->errorResponse('error_csrf');
+            throw new AuthorizationException('error_csrf');
         }
         
         $imie = trim($_POST['imie'] ?? '');
@@ -26,7 +30,12 @@ class AddEmployeeHandler extends BaseHandler {
         $status = 1;
         
         if (empty($imie) || empty($nazwisko) || empty($stanowisko)) {
-            $this->errorResponse('employee_required_fields');
+            throw new ValidationException('employee_required_fields');
+        }
+        
+        // Strict validation: Names should contain only letters, spaces, and hyphens
+        if (!preg_match('/^[\p{L}\s-]+$/u', $imie) || !preg_match('/^[\p{L}\s-]+$/u', $nazwisko)) {
+            throw new ValidationException('validation_name_invalid_characters');
         }
         
         $pracownik = new Employee($imie, $nazwisko, $stanowisko, $status);
@@ -35,7 +44,7 @@ class AddEmployeeHandler extends BaseHandler {
         if ($pracownikRepo->create($pracownik)) {
             $this->successResponse('employee_add_success');
         } else {
-            $this->errorResponse('error_general');
+            throw new \Exception('Failed to create employee');
         }
     }
 }

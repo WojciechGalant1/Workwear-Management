@@ -262,6 +262,7 @@ return [
     'error_general' => 'Wystąpił błąd podczas przetwarzania żądania',
     'error_network' => 'Wystąpił błąd sieci',
     'error_csrf' => 'Błąd bezpieczeństwa. Odśwież stronę i spróbuj ponownie',
+    'error_rate_limit_exceeded' => 'Zbyt wiele żądań. Spróbuj ponownie później.',
     'error_permission' => 'Nie masz uprawnień do tej strony',
     'error_not_found' => 'Strona nie znaleziona',
     'error_page_not_found' => 'Przepraszamy, ale strona której szukasz nie istnieje.',

@@ -20,6 +20,10 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', __DIR__ . '/../error_log.txt');
 
+// Security Headers for API
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: DENY");
+
 // Sesja
 if (session_status() === PHP_SESSION_NONE) {
     session_start();

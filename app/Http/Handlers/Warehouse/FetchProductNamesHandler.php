@@ -11,6 +11,8 @@ class FetchProductNamesHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
     
     public function handle(): void {
+        $this->throttle('search:product_names', 60, 60);
+        
         $query = $_GET['query'] ?? '';
         
         $ubranieRepo = $this->getRepository('ClothingRepository');

@@ -9,6 +9,11 @@ use App\Config\AccessLevels;
 use App\Helpers\LocalizationHelper;
 use App\Helpers\LanguageSwitcher;
 use App\Helpers\UrlHelper;
+use App\Exceptions\AuthenticationException;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\RateLimitExceededException;
+use App\Exceptions\ValidationException;
+use App\Exceptions\NotFoundException;
 
 /**
  * Base class for all HTTP handlers (AJAX/form POST)
@@ -42,7 +47,7 @@ abstract class BaseHandler {
         if (CsrfGuard::requiresValidation()) {
             if (!$this->validateCsrf()) {
                 $this->csrfErrorResponse();
-                exit; // Stop execution
+                exit; 
             }
         }
     }
@@ -61,23 +66,40 @@ abstract class BaseHandler {
         $guard = new AccessGuard();
         
         if (!$guard->isAuthenticated()) {
-            http_response_code(401);
-            $this->jsonResponse([
-                'success' => false,
-                'message' => LocalizationHelper::translate('error_session'),
-                'redirect' => '/login'
-            ]);
+            throw new AuthenticationException();
         }
         
         if (!$guard->hasRequiredStatus($this->requiredStatus)) {
-            http_response_code(403);
-            $this->jsonResponse([
-                'success' => false,
-                'message' => LocalizationHelper::translate('access_denied')
-            ]);
+            throw new AuthorizationException();
         }
     }
     
+
+    /**
+     * Ogranicza liczbę żądań dla danej akcji
+     * @param string $actionKey Unikalny klucz akcji (np. 'search:products')
+     * @param int $maxAttempts Maksymalna liczba prób
+     * @param int $decaySeconds Czas wygasania w sekundach
+     * @throws \App\Exceptions\RateLimitExceededException
+     */
+    protected function throttle(string $actionKey, int $maxAttempts = 60, int $decaySeconds = 60): void {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $userId = $this->getUserId();
+        
+        // Hybrid Key: rl:{action}:ip:{ip}(:user:{id})
+        $key = "rl:{$actionKey}:ip:{$ip}";
+        if ($userId) {
+            $key .= ":user:{$userId}";
+        }
+        
+        if (!\App\Helpers\RateLimiter::check($key, $maxAttempts, $decaySeconds)) {
+            // Log the security event
+            error_log("Rate limit exceeded for key: {$key}");
+            
+            throw new RateLimitExceededException('error_rate_limit_exceeded');
+        }
+    }
+
     /**
      * Walidacja tokenu CSRF
      * @param array|null $data Dane JSON (jeśli null, używa $_POST)
@@ -221,9 +243,36 @@ abstract class BaseHandler {
     
     /**
      * Statyczna metoda do szybkiego uruchomienia handlera
+     * Obsługuje wyjątki RateLimitExceededException oraz inne wyjątki aplikacji
      */
     public static function run(): void {
         $handler = new static();
-        $handler->handle();
+        try {
+            $handler->handle();
+        } catch (RateLimitExceededException $e) {
+            http_response_code(429);
+            $handler->errorResponse($e->getMessage());
+        } catch (ValidationException $e) {
+            http_response_code(400);
+            $handler->errorResponse($e->getMessage());
+        } catch (AuthenticationException $e) {
+            http_response_code(401);
+            $handler->jsonResponse([
+                'success' => false,
+                'message' => LocalizationHelper::translate($e->getMessage()),
+                'redirect' => '/login'
+            ]);
+        } catch (AuthorizationException $e) {
+            http_response_code(403);
+            $handler->errorResponse($e->getMessage());
+        } catch (NotFoundException $e) {
+            http_response_code(404);
+            $handler->errorResponse($e->getMessage());
+        } catch (\Exception $e) {
+            // Catch-all for unexpected errors
+            error_log("Unhandled Exception: " . $e->getMessage());
+            http_response_code(500);
+            $handler->errorResponse('error_server');
+        }
     }
 }
