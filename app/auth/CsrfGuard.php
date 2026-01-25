@@ -45,11 +45,11 @@ class CsrfGuard {
         }
         
         if ($token === null) {
-            $token = $_POST[self::FORM_FIELD_NAME] ?? null;
+            $token = $_POST[self::FORM_FIELD_NAME] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
         }
         
         if (!isset($_SESSION[self::SESSION_KEY]) || $token === null) {
-            error_log('CSRF validation failed: No token in session or request');
+            error_log('CSRF validation failed: No token in session or request (POST/Header)');
             return false;
         }
         

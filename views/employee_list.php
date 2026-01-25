@@ -22,9 +22,9 @@ include_once __DIR__ . '../../layout/header.php';
     <tbody>
     <?php foreach ($pracownicy as $index => $pracownik) { ?>
         <tr>
-            <td><?php echo $pracownik['imie']; ?></td>
-            <td><?php echo $pracownik['nazwisko']; ?></td>
-            <td><?php echo $pracownik['stanowisko']; ?></td>
+            <td><?php echo htmlspecialchars((string)$pracownik['imie']); ?></td>
+            <td><?php echo htmlspecialchars((string)$pracownik['nazwisko']); ?></td>
+            <td><?php echo htmlspecialchars((string)$pracownik['stanowisko']); ?></td>
             <td><?php echo $pracownik['status'] == 1 ? __('employee_active') : '[brak danych]'; ?></td>
             <td class="text-center">
                 <button class="btn btn-secondary open-modal-btn" data-index="<?php echo $index; ?>"

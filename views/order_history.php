@@ -23,13 +23,13 @@ include_once __DIR__ . '../../layout/header.php';
         <?php foreach ($zamowienia as $zamowienie) { ?>
             <tr>
                 <td><?php echo date('Y-m-d H:i', strtotime($zamowienie['data_zamowienia'])); ?></td>
-                <td><?php echo $zamowienie['nazwa_ubrania']; ?></td>
-                <td><?php echo $zamowienie['rozmiar_ubrania']; ?></td>
-                <td><?php echo $zamowienie['firma']; ?></td>
-                <td><?php echo $zamowienie['nazwa_uzytkownika']; ?></td>
-                <td><?php echo $zamowienie['ilosc']; ?></td>
+                <td><?php echo htmlspecialchars($zamowienie['nazwa_ubrania']); ?></td>
+                <td><?php echo htmlspecialchars($zamowienie['rozmiar_ubrania']); ?></td>
+                <td><?php echo htmlspecialchars($zamowienie['firma']); ?></td>
+                <td><?php echo htmlspecialchars($zamowienie['nazwa_uzytkownika']); ?></td>
+                <td><?php echo htmlspecialchars((string)$zamowienie['ilosc']); ?></td>
                 <td><?php echo $zamowienie['status'] == 1 ? __('order_approved') : ($zamowienie['status'] == 2 ? __('order_stocktaking') : __('order_no_data')); ?></td>
-                <td><?php echo $zamowienie['uwagi']; ?></td>
+                <td><?php echo htmlspecialchars((string)$zamowienie['uwagi']); ?></td>
             </tr>
         <?php } ?>
     </tbody>

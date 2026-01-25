@@ -49,11 +49,16 @@ class ValidateLoginHandler extends BaseHandler {
     }
     
     private function loginWithCode(PDO $pdo, string $kodID): void {
-        // Rate-limit using session
-        $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
+        // Rate-limit using RateLimiter helper with IP-based key
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $key = 'login_code_' . $ip;
         
-        if ($_SESSION['login_attempts'] > 20) {
-            usleep(500000); // 0.5s delay
+        // Allow 20 attempts per minute
+        if (!\App\Helpers\RateLimiter::check($key, 20, 60)) {
+            // Block request immediately
+            http_response_code(429); // Too Many Requests
+            $this->errorResponse('login_too_many_attempts');
+            return; 
         }
         
         $stmt = $pdo->prepare('SELECT * FROM uzytkownicy WHERE id_id = :kodID LIMIT 1');
@@ -61,6 +66,7 @@ class ValidateLoginHandler extends BaseHandler {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user) {
+            \App\Helpers\RateLimiter::clear($key); // Clear on success
             $this->createSession($user);
             $this->successResponse('login_success');
         } else {
@@ -70,7 +76,7 @@ class ValidateLoginHandler extends BaseHandler {
     
     private function createSession(array $user): void {
         $sessionManager = new SessionManager();
-        $sessionManager->login($user['id'], $user['status']);
+        $sessionManager->login((int)$user['id'], (int)$user['status']);
     }
 }
 

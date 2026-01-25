@@ -32,7 +32,19 @@ abstract class BaseHandler {
             $this->checkAccessStatus();
         }
         
+        // Enforce CSRF for state-changing requests
+        $this->checkCsrf();
+        
         $this->serviceContainer = ServiceContainer::getInstance();
+    }
+    
+    private function checkCsrf(): void {
+        if (CsrfGuard::requiresValidation()) {
+            if (!$this->validateCsrf()) {
+                $this->csrfErrorResponse();
+                exit; // Stop execution
+            }
+        }
     }
     
     private function initSession(): void {

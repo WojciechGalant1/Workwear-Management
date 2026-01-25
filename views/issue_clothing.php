@@ -24,7 +24,7 @@ $expire_date_months = [6, 12, 18, 24];
         </div>
         <div class="mb-3 position-relative inputcontainer">
             <input type="text" class="form-control" maxlength="30" placeholder="<?php echo __('employee_first_name'); ?> <?php echo __('employee_last_name'); ?>" id="username"
-                value="<?php echo trim("$imie $nazwisko $stanowisko") !== '' ? "$imie $nazwisko ($stanowisko)" : ''; ?>" required>
+                value="<?php echo trim("$imie $nazwisko $stanowisko") !== '' ? htmlspecialchars("$imie $nazwisko ($stanowisko)", ENT_QUOTES) : ''; ?>" required>
             <input type="hidden" id="pracownikID" name="pracownikID" value="<?php echo $pracownikId; ?>" />
             <ul id="suggestions" class="list-group position-absolute" style="display: none; z-index: 1000; width: 100%; top: 100%;"></ul>
         </div>

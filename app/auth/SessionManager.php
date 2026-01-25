@@ -7,6 +7,20 @@ use App\Auth\CsrfGuard;
 class SessionManager {
     public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
+            // Security hardening
+            // Use 'Strict' for SameSite to prevent CSRF, but 'Lax' is often more practical for navigation.
+            $cookieParams = [
+                'lifetime' => 0, // Session cookie
+                'path' => '/',
+                'domain' => '', // Current domain
+                'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on', // Only on HTTPS
+                'httponly' => true, // JavaScript cannot access session cookie
+                'samesite' => 'Strict' 
+            ];
+            
+            session_set_cookie_params($cookieParams);
+            session_name('WORKWEAR_SESSION'); // Unique name
+            
             session_start();
         }
         

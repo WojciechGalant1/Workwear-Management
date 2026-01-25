@@ -219,6 +219,7 @@ return [
     'login_invalid_code' => 'Błędny kod',
     'login_no_credentials' => 'Nie podano danych logowania',
     'login_connection_failed' => 'Błąd połączenia',
+    'login_too_many_attempts' => 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za minutę.',
     
     // Validation messages
     'validation_invalid_id' => 'Nieprawidłowe ID',

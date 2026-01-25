@@ -21,19 +21,21 @@ class Database
      */
     public static function createPdo(): PDO
     {
-        $config = require __DIR__ . '/../config/DbConfig.php';
+        $config = \App\Config\DbConfig::get();
         
-        $opts = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_EMULATE_PREPARES => false
-        ];
+        $dsn = "mysql:host={$config['host']};dbname={$config['database']};charset={$config['charset']}";
         
+        // Add Unix socket support if configured (for flexibility)
+        if (!empty($config['unix_socket'])) {
+             $dsn = "mysql:unix_socket={$config['unix_socket']};dbname={$config['database']};charset={$config['charset']}";
+        }
+
         try {
             return new PDO(
-                "mysql:host={$config['host']};dbname={$config['database']};charset=utf8",
+                $dsn,
                 $config['username'],
                 $config['password'],
-                $opts
+                $config['options']
             );
         } catch (PDOException $e) {
             error_log("DB connection error: " . $e->getMessage());
