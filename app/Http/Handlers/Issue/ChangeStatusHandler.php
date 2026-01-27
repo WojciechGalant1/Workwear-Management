@@ -7,23 +7,29 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 
+use App\Exceptions\ValidationException;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\NotFoundException;
+
 class ChangeStatusHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
     
     public function handle(): void {
+        $this->throttle('modify:change_status', 60, 60);
+
         $data = $this->getJsonInput();
         if (!is_array($data)) {
-            $this->errorResponse('validation_invalid_input');
-            return;
+            throw new ValidationException('validation_invalid_input');
         }
-        if (!isset($data['id'], $data['currentStatus'])) {
-            $this->errorResponse('validation_invalid_input');
-            return;
-        }
+
         if (!$this->validateCsrf($data)) {
-            $this->csrfErrorResponse();
-            return;
+            throw new AuthorizationException('error_csrf');
         }
+
+        if (!isset($data['id'], $data['currentStatus'])) {
+            throw new ValidationException('validation_invalid_input');
+        }
+        
         $id = intval($data['id']);
         $currentStatus = intval($data['currentStatus']);
         $newStatus = ($currentStatus == 1) ? 0 : 1;
@@ -33,9 +39,10 @@ class ChangeStatusHandler extends BaseHandler {
         if ($wydaneUbraniaRepo->updateStatus($id, $newStatus)) {
             $this->jsonResponse(['success' => true, 'newStatus' => $newStatus]);
         } else {
-            $this->errorResponse('status_update_failed');
+            throw new \Exception('status_update_failed');
         }
     }
 }
+
 
 ChangeStatusHandler::run();

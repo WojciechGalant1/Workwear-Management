@@ -7,27 +7,32 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 
+use App\Exceptions\ValidationException;
+use App\Exceptions\AuthorizationException;
+
 class DestroyClothingHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
     
     public function handle(): void {
+        $this->throttle('modify:destroy_clothing', 30, 60);
+
         if (!$this->isPost()) {
-            $this->errorResponse('error_method_not_allowed');
-            return;
+            throw new ValidationException('error_method_not_allowed');
         }
+
         $data = $this->getJsonInput();
         if (!is_array($data)) {
-            $this->errorResponse('validation_invalid_input');
-            return;
+            throw new ValidationException('validation_invalid_input');
         }
+
         if (!$this->validateCsrf($data)) {
-            $this->csrfErrorResponse();
-            return;
+            throw new AuthorizationException('error_csrf');
         }
-        $id = intval($data['id'] ?? null);
+
+        $id = intval($data['id'] ?? 0);
         
-        if (!$id) {
-            $this->errorResponse('validation_clothing_id_required');
+        if ($id <= 0) {
+            throw new ValidationException('validation_clothing_id_required');
         }
         
         $wydaneUbraniaRepo = $this->getRepository('IssuedClothingRepository');
@@ -35,7 +40,7 @@ class DestroyClothingHandler extends BaseHandler {
         if ($wydaneUbraniaRepo->destroyStatus($id)) {
             $this->successResponse();
         } else {
-            $this->errorResponse('status_update_failed');
+            throw new \Exception('status_update_failed');
         }
     }
 }

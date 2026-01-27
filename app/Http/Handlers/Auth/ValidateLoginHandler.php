@@ -8,11 +8,18 @@ use App\Http\BaseHandler;
 use App\Auth\SessionManager;
 use \PDO;
 
+use App\Exceptions\ValidationException;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\AuthenticationException;
+use App\Exceptions\RateLimitExceededException;
+
 class ValidateLoginHandler extends BaseHandler {
     
+    // Public access allowed (no required status)
+
     public function handle(): void {
         if ($this->isPost() && !$this->validateCsrf()) {
-            $this->csrfErrorResponse();
+            throw new AuthorizationException('error_csrf');
         }
         
         $username = trim($_POST['username'] ?? '');
@@ -26,11 +33,14 @@ class ValidateLoginHandler extends BaseHandler {
         } elseif (!empty($kodID)) {
             $this->loginWithCode($pdo, $kodID);
         } else {
-            $this->errorResponse('login_no_credentials');
+            throw new ValidationException('login_no_credentials');
         }
     }
     
     private function loginWithPassword(PDO $pdo, string $username, string $password): void {
+        // Protect password login - 5 attempts per minute
+        $this->throttle('auth:login_pass', 5, 60);
+
         $stmt = $pdo->prepare('SELECT * FROM uzytkownicy WHERE nazwa = :username LIMIT 1');
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -41,36 +51,27 @@ class ValidateLoginHandler extends BaseHandler {
                 $this->createSession($user);
                 $this->successResponse('login_success');
             } else {
-                $this->errorResponse('login_invalid_credentials');
+                throw new AuthenticationException('login_invalid_credentials');
             }
         } else {
-            $this->errorResponse('login_invalid_credentials');
+            // Consistent error message to prevent enumeration (same as invalid password)
+            throw new AuthenticationException('login_invalid_credentials');
         }
     }
     
     private function loginWithCode(PDO $pdo, string $kodID): void {
-        // Rate-limit using RateLimiter helper with IP-based key
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        $key = 'login_code_' . $ip;
-        
-        // Allow 20 attempts per minute
-        if (!\App\Helpers\RateLimiter::check($key, 20, 60)) {
-            // Block request immediately
-            http_response_code(429); // Too Many Requests
-            $this->errorResponse('login_too_many_attempts');
-            return; 
-        }
+        // Protect code login - 20 attempts per minute (as was original logic)
+        $this->throttle('auth:login_code', 20, 60);
         
         $stmt = $pdo->prepare('SELECT * FROM uzytkownicy WHERE id_id = :kodID LIMIT 1');
         $stmt->execute([':kodID' => $kodID]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user) {
-            \App\Helpers\RateLimiter::clear($key); // Clear on success
             $this->createSession($user);
             $this->successResponse('login_success');
         } else {
-            $this->errorResponse('login_invalid_code');
+            throw new AuthenticationException('login_invalid_code');
         }
     }
     

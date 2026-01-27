@@ -138,7 +138,11 @@ abstract class BaseHandler {
      */
     protected function errorResponse(string $message, bool $translate = true): void {
         $msg = $translate ? LocalizationHelper::translate($message) : $message;
-        $this->jsonResponse(['success' => false, 'message' => $msg]);
+        $this->jsonResponse([
+            'success' => false, 
+            'message' => $msg,
+            'error' => $msg // Compatibility with older JS expecting .error
+        ]);
     }
     
     /**

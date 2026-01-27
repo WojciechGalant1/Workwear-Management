@@ -7,6 +7,9 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 
+use App\Exceptions\ValidationException;
+use App\Exceptions\NotFoundException;
+
 class GetClothingByCodeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
     
@@ -14,8 +17,7 @@ class GetClothingByCodeHandler extends BaseHandler {
         $this->throttle('search:clothing_by_code', 60, 60);
         
         if (!isset($_GET['kod'])) {
-            $this->jsonResponse(['error' => $this->translate('validation_required')]);
-            return;
+            throw new ValidationException('validation_required');
         }
         
         $kodRepo = $this->getRepository('CodeRepository');
@@ -29,7 +31,8 @@ class GetClothingByCodeHandler extends BaseHandler {
                 'nazwa_rozmiaru' => $kodData['nazwa_rozmiaru']
             ]);
         } else {
-            $this->jsonResponse(['error' => $this->translate('clothing_code_not_found')]);
+            // Return 200 OK with error indicator for frontend to use its own translation
+            $this->jsonResponse(['error' => true]);
         }
     }
 }

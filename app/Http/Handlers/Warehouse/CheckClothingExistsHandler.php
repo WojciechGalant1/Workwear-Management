@@ -7,12 +7,14 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 
+use App\Exceptions\ValidationException;
+
 class CheckClothingExistsHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
     
     public function handle(): void {
         if (!isset($_GET['nazwa']) || !isset($_GET['rozmiar'])) {
-            $this->errorResponse('validation_required');
+            throw new ValidationException('validation_required');
         }
         
         $nazwa = $_GET['nazwa'];
