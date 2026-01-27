@@ -49,9 +49,23 @@ const request = async (
         );
     }
 
-    // HTTP-level error
+    // HTTP-level error handling
     if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+            const errorJson = await response.json();
+
+            // Global Handling for Session Expired / Unauthorized
+            if (response.status === 401 && errorJson.redirect) {
+                window.location.href = buildApiUrl(errorJson.redirect);
+                return;
+            }
+
+            errorMsg = errorJson.message || errorJson.error || errorMsg;
+        } catch (e) {
+            // Body is not JSON, use default status text
+        }
+        throw new Error(errorMsg);
     }
 
     // No JSON expected (optional)
@@ -130,7 +144,14 @@ const postFormData = async (endpoint, formData, signal = null) => {
     }
 
     if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+            const errorJson = await response.json();
+            errorMsg = errorJson.message || errorJson.error || errorMsg;
+        } catch (e) {
+            // Body is not JSON
+        }
+        throw new Error(errorMsg);
     }
 
     let json;
@@ -211,7 +232,14 @@ const postForm = async (endpoint, data, signal = null) => {
     }
 
     if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+            const errorJson = await response.json();
+            errorMsg = errorJson.message || errorJson.error || errorMsg;
+        } catch (e) {
+            // Body is not JSON
+        }
+        throw new Error(errorMsg);
     }
 
     let json;

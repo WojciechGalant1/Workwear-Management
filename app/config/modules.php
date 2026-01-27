@@ -8,7 +8,7 @@ return [
     'add_employee.php' => '',  // FormHandler obsługuje automatycznie
     'issue_clothing.php' => 'ClothingManager,WorkerSuggestions,ModalIssueClothing,ChangeStatus',
     'employee_list.php' => 'ModalEditEmployee',
-    'add_order.php' => 'ProductSuggestions,CheckClothing',
+    'add_order.php' => 'ProductSuggestions',
     'issue_history.php' => 'WorkerSuggestions,ChangeStatus,CancelIssue,DestroyClothing',
     'raport.php' => 'RedirectStatus,ChangeStatus',
     'warehouse_list.php' => 'EditClothing',

@@ -36,35 +36,47 @@ class LocalizationHelper {
     
 
     private static function loadTranslations(): void {
-        $translationFile = __DIR__ . '/../Config/translations/' . self::$currentLanguage . '.php';
-        
-        // Debugging
-        // error_log("LocalizationHelper: Attempting to load: " . $translationFile);
-        // error_log("LocalizationHelper: Realpath: " . realpath($translationFile));
-        // error_log("LocalizationHelper: Current Language: " . self::$currentLanguage);
-        
-        if (file_exists($translationFile)) {
-            $translations = include $translationFile;
-            if (is_array($translations)) {
-                self::$translations = $translations;
-                // error_log("LocalizationHelper: Loaded " . count($translations) . " keys for " . self::$currentLanguage);
-            } else {
-                error_log("LocalizationHelper: Invalid translations file format for language: " . self::$currentLanguage . " (Not an array)");
-                self::$translations = [];
-            }
+        $jsonFile = __DIR__ . '/../Config/translations/' . self::$currentLanguage . '.json';
+        $translations = self::loadWithCache($jsonFile, self::$currentLanguage);
+
+        if ($translations !== null) {
+            self::$translations = $translations;
         } else {
-            error_log("LocalizationHelper: Translation file not found: " . $translationFile);
-            
-            // Fallback to English if translation file doesn't exist
-            $fallbackFile = __DIR__ . '/../Config/translations/' . self::$fallbackLanguage . '.php';
-            if (file_exists($fallbackFile)) {
-                self::$translations = include $fallbackFile;
-                error_log("LocalizationHelper: Loaded fallback " . count(self::$translations) . " keys");
-            } else {
-                error_log("LocalizationHelper: Fallback file not found!");
-                self::$translations = [];
-            }
+            // Fallback to English if translation file doesn't exist or is invalid
+            $fallbackFile = __DIR__ . '/../Config/translations/' . self::$fallbackLanguage . '.json';
+            self::$translations = self::loadWithCache($fallbackFile, self::$fallbackLanguage) ?? [];
         }
+    }
+
+    private static function loadWithCache(string $jsonFile, string $lang): ?array {
+        if (!file_exists($jsonFile)) {
+            return null;
+        }
+
+        $cacheDir = __DIR__ . '/../../storage/cache/translations/';
+        $cacheFile = $cacheDir . $lang . '.php';
+
+        // Use cache if it exists and is newer than JSON
+        if (file_exists($cacheFile) && filemtime($cacheFile) >= filemtime($jsonFile)) {
+            $data = include $cacheFile;
+            return is_array($data) ? $data : null;
+        }
+
+        // Otherwise load JSON and rebuild cache
+        $jsonContent = file_get_contents($jsonFile);
+        $translations = json_decode($jsonContent, true);
+
+        if (is_array($translations)) {
+            if (!is_dir($cacheDir)) {
+                mkdir($cacheDir, 0777, true);
+            }
+            $cacheContent = "<?php\ndeclare(strict_types=1);\nreturn " . var_export($translations, true) . ";";
+            file_put_contents($cacheFile, $cacheContent);
+            return $translations;
+        }
+
+        error_log("LocalizationHelper: Invalid JSON format in " . $jsonFile);
+        return null;
     }
     
 
@@ -110,12 +122,12 @@ class LocalizationHelper {
 
     public static function getAvailableLanguages(): array {
         $languages = [];
-        $translationDir = __DIR__ . '/../config/translations/';
+        $translationDir = __DIR__ . '/../Config/translations/';
         
         if (is_dir($translationDir)) {
-            $files = glob($translationDir . '*.php');
+            $files = glob($translationDir . '*.json');
             foreach ($files as $file) {
-                $languages[] = basename($file, '.php');
+                $languages[] = basename($file, '.json');
             }
         }
         

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initAjaxForms(alertManager);
     }
 
-    const moduleLoaders = {        
+    const moduleLoaders = {
         ModalIssueClothing: async () => {
             const { ModalIssueClothing } = await import('./script/ModalIssueClothing.js');
             ModalIssueClothing.init(getAlertManager());
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const { ClothingManager } = await import('./script/clothing/ClothingManager.js');
             const container = document.getElementById('ubraniaContainer');
             const templateRow = document.querySelector('.ubranieRow');
-            
+
             if (!container || !templateRow) return;
 
             const manager = ClothingManager.create({
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 import('./script/CheckClothing.js'),
                 import('./script/ProductSuggestions.js')
             ]);
-            
+
             const container = document.getElementById('ubraniaContainer');
             const templateRow = document.querySelector('.ubranieRow');
             if (!container || !templateRow) return;
@@ -73,9 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             };
 
-            ProductSuggestions.init(document);
+            ProductSuggestions.init(container);
             container.querySelectorAll('.ubranieRow').forEach(row => {
-                ProductSuggestions.init(row);
                 initCheckClothingForRow(row);
             });
 

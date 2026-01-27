@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 /**
- * Polish translations 
+ * DEPRECATED: This file is no longer used.
+ * Source of truth has moved to pl.json.
+ * These translations are kept for reference only.
  */
 return [
     // General

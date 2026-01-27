@@ -40,10 +40,12 @@ export const CheckClothing = (() => {
         const row = inputElement.closest('.ubranieRow');
         const iloscMinField = row.querySelector('input[name*="[iloscMin]"]').closest('.col-md-2');
 
+        let isProcessing = false;
         const validate = async () => {
             const kod = inputElement.value.trim();
-            if (!kod) return;
+            if (!kod || isProcessing) return;
 
+            isProcessing = true;
             try {
                 const data = await apiClient.get(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
 
@@ -61,6 +63,8 @@ export const CheckClothing = (() => {
             } catch (error) {
                 console.error('Error checking warehouse:', error);
                 alertManager.createAlert(error.message || Translations.translate('clothing_search_error'));
+            } finally {
+                isProcessing = false;
             }
         };
 

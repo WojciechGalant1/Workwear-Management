@@ -38,6 +38,9 @@ echo '
     <link rel="stylesheet" href="' . $baseUrl . '/styl/bootstrap/icons/bootstrap-icons.css">
     <link rel="stylesheet" href="' . $baseUrl . '/styl/DataTables/datatables.css">
     <script src="' . $baseUrl . '/styl/DataTables/datatables.min.js"></script>
+    <script>
+        window.__TRANSLATIONS__ = ' . json_encode(LocalizationHelper::getAllTranslations(), JSON_UNESCAPED_UNICODE) . ';
+    </script>
 </head>
 <style>
     .tooltip-inner {

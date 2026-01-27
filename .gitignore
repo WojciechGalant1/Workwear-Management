@@ -15,6 +15,11 @@ app/config/database.php
 *.log
 /cache/
 /tmp/
+/storage/cache/*
+!/storage/cache/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
+
 
 # Composer dependencies
 /vendor/
