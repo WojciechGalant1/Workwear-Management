@@ -1,8 +1,11 @@
 import { apiClient } from './apiClient.js';
 import { API_ENDPOINTS } from './utils.js';
 import { Translations } from './translations.js';
+import { CacheManager } from './CacheManager.js';
 
 export const CheckClothing = (() => {
+    const codeCache = CacheManager.createCache(100);
+    const existsCache = CacheManager.createCache(100);
 
     const toggleIloscMinField = (field, show) => {
         field.style.display = show ? 'block' : 'none';
@@ -41,25 +44,36 @@ export const CheckClothing = (() => {
         const iloscMinField = row.querySelector('input[name*="[iloscMin]"]').closest('.col-md-2');
 
         let isProcessing = false;
+
+        const handleData = (data) => {
+            if (data && !data.error) {
+                alertManager.createAlert(`${Translations.translate('clothing_found')}: ${data.nazwa_ubrania}, ${Translations.translate('clothing_size')}: ${data.nazwa_rozmiaru}`);
+                toggleIloscMinField(iloscMinField, false);
+                row.dataset.ubrFoundByKod = 'true';
+                row.querySelector('input[name$="[nazwa]"]').value = data.nazwa_ubrania;
+                row.querySelector('input[name$="[rozmiar]"]').value = data.nazwa_rozmiaru;
+            } else {
+                alertManager.createAlert(Translations.translate('clothing_not_found'));
+                toggleIloscMinField(iloscMinField, true);
+                row.dataset.ubrFoundByKod = 'false';
+            }
+        };
+
         const validate = async () => {
             const kod = inputElement.value.trim();
             if (!kod || isProcessing) return;
 
+            // Check Cache
+            if (codeCache.has(kod)) {
+                handleData(codeCache.get(kod));
+                return;
+            }
+
             isProcessing = true;
             try {
                 const data = await apiClient.get(API_ENDPOINTS.GET_CLOTHING_BY_CODE, { kod });
-
-                if (data && !data.error) {
-                    alertManager.createAlert(`${Translations.translate('clothing_found')}: ${data.nazwa_ubrania}, ${Translations.translate('clothing_size')}: ${data.nazwa_rozmiaru}`);
-                    toggleIloscMinField(iloscMinField, false);
-                    row.dataset.ubrFoundByKod = 'true';
-                    row.querySelector('input[name$="[nazwa]"]').value = data.nazwa_ubrania;
-                    row.querySelector('input[name$="[rozmiar]"]').value = data.nazwa_rozmiaru;
-                } else {
-                    alertManager.createAlert(Translations.translate('clothing_not_found'));
-                    toggleIloscMinField(iloscMinField, true);
-                    row.dataset.ubrFoundByKod = 'false';
-                }
+                codeCache.set(kod, data);
+                handleData(data);
             } catch (error) {
                 console.error('Error checking warehouse:', error);
                 alertManager.createAlert(error.message || Translations.translate('clothing_search_error'));
@@ -76,6 +90,16 @@ export const CheckClothing = (() => {
         const row = inputElement.closest('.ubranieRow');
         const iloscMinField = row.querySelector('input[name*="[iloscMin]"]').closest('.col-md-2');
 
+        const handleData = (data) => {
+            if (data.exists) {
+                alertManager.createAlert(`${Translations.translate('clothing_exists')}`);
+                toggleIloscMinField(iloscMinField, false);
+            } else {
+                alertManager.createAlert(`${Translations.translate('clothing_not_exists')}`);
+                toggleIloscMinField(iloscMinField, true);
+            }
+        };
+
         const validate = async () => {
             if (row.dataset.ubrFoundByKod === 'true') return;
 
@@ -83,19 +107,20 @@ export const CheckClothing = (() => {
             const sizeName = row.querySelector('input[name*="[rozmiar]"]').value.trim();
             if (!productName || !sizeName) return;
 
+            const cacheKey = `${productName.toLowerCase()}|${sizeName.toLowerCase()}`;
+            if (existsCache.has(cacheKey)) {
+                handleData(existsCache.get(cacheKey));
+                return;
+            }
+
             try {
                 const data = await apiClient.get(API_ENDPOINTS.CHECK_CLOTHING_EXISTS, {
                     nazwa: productName,
                     rozmiar: sizeName
                 });
 
-                if (data.exists) {
-                    alertManager.createAlert(`${Translations.translate('clothing_exists')}`);
-                    toggleIloscMinField(iloscMinField, false);
-                } else {
-                    alertManager.createAlert(`${Translations.translate('clothing_not_exists')}`);
-                    toggleIloscMinField(iloscMinField, true);
-                }
+                existsCache.set(cacheKey, data);
+                handleData(data);
             } catch (error) {
                 console.error(`${Translations.translate('clothing_error_warehouse')}:`, error);
             }

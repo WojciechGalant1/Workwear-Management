@@ -4,6 +4,9 @@
 import { apiClient } from '../apiClient.js';
 import { API_ENDPOINTS } from '../utils.js';
 import { Translations } from '../translations.js';
+import { CacheManager } from '../CacheManager.js';
+
+const cache = CacheManager.createCache(100);
 
 export const ClothingSizesLoader = {
     /**
@@ -31,13 +34,8 @@ export const ClothingSizesLoader = {
             return;
         }
 
-        try {
-            const data = await apiClient.get(API_ENDPOINTS.GET_SIZES, {
-                ubranie_id: selectedUbranieId
-            });
-
+        const handleData = (data) => {
             sizeSelect.innerHTML = `<option value="">${Translations.translate('select_size_name')}</option>`;
-
             data.forEach(rozmiar => {
                 const option = document.createElement('option');
                 option.value = rozmiar.id;
@@ -47,8 +45,22 @@ export const ClothingSizesLoader = {
                 }
                 sizeSelect.appendChild(option);
             });
-
             sizeSelect.disabled = false;
+        };
+
+        // Check Cache
+        if (cache.has(selectedUbranieId)) {
+            handleData(cache.get(selectedUbranieId));
+            return;
+        }
+
+        try {
+            const data = await apiClient.get(API_ENDPOINTS.GET_SIZES, {
+                ubranie_id: selectedUbranieId
+            });
+
+            cache.set(selectedUbranieId, data);
+            handleData(data);
         } catch (error) {
             console.error('Error loading sizes:', error);
             sizeSelect.innerHTML = `<option value="">${Translations.translate('select_size_name')}</option>`;
