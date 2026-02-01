@@ -11,6 +11,7 @@ use App\Repositories\IssueRepository;
 use App\Repositories\IssuedClothingRepository;
 use App\Helpers\LocalizationHelper;
 use DateTime;
+use Exception;
 
 /**
  * Serwis obsługujący logikę biznesową wydawania ubrań
@@ -51,18 +52,18 @@ class IssueService {
         // Walidacja pracownika
         $pracownik = $this->employeeRepo->getById($pracownikId);
         if (!$pracownik) {
-            throw new \Exception(LocalizationHelper::translate('issue_employee_not_found'));
+            throw new Exception(LocalizationHelper::translate('issue_employee_not_found'));
         }
         
         // Walidacja użytkownika
         $user = $this->userRepo->getUserById($userId);
         if (!$user) {
-            throw new \Exception(LocalizationHelper::translate('error_user_not_found'));
+            throw new Exception(LocalizationHelper::translate('error_user_not_found'));
         }
         
         // Walidacja danych ubrań
         if (empty($ubrania) || !is_array($ubrania)) {
-            throw new \Exception(LocalizationHelper::translate('issue_no_clothing_data'));
+            throw new Exception(LocalizationHelper::translate('issue_no_clothing_data'));
         }
         
         // Walidacja i sprawdzenie dostępności w magazynie
@@ -75,7 +76,7 @@ class IssueService {
         $idWydania = $this->issueRepo->create($wydanie);
         
         if (!$idWydania) {
-            throw new \Exception(LocalizationHelper::translate('issue_error_processing'));
+            throw new Exception(LocalizationHelper::translate('issue_error_processing'));
         }
         
         // Dodawanie ubrań i aktualizacja magazynu
@@ -97,11 +98,11 @@ class IssueService {
             $ilosc = intval($ubranie['ilosc'] ?? 0);
             
             if ($idUbrania == 0 || $idRozmiar == 0) {
-                throw new \Exception(LocalizationHelper::translate('issue_invalid_code'));
+                throw new Exception(LocalizationHelper::translate('issue_invalid_code'));
             }
             
             if ($ilosc <= 0) {
-                throw new \Exception(LocalizationHelper::translate('issue_quantity_positive'));
+                throw new Exception(LocalizationHelper::translate('issue_quantity_positive'));
             }
         }
     }
@@ -121,7 +122,7 @@ class IssueService {
             $iloscDostepna = $this->warehouseRepo->getIlosc($idUbrania, $idRozmiar);
             
             if ($ilosc > $iloscDostepna) {
-                throw new \Exception(LocalizationHelper::translate('issue_insufficient_stock'));
+                throw new Exception(LocalizationHelper::translate('issue_insufficient_stock'));
             }
         }
     }
@@ -147,7 +148,7 @@ class IssueService {
             $wydaneUbranie = new IssuedClothing($dataWaznosci, $idWydania, $idUbrania, $idRozmiar, $ilosc, $status);
             
             if (!$this->issuedClothingRepo->create($wydaneUbranie)) {
-                throw new \Exception(LocalizationHelper::translate('issue_error_processing'));
+                throw new Exception(LocalizationHelper::translate('issue_error_processing'));
             }
             
             // Aktualizuj magazyn (zmniejsz ilość)
@@ -165,7 +166,7 @@ class IssueService {
         $wydaneUbranie = $this->issuedClothingRepo->getUbraniaById($ubranieId);
         
         if (!$wydaneUbranie) {
-            throw new \Exception(LocalizationHelper::translate('clothing_issued_not_found'));
+            throw new Exception(LocalizationHelper::translate('clothing_issued_not_found'));
         }
         
         $idUbrania = $wydaneUbranie['id_ubrania'];
@@ -174,7 +175,7 @@ class IssueService {
         
         // Anuluj wydanie (zmień status na 3)
         if (!$this->issuedClothingRepo->deleteWydaneUbranieStatus($ubranieId)) {
-            throw new \Exception(LocalizationHelper::translate('cancel_issue_failed'));
+            throw new Exception(LocalizationHelper::translate('cancel_issue_failed'));
         }
         
         // Zwróć do magazynu (true = dodaj z powrotem)

@@ -113,24 +113,24 @@ class WarehouseService {
         
         $userId = $currentUserId ?? $_SESSION['user_id'] ?? null;
         if (!$userId) {
-            throw new \Exception(LocalizationHelper::translate('error_user_not_found'));
+            throw new Exception(LocalizationHelper::translate('error_user_not_found'));
         }
         
         $zamowienie = new OrderHistory(new DateTime(), $userId, $uwagi, 2); // Status 2 = zmiana magazynu
         
         if (!$orderHistoryRepo->create($zamowienie)) {
-            throw new \Exception("Nie udało się zapisać historii zamówienia.");
+            throw new Exception("Nie udało się zapisać historii zamówienia.");
         }
         
         $zamowienieId = $orderHistoryRepo->getLastInsertId();
         if (!$zamowienieId) {
-            throw new \Exception("Nie udało się pobrać ID ostatniego zamówienia.");
+            throw new Exception("Nie udało się pobrać ID ostatniego zamówienia.");
         }
         
         $szczegol = new OrderDetails($zamowienieId, $idUbrania, $idRozmiaru, $iloscDiff, 0, "-", 0);
         
         if (!$orderDetailsRepo->create($szczegol)) {
-            throw new \Exception("Nie udało się zapisać szczegółów zamówienia.");
+            throw new Exception("Nie udało się zapisać szczegółów zamówienia.");
         }
     }
     
