@@ -3,9 +3,6 @@ namespace App\Services;
 
 use DateTime;
 
-/**
- * Serwis obsługujący reguły biznesowe dotyczące wygasania ubrań
- */
 class ClothingExpiryService {
     /**
      * Liczba miesięcy przed wygaśnięciem, gdy ubranie jest oznaczone jako "Koniec ważności"
@@ -17,22 +14,12 @@ class ClothingExpiryService {
      */
     const HISTORY_MONTHS = 6;
     
-    /**
-     * Pobiera datę ostrzeżenia o wygaśnięciu (2 miesiące od teraz)
-     * 
-     * @return DateTime
-     */
     public function getExpiryWarningDate(): DateTime {
         $date = new DateTime();
         $date->modify('+' . self::EXPIRY_WARNING_MONTHS . ' months');
         return $date;
     }
     
-    /**
-     * Pobiera datę początku historii (6 miesięcy wstecz)
-     * 
-     * @return DateTime
-     */
     public function getHistoryStartDate(): DateTime {
         $date = new DateTime();
         $date->modify('-' . self::HISTORY_MONTHS . ' months');
@@ -49,22 +36,10 @@ class ClothingExpiryService {
         return is_string($date) ? new DateTime($date) : $date;
     }
     
-    /**
-     * Sprawdza czy ubranie jest przeterminowane
-     * 
-     * @param string|DateTime $expiryDate Data wygaśnięcia
-     * @return bool
-     */
     public function isExpired(string|DateTime $expiryDate): bool {
         return $this->normalizeDateTime($expiryDate) <= new DateTime();
     }
     
-    /**
-     * Sprawdza czy ubranie wygasa wkrótce (w ciągu 2 miesięcy)
-     * 
-     * @param string|DateTime $expiryDate Data wygaśnięcia
-     * @return bool
-     */
     public function isExpiringSoon(string|DateTime $expiryDate): bool {
         $expiryDate = $this->normalizeDateTime($expiryDate);
         $now = new DateTime();
@@ -117,11 +92,6 @@ class ClothingExpiryService {
         return $this->getHistoryStartDate()->format('Y-m-d');
     }
     
-    /**
-     * Pobiera aktualną datę (dla zapytań SQL)
-     * 
-     * @return string Data w formacie Y-m-d
-     */
     public function getCurrentDateFormatted(): string {
         return (new DateTime())->format('Y-m-d');
     }

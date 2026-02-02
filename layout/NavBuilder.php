@@ -12,11 +12,6 @@ class NavBuilder {
 
     const LOGOUT_PATH = '/logout';
     
-    /**
-     * Render the complete navigation bar
-     * @param string $currentPage Current page filename
-     * @param string $currentLanguage Current language code
-     */
     public static function renderNavBar(string $currentPage, string $currentLanguage = 'en'): void {
         $sessionManager = new SessionManager();
         $userStatus = $sessionManager->getUserStatus();

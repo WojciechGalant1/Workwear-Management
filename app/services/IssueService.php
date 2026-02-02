@@ -13,25 +13,25 @@ use App\Helpers\LocalizationHelper;
 use DateTime;
 use Exception;
 
-/**
- * Serwis obsługujący logikę biznesową wydawania ubrań
- * Enkapsuluje złożoną logikę z handlerów HTTP
- */
 class IssueService {
-    private ServiceContainer $serviceContainer;
     private EmployeeRepository $employeeRepo;
     private UserRepository $userRepo;
     private WarehouseRepository $warehouseRepo;
     private IssueRepository $issueRepo;
     private IssuedClothingRepository $issuedClothingRepo;
     
-    public function __construct(ServiceContainer $serviceContainer) {
-        $this->serviceContainer = $serviceContainer;
-        $this->employeeRepo = $this->serviceContainer->getRepository('EmployeeRepository');
-        $this->userRepo = $this->serviceContainer->getRepository('UserRepository');
-        $this->warehouseRepo = $this->serviceContainer->getRepository('WarehouseRepository');
-        $this->issueRepo = $this->serviceContainer->getRepository('IssueRepository');
-        $this->issuedClothingRepo = $this->serviceContainer->getRepository('IssuedClothingRepository');
+    public function __construct(
+        EmployeeRepository $employeeRepo,
+        UserRepository $userRepo,
+        WarehouseRepository $warehouseRepo,
+        IssueRepository $issueRepo,
+        IssuedClothingRepository $issuedClothingRepo
+    ) {
+        $this->employeeRepo = $employeeRepo;
+        $this->userRepo = $userRepo;
+        $this->warehouseRepo = $warehouseRepo;
+        $this->issueRepo = $issueRepo;
+        $this->issuedClothingRepo = $issuedClothingRepo;
     }
     
     /**
@@ -82,7 +82,7 @@ class IssueService {
         // Dodawanie ubrań i aktualizacja magazynu
         $this->addClothingToIssue($idWydania, $ubrania);
         
-        return $idWydania;
+        return (int)$idWydania;
     }
     
     /**

@@ -19,6 +19,7 @@ app/config/database.php
 !/storage/cache/.gitkeep
 /storage/logs/*
 !/storage/logs/.gitkeep
+.phpunit.cache
 
 
 # Composer dependencies

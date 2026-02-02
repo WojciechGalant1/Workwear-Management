@@ -66,7 +66,13 @@ class ServiceContainer {
         return match($serviceName) {
             'ClothingExpiryService' => new ClothingExpiryService(),
             'WarehouseService' => new WarehouseService($this),
-            'IssueService' => new IssueService($this),
+            'IssueService' => new IssueService(
+                $this->getRepository('EmployeeRepository'),
+                $this->getRepository('UserRepository'),
+                $this->getRepository('WarehouseRepository'),
+                $this->getRepository('IssueRepository'),
+                $this->getRepository('IssuedClothingRepository')
+            ),
             'OrderService' => new OrderService($this),
             default => throw new \Exception("Service $serviceName not found")
         };
