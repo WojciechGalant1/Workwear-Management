@@ -56,7 +56,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Backend|PHP 8.3 (custom MVC), REST-style endpoints, Repository pattern|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
 |Database|MySQL (relational)|
-|Security|CSRF protection, Rate Limiting (Brute-force protection), XSS prevention, Secure Sessions, Security Headers (CSP)|
+|Security|CSRF protection, Rate Limiting (IP/Session based), XSS prevention, Secure Sessions, Security Headers (CSP)|
 |Localization|Custom i18n system (English/Polish)|
 |Performance|Designed for low-resource deployment, Asset optimization|
 |Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
@@ -98,6 +98,11 @@ A full-featured web platform designed to manage corporate workwear distribution 
 - **~25 JavaScript Modules** - ES6 modules with clear responsibilities
 - **Zero External PHP Dependencies** - Pure vanilla PHP (ready for Composer if needed)
 
+## Testing Strategies
+- **PHPUnit 11 Integration** - Modern testing framework configuration
+- **Unit Testing** - Comprehensive test suites for core Services (`OrderService`, `WarehouseService`) and Auth (`AccessGuard`, `RateLimiter`)
+- **Mocking** - Extensive use of Mock Objects to isolate business logic from database/session dependencies
+
 ##  Project Structure (Simplified)
 
 ```
@@ -108,6 +113,7 @@ project/
 │   │   ├── AccessGuard.php # Authorization middleware (role-based access)
 │   │   ├── CsrfGuard.php   # CSRF protection
 │   │   └── SessionManager.php
+│   ├── Exceptions/         
 │   ├── Services/           # Business logic layer
 │   ├── Repositories/       # Data access layer (Repository pattern)
 │   ├── Entities/           # Domain entities (Employee, Clothing, etc.)
@@ -165,8 +171,7 @@ project/
 - **API Integration** – Introduce REST API endpoints for external system sync (e.g., ERP or HR software)
 - **Batch Processing** – Enable bulk import/export of inventory data via CSV 
 - **Additional Security Enhancements**:
-  - Rate limiting to prevent brute-force form submissions
-  - API request throttling to mitigate abuse and maintain performance
+  - Advanced WAF integration
 - **Performance Optimizations**:
   - Database query caching for frequently accessed data
   - Asset minification and compression

@@ -56,7 +56,7 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 |Backend|PHP 8.3 (niestandardowy MVC), endpointy REST-style, Wzorzec Repository|
 |Frontend|JavaScript (ES6), Bootstrap, jQuery|
 |Baza danych|MySQL (relacyjna)|
-|Bezpieczeństwo|Ochrona CSRF, Rate Limiting (Ochrona przed Brute-Force), XSS, Bezpieczne Sesje, Nagłówki Bezpieczeństwa (CSP)|
+|Bezpieczeństwo|Ochrona CSRF, Rate Limiting (IP/Sesja), XSS, Bezpieczne Sesje, Nagłówki Bezpieczeństwa (CSP)|
 |Lokalizacja|Własny system i18n (Angielski/Polski)|
 |Wydajność|Zoptymalizowany pod kątem niskiego zużycia zasobów|
 |Architektura|MVC z Kontrolerami, Warstwa Serwisów, Wzorzec Repository, Kontener Serwisów (DI), BaseHandler/BaseController, routing z middleware|
@@ -99,6 +99,11 @@ Kompletny system webowy stworzony do zarządzania odzieżą roboczą w firmie �
 - **~60 klas PHP** - W pełni oparte na namespace (PSR-4) i uporządkowane warstwowo
 - **Zero zewnętrznych zależności PHP** - Czysty vanilla PHP (gotowe na Composer jeśli potrzeba)
 
+## Strategie Testowania
+- **Integracja PHPUnit 11** - Nowoczesna konfiguracja frameworka testowego
+- **Testy Jednostkowe** - Kompleksowe pakiety testów dla kluczowych serwisów (`OrderService`, `WarehouseService`) i Auth (`AccessGuard`, `RateLimiter`)
+- **Mocking** - Szerokie wykorzystanie Obiektów Mock do izolacji logiki biznesowej od zależności bazy danych/sesji
+
 ##  Struktura projektu (uproszczona)
 
 ```
@@ -109,6 +114,7 @@ project/
 │   │   ├── AccessGuard.php # Middleware autoryzacji (kontrola ról)
 │   │   ├── CsrfGuard.php   # Ochrona CSRF
 │   │   └── SessionManager.php
+│   ├── Exceptions/         
 │   ├── Services/           # Warstwa logiki biznesowej
 │   ├── Repositories/       # Warstwa dostępu do danych (wzorzec Repository)
 │   │   ├── BaseRepository.php
@@ -177,8 +183,7 @@ project/
 - **Integracja API** – Wprowadzenie punktów końcowych REST API dla synchronizacji z systemami zewnętrznymi (np. oprogramowanie ERP lub HR)
 - **Przetwarzanie wsadowe** – Umożliwienie zbiorczego importu/eksportu danych magazynowych przez CSV
 - **Dodatkowe usprawnienia bezpieczeństwa**:
-  - Ograniczanie częstotliwości, aby zapobiec atakom brute-force na formularze
-  - Throttling żądań API w celu łagodzenia nadużyć i utrzymania wydajności
+  - Zaawansowana integracja WAF
 - **Optymalizacje wydajności**:
   - Cachowanie zapytań bazodanowych dla często używanych danych
   - Minifikacja i kompresja zasobów
