@@ -1,7 +1,7 @@
 <?php
+declare(strict_types=1);
 namespace App\Services;
 
-use App\Core\ServiceContainer;
 use App\Entities\OrderHistory;
 use App\Entities\OrderDetails;
 use App\Entities\Clothing;
@@ -14,6 +14,7 @@ use App\Repositories\ClothingRepository;
 use App\Repositories\SizeRepository;
 use App\Repositories\CodeRepository;
 use App\Repositories\WarehouseRepository;
+use App\Repositories\UserRepository;
 use App\Helpers\LocalizationHelper;
 use DateTime;
 use Exception;
@@ -22,7 +23,6 @@ use Exception;
  * Serwis obsługujący logikę biznesową zamówień
  */
 class OrderService {
-    private ServiceContainer $serviceContainer;
     private OrderHistoryRepository $orderHistoryRepo;
     private OrderDetailsRepository $orderDetailsRepo;
     private ClothingRepository $clothingRepo;
@@ -30,16 +30,26 @@ class OrderService {
     private CodeRepository $codeRepo;
     private WarehouseRepository $warehouseRepo;
     private WarehouseService $warehouseService;
+    private UserRepository $userRepo;
     
-    public function __construct(ServiceContainer $serviceContainer) {
-        $this->serviceContainer = $serviceContainer;
-        $this->orderHistoryRepo = $this->serviceContainer->getRepository('OrderHistoryRepository');
-        $this->orderDetailsRepo = $this->serviceContainer->getRepository('OrderDetailsRepository');
-        $this->clothingRepo = $this->serviceContainer->getRepository('ClothingRepository');
-        $this->sizeRepo = $this->serviceContainer->getRepository('SizeRepository');
-        $this->codeRepo = $this->serviceContainer->getRepository('CodeRepository');
-        $this->warehouseRepo = $this->serviceContainer->getRepository('WarehouseRepository');
-        $this->warehouseService = $this->serviceContainer->getService('WarehouseService');
+    public function __construct(
+        OrderHistoryRepository $orderHistoryRepo,
+        OrderDetailsRepository $orderDetailsRepo,
+        ClothingRepository $clothingRepo,
+        SizeRepository $sizeRepo,
+        CodeRepository $codeRepo,
+        WarehouseRepository $warehouseRepo,
+        WarehouseService $warehouseService,
+        UserRepository $userRepo
+    ) {
+        $this->orderHistoryRepo = $orderHistoryRepo;
+        $this->orderDetailsRepo = $orderDetailsRepo;
+        $this->clothingRepo = $clothingRepo;
+        $this->sizeRepo = $sizeRepo;
+        $this->codeRepo = $codeRepo;
+        $this->warehouseRepo = $warehouseRepo;
+        $this->warehouseService = $warehouseService;
+        $this->userRepo = $userRepo;
     }
     
     /**
@@ -65,8 +75,7 @@ class OrderService {
         }
         
         // Walidacja użytkownika
-        $userRepo = $this->serviceContainer->getRepository('UserRepository');
-        $user = $userRepo->getUserById($userId);
+        $user = $this->userRepo->getUserById($userId);
         if (!$user) {
             throw new Exception(LocalizationHelper::translate('error_user_not_found'));
         }

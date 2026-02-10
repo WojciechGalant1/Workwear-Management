@@ -1,17 +1,14 @@
 <?php
+declare(strict_types=1);
 namespace App\Services;
 
 use DateTime;
 
 class ClothingExpiryService {
-    /**
-     * Liczba miesięcy przed wygaśnięciem, gdy ubranie jest oznaczone jako "Koniec ważności"
-     */
+    //Liczba miesięcy przed wygaśnięciem, gdy ubranie jest oznaczone jako "Koniec ważności"
     const EXPIRY_WARNING_MONTHS = 2;
     
-    /**
-     * Liczba miesięcy wstecz dla historii wydań
-     */
+    //Liczba miesięcy wstecz dla historii wydań
     const HISTORY_MONTHS = 6;
     
     public function getExpiryWarningDate(): DateTime {

@@ -1,7 +1,7 @@
 <?php
+declare(strict_types=1);
 namespace App\Services;
 
-use App\Core\ServiceContainer;
 use App\Entities\Warehouse;
 use App\Entities\Clothing;
 use App\Entities\Size;
@@ -10,6 +10,8 @@ use App\Entities\OrderDetails;
 use App\Repositories\WarehouseRepository;
 use App\Repositories\ClothingRepository;
 use App\Repositories\SizeRepository;
+use App\Repositories\OrderHistoryRepository;
+use App\Repositories\OrderDetailsRepository;
 use App\Helpers\LocalizationHelper;
 use DateTime;
 use Exception;
@@ -18,16 +20,24 @@ use Exception;
  * Serwis obsługujący logikę biznesową magazynu
  */
 class WarehouseService {
-    private ServiceContainer $serviceContainer;
     private WarehouseRepository $warehouseRepo;
     private ClothingRepository $clothingRepo;
     private SizeRepository $sizeRepo;
+    private OrderHistoryRepository $orderHistoryRepo;
+    private OrderDetailsRepository $orderDetailsRepo;
     
-    public function __construct(ServiceContainer $serviceContainer) {
-        $this->serviceContainer = $serviceContainer;
-        $this->warehouseRepo = $this->serviceContainer->getRepository('WarehouseRepository');
-        $this->clothingRepo = $this->serviceContainer->getRepository('ClothingRepository');
-        $this->sizeRepo = $this->serviceContainer->getRepository('SizeRepository');
+    public function __construct(
+        WarehouseRepository $warehouseRepo,
+        ClothingRepository $clothingRepo,
+        SizeRepository $sizeRepo,
+        OrderHistoryRepository $orderHistoryRepo,
+        OrderDetailsRepository $orderDetailsRepo
+    ) {
+        $this->warehouseRepo = $warehouseRepo;
+        $this->clothingRepo = $clothingRepo;
+        $this->sizeRepo = $sizeRepo;
+        $this->orderHistoryRepo = $orderHistoryRepo;
+        $this->orderDetailsRepo = $orderDetailsRepo;
     }
     
     /**
@@ -107,10 +117,6 @@ class WarehouseService {
      * @throws Exception
      */
     private function createOrderFromWarehouseChange(int $idUbrania, int $idRozmiaru, int $iloscDiff, string $uwagi, ?int $currentUserId = null): void {
-        // Używamy repozytoriów bezpośrednio, aby uniknąć cyklicznej zależności z OrderService
-        $orderHistoryRepo = $this->serviceContainer->getRepository('OrderHistoryRepository');
-        $orderDetailsRepo = $this->serviceContainer->getRepository('OrderDetailsRepository');
-        
         $userId = $currentUserId ?? $_SESSION['user_id'] ?? null;
         if (!$userId) {
             throw new Exception(LocalizationHelper::translate('error_user_not_found'));
@@ -118,18 +124,18 @@ class WarehouseService {
         
         $zamowienie = new OrderHistory(new DateTime(), $userId, $uwagi, 2); // Status 2 = zmiana magazynu
         
-        if (!$orderHistoryRepo->create($zamowienie)) {
+        if (!$this->orderHistoryRepo->create($zamowienie)) {
             throw new Exception("Nie udało się zapisać historii zamówienia.");
         }
         
-        $zamowienieId = $orderHistoryRepo->getLastInsertId();
+        $zamowienieId = $this->orderHistoryRepo->getLastInsertId();
         if (!$zamowienieId) {
             throw new Exception("Nie udało się pobrać ID ostatniego zamówienia.");
         }
         
         $szczegol = new OrderDetails($zamowienieId, $idUbrania, $idRozmiaru, $iloscDiff, 0, "-", 0);
         
-        if (!$orderDetailsRepo->create($szczegol)) {
+        if (!$this->orderDetailsRepo->create($szczegol)) {
             throw new Exception("Nie udało się zapisać szczegółów zamówienia.");
         }
     }
