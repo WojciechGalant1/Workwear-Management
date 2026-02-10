@@ -4,9 +4,15 @@ namespace App\Core;
 
 use App\Helpers\UrlHelper;
 use App\Auth\AccessGuard;
+use App\Core\ServiceContainer;
 
 class Router {
+    private ServiceContainer $serviceContainer;
     private array $routes = [];
+    
+    public function __construct() {
+        $this->serviceContainer = ServiceContainer::getInstance();
+    }
     /** @var callable|null */
     private $notFoundCallback = null;
 
@@ -31,7 +37,8 @@ class Router {
             if (is_array($route)) {
                 // Middleware - Auth check (PRZED kontrolerem)
                 if (isset($route['auth'])) {
-                    $guard = new AccessGuard();
+                    /** @var AccessGuard $guard */
+                    $guard = $this->serviceContainer->getService(AccessGuard::class);
                     $guard->requireStatus($route['auth']);
                 }
                 

@@ -3,19 +3,17 @@ declare(strict_types=1);
 namespace App\Auth;
 
 use App\Auth\SessionManager;
-use App\Core\ServiceContainer;
-use App\Helpers\UrlHelper;
-use App\Helpers\LocalizationHelper;
-use App\Helpers\LanguageSwitcher;
 use App\Repositories\UserRepository;
+use App\Exceptions\AuthException;
+use App\Exceptions\AccessDeniedException;
 
 class AccessGuard {
-    private ServiceContainer $serviceContainer;
     private SessionManager $sessionManager;
+    private UserRepository $userRepo;
     
-    public function __construct() {
-        $this->sessionManager = new SessionManager();
-        $this->serviceContainer = ServiceContainer::getInstance();
+    public function __construct(SessionManager $sessionManager, UserRepository $userRepo) {
+        $this->sessionManager = $sessionManager;
+        $this->userRepo = $userRepo;
     }
     
     public function isAuthenticated(): bool {
@@ -31,38 +29,22 @@ class AccessGuard {
         if (!$userId) {
             return false;
         }
-        $userRepo = $this->serviceContainer->getRepository(UserRepository::class);
-        $user = $userRepo->getUserById($userId);
-        return $user && $user['status'] >= $requiredStatus;
+        
+        $user = $this->userRepo->getUserById($userId);
+        return $user && (int)$user['status'] >= $requiredStatus;
     }
     
+    /**
+     * @throws AuthException
+     * @throws AccessDeniedException
+     */
     public function requireStatus(int $requiredStatus): void {
         if (!$this->isAuthenticated()) {
-            $this->redirectToLogin();
+            throw new AuthException('User not authenticated');
         }
         
         if (!$this->hasRequiredStatus($requiredStatus)) {
-            $this->denyAccess();
+            throw new AccessDeniedException('Insufficient permissions');
         }
-    }
-    
-    private function redirectToLogin(): void {
-        $baseUrl = UrlHelper::getBaseUrl();
-        header('Location: ' . $baseUrl . '/login');
-        exit();
-    }
-    
-    private function denyAccess(): void {
-        $this->initLocalization();
-        echo '<div class="alert alert-danger text-center">' . LocalizationHelper::translate('access_denied') . '</div>';
-        die();
-    }
-    
-    private function initLocalization(): void {
-        if (!isset($_SESSION['current_language'])) {
-            LanguageSwitcher::initializeWithRouting();
-        }
-        $currentLanguage = LanguageSwitcher::getCurrentLanguage();
-        LocalizationHelper::setLanguage($currentLanguage);
     }
 }

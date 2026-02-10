@@ -7,6 +7,8 @@ use App\Services\ClothingExpiryService;
 use App\Services\WarehouseService;
 use App\Services\IssueService;
 use App\Services\OrderService;
+use App\Auth\AccessGuard;
+use App\Auth\SessionManager;
 use App\Repositories\WarehouseRepository;
 use App\Repositories\ClothingRepository;
 use App\Repositories\SizeRepository;
@@ -82,6 +84,11 @@ class ServiceContainer {
                 $this->getRepository(CodeRepository::class),
                 $this->getRepository(WarehouseRepository::class),
                 $this->getService(WarehouseService::class),
+                $this->getRepository(UserRepository::class)
+            ),
+            SessionManager::class => new SessionManager(),
+            AccessGuard::class => new AccessGuard(
+                $this->getService(SessionManager::class),
                 $this->getRepository(UserRepository::class)
             ),
             default => throw new \Exception("Service $serviceName not found")

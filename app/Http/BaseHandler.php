@@ -11,6 +11,8 @@ use App\Helpers\LanguageSwitcher;
 use App\Helpers\UrlHelper;
 use App\Exceptions\AuthenticationException;
 use App\Exceptions\AuthorizationException;
+use App\Exceptions\AuthException;
+use App\Exceptions\AccessDeniedException;
 use App\Exceptions\RateLimitExceededException;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
@@ -63,15 +65,11 @@ abstract class BaseHandler {
     }
     
     private function checkAccessStatus(): void {
-        $guard = new AccessGuard();
+        /** @var AccessGuard $guard */
+        $guard = $this->serviceContainer->getService(AccessGuard::class);
         
-        if (!$guard->isAuthenticated()) {
-            throw new AuthenticationException();
-        }
-        
-        if (!$guard->hasRequiredStatus($this->requiredStatus)) {
-            throw new AuthorizationException();
-        }
+        // This will now throw AuthException or AccessDeniedException
+        $guard->requireStatus($this->requiredStatus);
     }
     
 
@@ -259,14 +257,14 @@ abstract class BaseHandler {
         } catch (ValidationException $e) {
             http_response_code(400);
             $handler->errorResponse($e->getMessage());
-        } catch (AuthenticationException $e) {
+        } catch (AuthenticationException|AuthException $e) {
             http_response_code(401);
             $handler->jsonResponse([
                 'success' => false,
                 'message' => LocalizationHelper::translate($e->getMessage()),
                 'redirect' => '/login'
             ]);
-        } catch (AuthorizationException $e) {
+        } catch (AuthorizationException|AccessDeniedException $e) {
             http_response_code(403);
             $handler->errorResponse($e->getMessage());
         } catch (NotFoundException $e) {
