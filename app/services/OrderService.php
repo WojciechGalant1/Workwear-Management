@@ -88,7 +88,13 @@ class OrderService {
             throw new Exception(LocalizationHelper::translate('order_create_error'));
         }
         
-        $zamowienieId = $this->orderHistoryRepo->getLastInsertId();
+        $rawId = $this->orderHistoryRepo->getLastInsertId();
+        $zamowienieId = ($rawId === false) ? 0 : (int)$rawId;
+        
+        if ($zamowienieId === 0) {
+            throw new Exception(LocalizationHelper::translate('order_create_error'));
+        }
+        
         $zamowienie->setId($zamowienieId);
         
         // Utwórz szczegóły zamówienia

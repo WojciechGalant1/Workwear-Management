@@ -72,7 +72,7 @@ class WarehouseServiceTest extends TestCase
 
         $this->warehouseRepo->method('findByUbranieAndRozmiar')
             ->with(10, 20)
-            ->willReturn(false);
+            ->willReturn(null);
 
         $this->warehouseRepo->expects($this->once())
             ->method('insertNew')
@@ -121,7 +121,7 @@ class WarehouseServiceTest extends TestCase
             ))
             ->willReturn(true);
             
-        $this->orderHistoryRepo->method('getLastInsertId')->willReturn(999);
+        $this->orderHistoryRepo->method('getLastInsertId')->willReturn('999');
         $this->orderDetailsRepo->expects($this->once())
             ->method('create')
             ->willReturn(true);

@@ -81,7 +81,7 @@ class IssueService {
         }
         
         // Dodawanie ubrań i aktualizacja magazynu
-        $this->addClothingToIssue($idWydania, $ubrania);
+        $this->addClothingToIssue((int)$idWydania, $ubrania);
         
         return (int)$idWydania;
     }

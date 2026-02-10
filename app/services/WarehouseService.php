@@ -128,8 +128,10 @@ class WarehouseService {
             throw new Exception("Nie udało się zapisać historii zamówienia.");
         }
         
-        $zamowienieId = $this->orderHistoryRepo->getLastInsertId();
-        if (!$zamowienieId) {
+        $rawId = $this->orderHistoryRepo->getLastInsertId();
+        $zamowienieId = ($rawId === false) ? 0 : (int)$rawId;
+        
+        if ($zamowienieId === 0) {
             throw new Exception("Nie udało się pobrać ID ostatniego zamówienia.");
         }
         

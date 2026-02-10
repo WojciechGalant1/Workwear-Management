@@ -103,7 +103,7 @@ class OrderServiceTest extends TestCase
             ->willReturn(true);
 
         $this->orderHistoryRepo->method('getLastInsertId')
-            ->willReturn(self::EXAMPLE_ORDER_ID);
+            ->willReturn((string)self::EXAMPLE_ORDER_ID);
 
         // Mock Item Logic (simplified for brevity, ensuring flow works)
         $this->clothingRepo->method('firstOrCreate')->willReturn(10);
@@ -190,11 +190,13 @@ class OrderServiceTest extends TestCase
 
         $this->userRepo->method('getUserById')->willReturn(['id' => self::EXAMPLE_USER_ID]);
         $this->orderHistoryRepo->method('create')->willReturn(true);
-        $this->orderHistoryRepo->method('getLastInsertId')->willReturn(self::EXAMPLE_ORDER_ID);
+        $this->orderHistoryRepo->method('getLastInsertId')->willReturn((string)self::EXAMPLE_ORDER_ID);
         
         $this->clothingRepo->method('firstOrCreate')->willReturn(1);
         $this->sizeRepo->method('firstOrCreate')->willReturn(1);
-        $this->codeRepo->method('findKodByNazwa')->willReturn($this->createMock(Code::class));
+        $mockCode = $this->createMock(Code::class);
+        $mockCode->method('getIdKod')->willReturn(99);
+        $this->codeRepo->method('findKodByNazwa')->willReturn($mockCode);
         $this->orderDetailsRepo->method('create')->willReturn(true);
 
         // WHEN
