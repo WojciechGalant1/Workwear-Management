@@ -8,6 +8,7 @@ use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
+use App\Services\IssueService;
 use Exception;
 
 class IssueClothingHandler extends BaseHandler {
@@ -37,7 +38,7 @@ class IssueClothingHandler extends BaseHandler {
         }
         
         try {
-            $issueService = $this->getService('IssueService');
+            $issueService = $this->getService(IssueService::class);
             $currentUserId = $this->getUserId();
             
             $issueService->issueClothing(

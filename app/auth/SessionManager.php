@@ -30,7 +30,7 @@ class SessionManager {
     }
 
     public function login(int $userId, int $status): void {
-        session_regenerate_id(true); //fixation attack
+        session_regenerate_id(true); 
         
         $_SESSION['user_id'] = $userId;
         $_SESSION['user_status'] = $status;

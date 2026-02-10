@@ -9,6 +9,7 @@ use App\Config\AccessLevels;
 
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
+use App\Services\IssueService;
 
 class CancelIssueHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
@@ -32,7 +33,7 @@ class CancelIssueHandler extends BaseHandler {
         $ubranieId = intval($data['id']);
         
         try {
-            $issueService = $this->getService('IssueService');
+            $issueService = $this->getService(IssueService::class);
             $issueService->cancelIssue($ubranieId);
             
             $this->successResponse();

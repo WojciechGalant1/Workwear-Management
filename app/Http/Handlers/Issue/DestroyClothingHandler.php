@@ -9,6 +9,7 @@ use App\Config\AccessLevels;
 
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
+use App\Repositories\IssuedClothingRepository;
 
 class DestroyClothingHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
@@ -35,7 +36,7 @@ class DestroyClothingHandler extends BaseHandler {
             throw new ValidationException('validation_clothing_id_required');
         }
         
-        $wydaneUbraniaRepo = $this->getRepository('IssuedClothingRepository');
+        $wydaneUbraniaRepo = $this->getRepository(IssuedClothingRepository::class);
         
         if ($wydaneUbraniaRepo->destroyStatus($id)) {
             $this->successResponse();

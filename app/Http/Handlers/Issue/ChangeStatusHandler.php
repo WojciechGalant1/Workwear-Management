@@ -10,6 +10,7 @@ use App\Config\AccessLevels;
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
 use App\Exceptions\NotFoundException;
+use App\Repositories\IssuedClothingRepository;
 
 class ChangeStatusHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
@@ -34,7 +35,7 @@ class ChangeStatusHandler extends BaseHandler {
         $currentStatus = intval($data['currentStatus']);
         $newStatus = ($currentStatus == 1) ? 0 : 1;
         
-        $wydaneUbraniaRepo = $this->getRepository('IssuedClothingRepository');
+        $wydaneUbraniaRepo = $this->getRepository(IssuedClothingRepository::class);
         
         if ($wydaneUbraniaRepo->updateStatus($id, $newStatus)) {
             $this->jsonResponse(['success' => true, 'newStatus' => $newStatus]);

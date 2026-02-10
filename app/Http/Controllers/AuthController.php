@@ -7,6 +7,7 @@ use App\Helpers\UrlHelper;
 use App\Auth\CsrfGuard;
 use App\Helpers\LocalizationHelper;
 use App\Helpers\LanguageSwitcher;
+use App\Http\Handlers\Auth\LogoutHandler;
 
 class AuthController extends BaseController {
     
@@ -27,6 +28,6 @@ class AuthController extends BaseController {
     }
 
     public function logout(): void {
-        \App\Http\Handlers\Auth\LogoutHandler::run();
+        LogoutHandler::run();
     }
 }

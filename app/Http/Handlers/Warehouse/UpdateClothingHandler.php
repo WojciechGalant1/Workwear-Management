@@ -8,6 +8,7 @@ use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
+use App\Services\WarehouseService;
 use Exception;
 
 class UpdateClothingHandler extends BaseHandler {
@@ -47,7 +48,7 @@ class UpdateClothingHandler extends BaseHandler {
         }
         
         try {
-            $warehouseService = $this->getService('WarehouseService');
+            $warehouseService = $this->getService(WarehouseService::class);
             $result = $warehouseService->updateWarehouseItem($id, $nazwa, $rozmiar, $ilosc, $iloscMin, $uwagi, $currentUserId);
             
             if ($result['success']) {

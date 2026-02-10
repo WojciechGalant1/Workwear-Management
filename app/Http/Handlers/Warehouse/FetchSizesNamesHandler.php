@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
+use App\Repositories\SizeRepository;
 
 class FetchSizesNamesHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
@@ -15,7 +16,7 @@ class FetchSizesNamesHandler extends BaseHandler {
         
         $query = $_GET['query'] ?? '';
         
-        $rozmiarRepo = $this->getRepository('SizeRepository');
+        $rozmiarRepo = $this->getRepository(SizeRepository::class);
         $rozmiary = $rozmiarRepo->searchByName($query);
         
         $this->jsonResponse($rozmiary);

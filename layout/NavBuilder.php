@@ -7,6 +7,7 @@ use App\Helpers\LocalizationHelper;
 use App\Helpers\LanguageSwitcher;
 use App\Config\RouteConfig;
 use App\Config\AccessLevels;
+use App\Repositories\WarehouseRepository;
 
 class NavBuilder {
 
@@ -17,7 +18,7 @@ class NavBuilder {
         $userStatus = $sessionManager->getUserStatus();
         
         $serviceContainer = ServiceContainer::getInstance();
-        $warehouseRepo = $serviceContainer->getRepository('WarehouseRepository');
+        $warehouseRepo = $serviceContainer->getRepository(WarehouseRepository::class);
         $hasShortages = $warehouseRepo->checkIlosc();
         
         $baseUrl = UrlHelper::getBaseUrl();

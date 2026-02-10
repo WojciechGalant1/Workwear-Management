@@ -50,11 +50,6 @@ class ServiceContainer {
         return $this->repositories[$repositoryName];
     }
     
-    /**
-     * Pobiera serwis z kontenera (lazy loading + singleton per container)
-     * @param string $serviceName Nazwa serwisu
-     * @return object
-     */
     public function getService(string $serviceName): object {
         if (!isset($this->services[$serviceName])) {
             $this->services[$serviceName] = $this->createService($serviceName);
@@ -64,32 +59,47 @@ class ServiceContainer {
     
     private function createService(string $serviceName): object {
         return match($serviceName) {
-            'ClothingExpiryService' => new ClothingExpiryService(),
-            'WarehouseService' => new WarehouseService($this),
-            'IssueService' => new IssueService(
-                $this->getRepository('EmployeeRepository'),
-                $this->getRepository('UserRepository'),
-                $this->getRepository('WarehouseRepository'),
-                $this->getRepository('IssueRepository'),
-                $this->getRepository('IssuedClothingRepository')
+            ClothingExpiryService::class => new ClothingExpiryService(),
+            WarehouseService::class => new WarehouseService(
+                $this->getRepository(WarehouseRepository::class),
+                $this->getRepository(ClothingRepository::class),
+                $this->getRepository(SizeRepository::class),
+                $this->getRepository(OrderHistoryRepository::class),
+                $this->getRepository(OrderDetailsRepository::class)
             ),
-            'OrderService' => new OrderService($this),
+            IssueService::class => new IssueService(
+                $this->getRepository(EmployeeRepository::class),
+                $this->getRepository(UserRepository::class),
+                $this->getRepository(WarehouseRepository::class),
+                $this->getRepository(IssueRepository::class),
+                $this->getRepository(IssuedClothingRepository::class)
+            ),
+            OrderService::class => new OrderService(
+                $this->getRepository(OrderHistoryRepository::class),
+                $this->getRepository(OrderDetailsRepository::class),
+                $this->getRepository(ClothingRepository::class),
+                $this->getRepository(SizeRepository::class),
+                $this->getRepository(CodeRepository::class),
+                $this->getRepository(WarehouseRepository::class),
+                $this->getService(WarehouseService::class),
+                $this->getRepository(UserRepository::class)
+            ),
             default => throw new \Exception("Service $serviceName not found")
         };
     }
     
     private function createRepository(string $repositoryName): object {
         return match($repositoryName) {
-            'WarehouseRepository' => new WarehouseRepository($this->pdo),
-            'ClothingRepository' => new ClothingRepository($this->pdo),
-            'SizeRepository' => new SizeRepository($this->pdo),
-            'OrderHistoryRepository' => new OrderHistoryRepository($this->pdo),
-            'OrderDetailsRepository' => new OrderDetailsRepository($this->pdo),
-            'EmployeeRepository' => new EmployeeRepository($this->pdo),
-            'UserRepository' => new UserRepository($this->pdo),
-            'IssueRepository' => new IssueRepository($this->pdo),
-            'IssuedClothingRepository' => new IssuedClothingRepository($this->pdo, $this->getService('ClothingExpiryService')),
-            'CodeRepository' => new CodeRepository($this->pdo),
+            WarehouseRepository::class => new WarehouseRepository($this->pdo),
+            ClothingRepository::class => new ClothingRepository($this->pdo),
+            SizeRepository::class => new SizeRepository($this->pdo),
+            OrderHistoryRepository::class => new OrderHistoryRepository($this->pdo),
+            OrderDetailsRepository::class => new OrderDetailsRepository($this->pdo),
+            EmployeeRepository::class => new EmployeeRepository($this->pdo),
+            UserRepository::class => new UserRepository($this->pdo),
+            IssueRepository::class => new IssueRepository($this->pdo),
+            IssuedClothingRepository::class => new IssuedClothingRepository($this->pdo, $this->getService(ClothingExpiryService::class)),
+            CodeRepository::class => new CodeRepository($this->pdo),
             default => throw new \Exception("Repository $repositoryName not found")
         };
     }

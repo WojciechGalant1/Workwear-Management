@@ -3,11 +3,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\BaseController;
+use App\Repositories\OrderHistoryRepository;
 
 class OrderController extends BaseController {
     
     public function history(): array {
-        $orderHistoryRepo = $this->getRepository('OrderHistoryRepository');
+        $orderHistoryRepo = $this->getRepository(OrderHistoryRepository::class);
         
         return [
             'zamowienia' => $orderHistoryRepo->getAll(),

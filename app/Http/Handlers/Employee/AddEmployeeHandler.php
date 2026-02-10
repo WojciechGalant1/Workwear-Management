@@ -9,6 +9,7 @@ use App\Config\AccessLevels;
 use App\Entities\Employee;
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
+use App\Repositories\EmployeeRepository;
 
 class AddEmployeeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
@@ -39,7 +40,7 @@ class AddEmployeeHandler extends BaseHandler {
         }
         
         $pracownik = new Employee($imie, $nazwisko, $stanowisko, $status);
-        $pracownikRepo = $this->getRepository('EmployeeRepository');
+        $pracownikRepo = $this->getRepository(EmployeeRepository::class);
         
         if ($pracownikRepo->create($pracownik)) {
             $this->successResponse('employee_add_success');

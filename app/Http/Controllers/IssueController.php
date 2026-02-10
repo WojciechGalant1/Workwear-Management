@@ -3,6 +3,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\BaseController;
+use App\Repositories\ClothingRepository;
+use App\Repositories\IssuedClothingRepository;
+use App\Repositories\EmployeeRepository;
 
 class IssueController extends BaseController {
     
@@ -11,8 +14,8 @@ class IssueController extends BaseController {
      * Obsługuje GET params: ?fromRaport=1&pracownikId=X&imie=...&nazwisko=...&stanowisko=...
      */
     public function issue(): array {
-        $clothingRepo = $this->getRepository('ClothingRepository');
-        $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
+        $clothingRepo = $this->getRepository(ClothingRepository::class);
+        $issuedClothingRepo = $this->getRepository(IssuedClothingRepository::class);
         
         $result = [
             'pageTitle' => 'issue_title',
@@ -47,8 +50,8 @@ class IssueController extends BaseController {
      * Obsługuje GET parameter ?pracownikID=X
      */
     public function history(): array {
-        $pracownikRepo = $this->getRepository('EmployeeRepository');
-        $issuedClothingRepo = $this->getRepository('IssuedClothingRepository');
+        $pracownikRepo = $this->getRepository(EmployeeRepository::class);
+        $issuedClothingRepo = $this->getRepository(IssuedClothingRepository::class);
         
         $result = [
             'pageTitle' => 'history_issue_title',

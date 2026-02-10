@@ -8,6 +8,7 @@ use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
+use App\Services\OrderService;
 use Exception;
 
 class AddOrderHandler extends BaseHandler {
@@ -29,7 +30,7 @@ class AddOrderHandler extends BaseHandler {
         $currentUserId = $this->getUserId();
         
         try {
-            $orderService = $this->getService('OrderService');
+            $orderService = $this->getService(OrderService::class);
             
             $orderService->createOrder($currentUserId, $ubrania, $uwagi, 1);
             

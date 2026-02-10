@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
+use App\Repositories\EmployeeRepository;
 
 class FetchWorkersHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
@@ -15,7 +16,7 @@ class FetchWorkersHandler extends BaseHandler {
         
         $query = $_GET['query'] ?? '';
         
-        $pracownikRepo = $this->getRepository('EmployeeRepository');
+        $pracownikRepo = $this->getRepository(EmployeeRepository::class);
         $pracownicy = $pracownikRepo->searchByName($query);
         
         $this->jsonResponse($pracownicy);

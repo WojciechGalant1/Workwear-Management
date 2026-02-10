@@ -35,7 +35,6 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // ===== 4. GLOBAL HELPER FUNCTIONS =====
-// Load global helper functions
 require_once __DIR__ . '/Helpers/functions.php';
 
 // ===== 5. USE STATEMENTS =====

@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../handler_bootstrap.php';
 
 use App\Http\BaseHandler;
 use App\Config\AccessLevels;
+use App\Repositories\ClothingRepository;
 
 class FetchProductNamesHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
@@ -15,7 +16,7 @@ class FetchProductNamesHandler extends BaseHandler {
         
         $query = $_GET['query'] ?? '';
         
-        $ubranieRepo = $this->getRepository('ClothingRepository');
+        $ubranieRepo = $this->getRepository(ClothingRepository::class);
         $ubrania = $ubranieRepo->searchByName($query);
         
         if ($ubrania === false) {

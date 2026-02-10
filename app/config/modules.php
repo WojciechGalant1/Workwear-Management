@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Configuration for JavaScript modules required by each page
  */
 return [
-    'add_employee.php' => '',  // FormHandler obsługuje automatycznie
+    'add_employee.php' => '',
     'issue_clothing.php' => 'ClothingManager,WorkerSuggestions,ModalIssueClothing,ChangeStatus',
     'employee_list.php' => 'ModalEditEmployee',
     'add_order.php' => 'ProductSuggestions',

@@ -7,10 +7,8 @@ use App\Core\ServiceContainer;
 use App\Helpers\UrlHelper;
 use App\Helpers\LocalizationHelper;
 use App\Helpers\LanguageSwitcher;
+use App\Repositories\UserRepository;
 
-/**
- * Klasa odpowiedzialna za kontrolę dostępu (autoryzację)
- */
 class AccessGuard {
     private ServiceContainer $serviceContainer;
     private SessionManager $sessionManager;
@@ -33,7 +31,7 @@ class AccessGuard {
         if (!$userId) {
             return false;
         }
-        $userRepo = $this->serviceContainer->getRepository('UserRepository');
+        $userRepo = $this->serviceContainer->getRepository(UserRepository::class);
         $user = $userRepo->getUserById($userId);
         return $user && $user['status'] >= $requiredStatus;
     }

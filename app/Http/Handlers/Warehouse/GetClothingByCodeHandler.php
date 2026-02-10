@@ -9,6 +9,7 @@ use App\Config\AccessLevels;
 
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
+use App\Repositories\CodeRepository;
 
 class GetClothingByCodeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::USER;
@@ -20,7 +21,7 @@ class GetClothingByCodeHandler extends BaseHandler {
             throw new ValidationException('validation_required');
         }
         
-        $kodRepo = $this->getRepository('CodeRepository');
+        $kodRepo = $this->getRepository(CodeRepository::class);
         $kodData = $kodRepo->findByNazwa($_GET['kod']);
         
         if ($kodData) {

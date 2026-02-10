@@ -2,9 +2,10 @@
 declare(strict_types=1);
 namespace App\Core;
 
-use \PDO;
-use \PDOException;
-use \RuntimeException;
+use App\Config\DbConfig;
+use PDO;
+use PDOException;
+use RuntimeException;
 
 
 /**
@@ -14,14 +15,10 @@ use \RuntimeException;
  */
 class Database
 {
-    /**
-     * Tworzy nowe połączenie PDO
-     * @return PDO
-     * @throws RuntimeException
-     */
+
     public static function createPdo(): PDO
     {
-        $config = \App\Config\DbConfig::get();
+        $config = DbConfig::get();
         
         $dsn = "mysql:host={$config['host']};dbname={$config['database']};charset={$config['charset']}";
         

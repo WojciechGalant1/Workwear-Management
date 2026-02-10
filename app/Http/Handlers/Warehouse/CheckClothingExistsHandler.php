@@ -8,6 +8,7 @@ use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 
 use App\Exceptions\ValidationException;
+use App\Repositories\WarehouseRepository;
 
 class CheckClothingExistsHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::WAREHOUSE;
@@ -20,7 +21,7 @@ class CheckClothingExistsHandler extends BaseHandler {
         $nazwa = $_GET['nazwa'];
         $rozmiar = $_GET['rozmiar'];
         
-        $stanMagazynuRepo = $this->getRepository('WarehouseRepository');
+        $stanMagazynuRepo = $this->getRepository(WarehouseRepository::class);
         $ubranieExists = $stanMagazynuRepo->findByUbranieAndRozmiarByName($nazwa, $rozmiar);
         
         $this->jsonResponse(['exists' => (bool)$ubranieExists]);

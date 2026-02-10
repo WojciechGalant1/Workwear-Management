@@ -8,6 +8,7 @@ use App\Http\BaseHandler;
 use App\Config\AccessLevels;
 use App\Exceptions\ValidationException;
 use App\Exceptions\AuthorizationException;
+use App\Repositories\EmployeeRepository;
 
 class UpdateEmployeeHandler extends BaseHandler {
     protected ?int $requiredStatus = AccessLevels::SUPERVISOR;
@@ -37,7 +38,7 @@ class UpdateEmployeeHandler extends BaseHandler {
             throw new ValidationException('validation_name_invalid_characters');
         }
         
-        $pracownikRepo = $this->getRepository('EmployeeRepository');
+        $pracownikRepo = $this->getRepository(EmployeeRepository::class);
         
         if ($pracownikRepo->update($id, $imie, $nazwisko, $stanowisko, $status)) {
             $this->successResponse('employee_update_success');
