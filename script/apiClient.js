@@ -11,6 +11,72 @@ import { Translations } from './translations.js';
  * - validate HTTP & business responses
  * - provide a clean API for UI modules
  */
+
+const executeFetch = async (url, options) => {
+    try {
+        return await fetch(url, options);
+    } catch (networkError) {
+        throw new Error(
+            Translations.translate('network_error') || 'Network error'
+        );
+    }
+};
+
+const handleJsonResponse = async (response, validateSuccess = true) => {
+    // HTTP-level error handling
+    if (!response.ok) {
+        let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+            const errorJson = await response.json();
+
+            // Global handling for Session Expired / Unauthorized
+            if (response.status === 401 && errorJson.redirect) {
+                window.location.href = buildApiUrl(errorJson.redirect);
+                return;
+            }
+
+            errorMsg = errorJson.message || errorJson.error || errorMsg;
+        } catch (e) {
+            // Body is not JSON, use default status text
+        }
+        throw new Error(errorMsg);
+    }
+
+    // Parse JSON
+    let json;
+    try {
+        json = await response.json();
+    } catch (parseError) {
+        throw new Error(
+            Translations.translate('error_invalid_response') ||
+            'Invalid server response'
+        );
+    }
+
+    // Validate business response structure
+    if (validateSuccess) {
+        if (json === null || typeof json !== 'object' || typeof json.success !== 'boolean') {
+            throw new Error(
+                Translations.translate('error_invalid_response') ||
+                'Malformed API response'
+            );
+        }
+
+        if (!json.success) {
+            throw new Error(
+                json.message ||
+                Translations.translate('error_general') ||
+                'Operation failed'
+            );
+        }
+    }
+
+    return json;
+};
+
+/**
+ * JSON request (GET / POST / PUT / DELETE)
+ */
 const request = async (
     endpoint,
     {
@@ -39,71 +105,17 @@ const request = async (
         options.body = JSON.stringify(addCsrfToObject(body));
     }
 
-    let response;
-
-    try {
-        response = await fetch(url, options);
-    } catch (networkError) {
-        throw new Error(
-            Translations.translate('network_error') || 'Network error'
-        );
-    }
-
-    // HTTP-level error handling
-    if (!response.ok) {
-        let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-            const errorJson = await response.json();
-
-            // Global Handling for Session Expired / Unauthorized
-            if (response.status === 401 && errorJson.redirect) {
-                window.location.href = buildApiUrl(errorJson.redirect);
-                return;
-            }
-
-            errorMsg = errorJson.message || errorJson.error || errorMsg;
-        } catch (e) {
-            // Body is not JSON, use default status text
-        }
-        throw new Error(errorMsg);
-    }
+    const response = await executeFetch(url, options);
 
     // No JSON expected (optional)
     if (!expectJson) {
         return response;
     }
 
-    let json;
+    // For GET requests, endpoints may return data without a success field
+    const validateSuccess = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
 
-    try {
-        json = await response.json();
-    } catch (parseError) {
-        throw new Error(
-            Translations.translate('error_invalid_response') ||
-            'Invalid server response'
-        );
-    }
-
-    // For GET requests, some endpoints return data directly (arrays, objects without success field)
-    // Only validate success field for mutating requests (POST, PUT, PATCH, DELETE)
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-        if (json === null || typeof json !== 'object' || typeof json.success !== 'boolean') {
-            throw new Error(
-                Translations.translate('error_invalid_response') ||
-                'Malformed API response'
-            );
-        }
-
-        if (!json.success) {
-            throw new Error(
-                json.message ||
-                Translations.translate('error_general') ||
-                'Operation failed'
-            );
-        }
-    }
-
-    return json;
+    return handleJsonResponse(response, validateSuccess);
 };
 
 /**
@@ -113,78 +125,24 @@ const request = async (
 const postFormData = async (endpoint, formData, signal = null) => {
     let url;
     if (endpoint.startsWith('http://') || endpoint.startsWith('https://') || endpoint.startsWith('/')) {
-        // Already a full URL or absolute path - use as is
         url = endpoint.startsWith('/') ? `${window.location.origin}${endpoint}` : endpoint;
     } else {
-        // Relative endpoint - use buildApiUrl
         url = buildApiUrl(endpoint);
     }
-    const csrfToken = getCsrfToken();
 
-    // Only add CSRF token if it's not already in FormData
+    const csrfToken = getCsrfToken();
     if (csrfToken && !formData.has('csrf_token')) {
         formData.append('csrf_token', csrfToken);
     }
 
-    const options = {
+    const response = await executeFetch(url, {
         method: 'POST',
         credentials: 'same-origin',
         body: formData,
         signal
-    };
+    });
 
-    let response;
-
-    try {
-        response = await fetch(url, options);
-    } catch (networkError) {
-        throw new Error(
-            Translations.translate('network_error') || 'Network error'
-        );
-    }
-
-    if (!response.ok) {
-        let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-            const errorJson = await response.json();
-            errorMsg = errorJson.message || errorJson.error || errorMsg;
-        } catch (e) {
-            // Body is not JSON
-        }
-        throw new Error(errorMsg);
-    }
-
-    let json;
-
-    try {
-        json = await response.json();
-    } catch (parseError) {
-        throw new Error(
-            Translations.translate('error_invalid_response') ||
-            'Invalid server response'
-        );
-    }
-
-    if (
-        json === null ||
-        typeof json !== 'object' ||
-        typeof json.success !== 'boolean'
-    ) {
-        throw new Error(
-            Translations.translate('error_invalid_response') ||
-            'Malformed API response'
-        );
-    }
-
-    if (!json.success) {
-        throw new Error(
-            json.message ||
-            Translations.translate('error_general') ||
-            'Operation failed'
-        );
-    }
-
-    return json;
+    return handleJsonResponse(response);
 };
 
 /**
@@ -211,77 +169,22 @@ const postForm = async (endpoint, data, signal = null) => {
         body = params.toString();
     }
 
-    const options = {
+    const response = await executeFetch(url, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         credentials: 'same-origin',
-        body: body,
+        body,
         signal
-    };
+    });
 
-    let response;
-
-    try {
-        response = await fetch(url, options);
-    } catch (networkError) {
-        throw new Error(
-            Translations.translate('network_error') || 'Network error'
-        );
-    }
-
-    if (!response.ok) {
-        let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
-        try {
-            const errorJson = await response.json();
-            errorMsg = errorJson.message || errorJson.error || errorMsg;
-        } catch (e) {
-            // Body is not JSON
-        }
-        throw new Error(errorMsg);
-    }
-
-    let json;
-
-    try {
-        json = await response.json();
-    } catch (parseError) {
-        throw new Error(
-            Translations.translate('error_invalid_response') ||
-            'Invalid server response'
-        );
-    }
-
-    if (
-        json === null ||
-        typeof json !== 'object' ||
-        typeof json.success !== 'boolean'
-    ) {
-        throw new Error(
-            Translations.translate('error_invalid_response') ||
-            'Malformed API response'
-        );
-    }
-
-    if (!json.success) {
-        throw new Error(
-            json.message ||
-            Translations.translate('error_general') ||
-            'Operation failed'
-        );
-    }
-
-    return json;
+    return handleJsonResponse(response);
 };
 
 /**
  * Public API client
  */
 export const apiClient = {
-    /**
-     * GET request
-     */
+
     get(endpoint, params = {}, options = {}) {
         return request(endpoint, {
             method: 'GET',
@@ -290,9 +193,6 @@ export const apiClient = {
         });
     },
 
-    /**
-     * POST request (JSON)
-     */
     post(endpoint, body = {}, options = {}) {
         return request(endpoint, {
             method: 'POST',
@@ -301,9 +201,6 @@ export const apiClient = {
         });
     },
 
-    /**
-     * PUT request
-     */
     put(endpoint, body = {}, options = {}) {
         return request(endpoint, {
             method: 'PUT',
@@ -312,9 +209,6 @@ export const apiClient = {
         });
     },
 
-    /**
-     * DELETE request
-     */
     delete(endpoint, body = {}, options = {}) {
         return request(endpoint, {
             method: 'DELETE',
