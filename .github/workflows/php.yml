@@ -1,0 +1,45 @@
+name: PHP CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          coverage: none
+
+      # 2. Validate composer
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      # 3. Cache vendor
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      # 4. Install deps
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      # 5. Run tests
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
