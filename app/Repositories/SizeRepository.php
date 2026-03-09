@@ -29,15 +29,12 @@ class SizeRepository extends BaseRepository {
         
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($result) {
-            $rozmiar = new Size($result['nazwa_rozmiaru']);
-            $rozmiar->setIdRozmiar($result['id_rozmiar']);
-            return $rozmiar;
+            return Size::fromDatabase((int)$result['id_rozmiar'], $result['nazwa_rozmiaru']);
         }
         return null;
     }
 
     public function firstOrCreate(Size $rozmiar): int {
-        $rozmiar->setNazwaRozmiaru($rozmiar->getNazwaRozmiaru());
         $existing = $this->findByName($rozmiar->getNazwaRozmiaru());
         if ($existing) {
             return $existing->getIdRozmiar();

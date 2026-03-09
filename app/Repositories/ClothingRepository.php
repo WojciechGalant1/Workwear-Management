@@ -38,9 +38,7 @@ class ClothingRepository extends BaseRepository {
         
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($result) {
-            $ubranie = new Clothing($result['nazwa_ubrania']);
-            $ubranie->setIdUbranie($result['id_ubranie']);
-            return $ubranie;
+            return Clothing::fromDatabase((int)$result['id_ubranie'], $result['nazwa_ubrania']);
         }
         return null;
     }

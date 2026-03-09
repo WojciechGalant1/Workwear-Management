@@ -43,11 +43,21 @@ class EmployeeRepository extends BaseRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getById(int $id): array|false {
+    public function getById(int $id): ?Employee {
         $stmt = $this->pdo->prepare("SELECT * FROM pracownicy WHERE id_pracownik = :id");
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            return Employee::fromDatabase(
+                (int)$result['id_pracownik'],
+                $result['imie'],
+                $result['nazwisko'],
+                $result['stanowisko'],
+                (int)$result['status']
+            );
+        }
+        return null;
     }
 
     public function searchByName(string $query): array {

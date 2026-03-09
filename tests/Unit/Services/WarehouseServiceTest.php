@@ -121,7 +121,7 @@ class WarehouseServiceTest extends TestCase
             ))
             ->willReturn(true);
             
-        $this->orderHistoryRepo->method('getLastInsertId')->willReturn('999');
+        $this->orderHistoryRepo->method('getLastInsertId')->willReturn(999);
         $this->orderDetailsRepo->expects($this->once())
             ->method('create')
             ->willReturn(true);

@@ -5,6 +5,7 @@ namespace Tests\Unit\Services;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use App\Services\IssueService;
+use App\Entities\Employee;
 use App\Repositories\IssueRepository;
 use App\Repositories\IssuedClothingRepository;
 use App\Repositories\WarehouseRepository;
@@ -56,7 +57,7 @@ class IssueServiceTest extends TestCase
 
         $this->employeeRepo->method('getById')
             ->with(self::EXAMPLE_PRACOWNIK_ID)
-            ->willReturn(['id_pracownik' => self::EXAMPLE_PRACOWNIK_ID]);
+            ->willReturn(Employee::fromDatabase(self::EXAMPLE_PRACOWNIK_ID, 'Jan', 'Kowalski', 'Magazynier', 1));
 
         $this->userRepo->method('getUserById')
             ->with(self::EXAMPLE_USER_ID)
@@ -76,7 +77,7 @@ class IssueServiceTest extends TestCase
                 $issue->getUwagi() === $uwagi &&
                 $issue->getIdPracownik() === self::EXAMPLE_PRACOWNIK_ID
             ))
-            ->willReturn((string)self::EXAMPLE_ISSUE_ID);
+            ->willReturn(self::EXAMPLE_ISSUE_ID);
 
         // Verify Expiry Date Calculation for first item
         $expectedExpiryDate = (new \DateTime())->modify('+12 months')->format('Y-m-d');
@@ -123,7 +124,7 @@ class IssueServiceTest extends TestCase
     {
         $ubrania = [['id_ubrania' => 1, 'id_rozmiar' => 3, 'ilosc' => 5]];
 
-        $this->employeeRepo->method('getById')->willReturn(['id_pracownik' => self::EXAMPLE_PRACOWNIK_ID]);
+        $this->employeeRepo->method('getById')->willReturn(Employee::fromDatabase(self::EXAMPLE_PRACOWNIK_ID, 'Jan', 'Kowalski', 'Magazynier', 1));
         $this->userRepo->method('getUserById')->willReturn(['id' => self::EXAMPLE_USER_ID]);
 
         // Point 8: fail-fast callback instead of Map if we want to be strict
@@ -139,7 +140,7 @@ class IssueServiceTest extends TestCase
     #[DataProvider('invalidClothingDataProvider')]
     public function testShouldThrowExceptionWhenClothingDataFailsValidation(array $ubrania): void
     {
-        $this->employeeRepo->method('getById')->willReturn(['id_pracownik' => self::EXAMPLE_PRACOWNIK_ID]);
+        $this->employeeRepo->method('getById')->willReturn(Employee::fromDatabase(self::EXAMPLE_PRACOWNIK_ID, 'Jan', 'Kowalski', 'Magazynier', 1));
         $this->userRepo->method('getUserById')->willReturn(['id' => self::EXAMPLE_USER_ID]);
 
         $this->expectException(\Exception::class);
@@ -205,18 +206,18 @@ class IssueServiceTest extends TestCase
 
     public function testShouldThrowExceptionWhenEmployeeNotFound(): void
     {
-        $this->employeeRepo->method('getById')->willReturn(false);
+        $this->employeeRepo->method('getById')->willReturn(null);
         $this->expectException(\Exception::class);
         $this->service->issueClothing(999, self::EXAMPLE_USER_ID, [['id_ubrania' => 1, 'id_rozmiar' => 1, 'ilosc' => 1]]);
     }
 
     public function testShouldThrowExceptionWhenIssueHeaderCreationFails(): void
     {
-        $this->employeeRepo->method('getById')->willReturn(['id_pracownik' => self::EXAMPLE_PRACOWNIK_ID]);
+        $this->employeeRepo->method('getById')->willReturn(Employee::fromDatabase(self::EXAMPLE_PRACOWNIK_ID, 'Jan', 'Kowalski', 'Magazynier', 1));
         $this->userRepo->method('getUserById')->willReturn(['id' => self::EXAMPLE_USER_ID]);
         $this->warehouseRepo->method('getIlosc')->willReturn(10);
         
-        $this->issueRepo->method('create')->willReturn(false);
+        $this->issueRepo->method('create')->willReturn(0);
 
         $this->expectException(\Exception::class);
         $this->service->issueClothing(self::EXAMPLE_PRACOWNIK_ID, self::EXAMPLE_USER_ID, [['id_ubrania' => 1, 'id_rozmiar' => 1, 'ilosc' => 1]]);
@@ -224,10 +225,10 @@ class IssueServiceTest extends TestCase
 
     public function testShouldThrowExceptionWhenIssuedItemCreationFails(): void
     {
-        $this->employeeRepo->method('getById')->willReturn(['id_pracownik' => self::EXAMPLE_PRACOWNIK_ID]);
+        $this->employeeRepo->method('getById')->willReturn(Employee::fromDatabase(self::EXAMPLE_PRACOWNIK_ID, 'Jan', 'Kowalski', 'Magazynier', 1));
         $this->userRepo->method('getUserById')->willReturn(['id' => self::EXAMPLE_USER_ID]);
         $this->warehouseRepo->method('getIlosc')->willReturn(10);
-        $this->issueRepo->method('create')->willReturn((string)self::EXAMPLE_ISSUE_ID);
+        $this->issueRepo->method('create')->willReturn(self::EXAMPLE_ISSUE_ID);
 
         // Fail on the second item
         $this->issuedClothingRepo->method('create')

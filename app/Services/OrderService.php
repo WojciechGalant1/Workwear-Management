@@ -88,8 +88,7 @@ class OrderService {
             throw new Exception(LocalizationHelper::translate('order_create_error'));
         }
         
-        $rawId = $this->orderHistoryRepo->getLastInsertId();
-        $zamowienieId = ($rawId === false) ? 0 : (int)$rawId;
+        $zamowienieId = $this->orderHistoryRepo->getLastInsertId();
         
         if ($zamowienieId === 0) {
             throw new Exception(LocalizationHelper::translate('order_create_error'));
@@ -170,10 +169,10 @@ class OrderService {
         }
         
         foreach ($szczegoly as $szczegolData) {
-            $idUbrania = $szczegolData['id_ubrania'];
-            $idRozmiaru = $szczegolData['id_rozmiaru'];
-            $ilosc = $szczegolData['ilosc'];
-            $iloscMin = $szczegolData['iloscMin'];
+            $idUbrania = (int)$szczegolData['id_ubrania'];
+            $idRozmiaru = (int)$szczegolData['id_rozmiaru'];
+            $ilosc = (int)$szczegolData['ilosc'];
+            $iloscMin = (int)$szczegolData['iloscMin'];
             
             $stanMagazynu = new Warehouse($idUbrania, $idRozmiaru, $ilosc, $iloscMin);
             

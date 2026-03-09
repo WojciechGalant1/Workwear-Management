@@ -39,8 +39,8 @@ $modal = new ClassModal();
 if ($pracownikNotFound) {
     echo "<p>" . __('history_employee_not_found') . "</p>";
 } elseif ($pracownik) {
-    $imie = htmlspecialchars($pracownik['imie']);
-    $nazwisko = htmlspecialchars($pracownik['nazwisko']);
+    $imie = htmlspecialchars($pracownik->getImie());
+    $nazwisko = htmlspecialchars($pracownik->getNazwisko());
     
     if (!empty($historia)) {
         echo "<h2>" . __('history_issue_for') . ": {$imie} {$nazwisko}</h2> <br/>";

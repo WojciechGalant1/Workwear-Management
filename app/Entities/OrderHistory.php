@@ -6,10 +6,16 @@ class OrderHistory {
     private ?int $id = null;
     private \DateTime $data_zamowienia;
     private int $user_id;
-    private string $uwagi = '';
-    private int $status = 0;
+    private string $uwagi;
+    private int $status;
 
-    public function __construct(\DateTime $data_zamowienia, int $user_id, string $uwagi = '', int $status = 0) {
+    public function __construct(\DateTime $data_zamowienia, int $user_id, string $uwagi = '', int $status = 1) {
+        if ($user_id <= 0) {
+            throw new \InvalidArgumentException('ID użytkownika musi być większe od 0.');
+        }
+        if (!in_array($status, [1, 2], true)) {
+            throw new \InvalidArgumentException('Status zamówienia musi wynosić 1 lub 2.');
+        }
         $this->data_zamowienia = $data_zamowienia;
         $this->user_id = $user_id;
         $this->uwagi = $uwagi;
@@ -20,7 +26,7 @@ class OrderHistory {
         return $this->id;
     }
 
-    public function setId(?int $id): void {
+    public function setId(int $id): void {
         $this->id = $id;
     }
 
@@ -28,16 +34,8 @@ class OrderHistory {
         return $this->data_zamowienia;
     }
 
-    public function setDataZamowienia(\DateTime $data_zamowienia): void {
-        $this->data_zamowienia = $data_zamowienia;
-    }
-
     public function getUserId(): int {
         return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): void {
-        $this->user_id = $user_id;
     }
 
     public function getUwagi(): string {
@@ -50,9 +48,5 @@ class OrderHistory {
 
     public function getStatus(): int {
         return $this->status;
-    }
-
-    public function setStatus(int $status): void {
-        $this->status = $status;
     }
 }

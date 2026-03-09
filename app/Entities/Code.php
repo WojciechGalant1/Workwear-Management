@@ -4,55 +4,50 @@ namespace App\Entities;
 
 class Code {
     private ?int $id_kod = null;
-    private ?string $kod_nazwa = null;
-    private ?int $ubranieID = null;
-    private ?int $rozmiarID = null;
-    private ?int $status = null;
+    private string $kod_nazwa;
+    private int $ubranieID;
+    private int $rozmiarID;
+    private int $status;
 
-    public function __construct(?string $kod_nazwa = null, ?int $ubranieID = null, ?int $rozmiarID = null, ?int $status = null) {
-        $this->kod_nazwa = $kod_nazwa;
+    public function __construct(string $kod_nazwa, int $ubranieID, int $rozmiarID, int $status) {
+        if (trim($kod_nazwa) === '') {
+            throw new \InvalidArgumentException('Kod nazwa nie może być pusty.');
+        }
+        if ($ubranieID <= 0) {
+            throw new \InvalidArgumentException('ID ubrania musi być większe od 0.');
+        }
+        if ($rozmiarID <= 0) {
+            throw new \InvalidArgumentException('ID rozmiaru musi być większe od 0.');
+        }
+        $this->kod_nazwa = trim($kod_nazwa);
         $this->ubranieID = $ubranieID;
         $this->rozmiarID = $rozmiarID;
         $this->status = $status;
+    }
+
+    public static function fromDatabase(int $id, string $kod_nazwa, int $ubranieID, int $rozmiarID, int $status): self {
+        $entity = new self($kod_nazwa, $ubranieID, $rozmiarID, $status);
+        $entity->id_kod = $id;
+        return $entity;
     }
 
     public function getIdKod(): ?int {
         return $this->id_kod;
     }
 
-    public function setIdKod(?int $id_kod): void {
-        $this->id_kod = $id_kod;
-    }
-
-    public function getNazwaKod(): ?string {
+    public function getNazwaKod(): string {
         return $this->kod_nazwa;
     }
 
-    public function setNazwaKod(?string $kod_nazwa): void {
-        $this->kod_nazwa = $kod_nazwa;
-    }
-
-    public function getUbranieID(): ?int {
+    public function getUbranieID(): int {
         return $this->ubranieID;
     }
 
-    public function setUbranieID(?int $ubranieID): void {
-        $this->ubranieID = $ubranieID;
-    }
-
-    public function getRozmiarID(): ?int {
+    public function getRozmiarID(): int {
         return $this->rozmiarID;
     }
 
-    public function setRozmiarID(?int $rozmiarID): void {
-        $this->rozmiarID = $rozmiarID;
-    }
-
-    public function getStatus(): ?int {
+    public function getStatus(): int {
         return $this->status;
-    }
-
-    public function setStatus(?int $status): void {
-        $this->status = $status;
     }
 }

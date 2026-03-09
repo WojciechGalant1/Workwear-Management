@@ -103,15 +103,14 @@ class OrderServiceTest extends TestCase
             ->willReturn(true);
 
         $this->orderHistoryRepo->method('getLastInsertId')
-            ->willReturn((string)self::EXAMPLE_ORDER_ID);
+            ->willReturn(self::EXAMPLE_ORDER_ID);
 
         // Mock Item Logic (simplified for brevity, ensuring flow works)
         $this->clothingRepo->method('firstOrCreate')->willReturn(10);
         $this->sizeRepo->method('firstOrCreate')->willReturn(20);
         
         // Mock Code logic: first item exists, second creates new
-        $existingCode = $this->createMock(Code::class);
-        $existingCode->method('getIdKod')->willReturn(99);
+        $existingCode = Code::fromDatabase(99, 'CODE-123', 10, 20, 1);
 
         $this->codeRepo->method('findKodByNazwa')
             ->willReturnMap([
@@ -190,13 +189,12 @@ class OrderServiceTest extends TestCase
 
         $this->userRepo->method('getUserById')->willReturn(['id' => self::EXAMPLE_USER_ID]);
         $this->orderHistoryRepo->method('create')->willReturn(true);
-        $this->orderHistoryRepo->method('getLastInsertId')->willReturn((string)self::EXAMPLE_ORDER_ID);
+        $this->orderHistoryRepo->method('getLastInsertId')->willReturn(self::EXAMPLE_ORDER_ID);
         
         $this->clothingRepo->method('firstOrCreate')->willReturn(1);
         $this->sizeRepo->method('firstOrCreate')->willReturn(1);
-        $mockCode = $this->createMock(Code::class);
-        $mockCode->method('getIdKod')->willReturn(99);
-        $this->codeRepo->method('findKodByNazwa')->willReturn($mockCode);
+        $existingCode = Code::fromDatabase(99, 'MOCK-CODE', 1, 1, 2);
+        $this->codeRepo->method('findKodByNazwa')->willReturn($existingCode);
         $this->orderDetailsRepo->method('create')->willReturn(true);
 
         // WHEN

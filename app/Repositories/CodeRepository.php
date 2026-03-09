@@ -45,11 +45,20 @@ class CodeRepository extends BaseRepository {
     }
 
     public function findKodByNazwa(string $kod_nazwa): Code|false {
-        $stmt = $this->pdo->prepare('SELECT id_kod FROM kod WHERE kod_nazwa = :kod_nazwa');
+        $stmt = $this->pdo->prepare('SELECT id_kod, kod_nazwa, ubranieID, rozmiarID, status FROM kod WHERE kod_nazwa = :kod_nazwa');
         $stmt->bindValue(':kod_nazwa', $kod_nazwa);
         $stmt->execute();
-        $stmt->setFetchMode(PDO::FETCH_CLASS, Code::class);
-        return $stmt->fetch(); 
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            return Code::fromDatabase(
+                (int)$result['id_kod'],
+                $result['kod_nazwa'],
+                (int)$result['ubranieID'],
+                (int)$result['rozmiarID'],
+                (int)$result['status']
+            );
+        }
+        return false;
     }
     
 }

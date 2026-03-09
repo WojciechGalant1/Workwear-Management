@@ -23,8 +23,9 @@ class OrderHistoryRepository extends BaseRepository {
         return $stmt->execute();
     }
     
-    public function getLastInsertId(): string|false {
-        return $this->pdo->lastInsertId();
+    public function getLastInsertId(): int {
+        $id = $this->pdo->lastInsertId();
+        return $id === false ? 0 : (int)$id;
     }
 
     public function getAll(): array {

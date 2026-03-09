@@ -13,15 +13,15 @@ class IssueRepository extends BaseRepository {
         parent::__construct($pdo);
     }
     
-    public function create(Issue $wydania): string|false {
+    public function create(Issue $wydania): int {
         $stmt = $this->pdo->prepare("INSERT INTO wydania (pracownik_id, user_id, data_wydania) VALUES (:pracownik_id, :user_id, :data_wydania)");
         $stmt->bindValue(':pracownik_id', $wydania->getIdPracownik());
         $stmt->bindValue(':user_id', $wydania->getUserId());
         $dataWydania = $wydania->getDataWydania();
-        $stmt->bindValue(':data_wydania', $dataWydania ? $dataWydania->format('Y-m-d H:i:s') : null);
+        $stmt->bindValue(':data_wydania', $dataWydania->format('Y-m-d H:i:s'));
         
         $stmt->execute();
-        return $this->pdo->lastInsertId();
+        return (int)$this->pdo->lastInsertId();
     }
 
     public function deleteWydanie(int $id_wydania): bool {

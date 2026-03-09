@@ -2,63 +2,55 @@
 declare(strict_types=1);
 namespace App\Entities;
 
-class Warehouse
-{
+class Warehouse {
     private ?int $id = null;
-    private ?int $id_ubrania = null;
-    private ?int $id_rozmiaru = null;
-    private int $ilosc = 0;
-    private int $iloscMin = 0;
+    private int $id_ubrania;
+    private int $id_rozmiaru;
+    private int $ilosc;
+    private int $iloscMin;
 
-    public function __construct(?int $id_ubrania = null, ?int $id_rozmiaru = null, int $ilosc = 0, int $iloscMin = 0) {
+    public function __construct(int $id_ubrania, int $id_rozmiaru, int $ilosc, int $iloscMin = 0) {
+        if ($id_ubrania <= 0) {
+            throw new \InvalidArgumentException('ID ubrania musi być większe od 0.');
+        }
+        if ($id_rozmiaru <= 0) {
+            throw new \InvalidArgumentException('ID rozmiaru musi być większe od 0.');
+        }
+        if ($ilosc < 0) {
+            throw new \InvalidArgumentException('Ilość nie może być ujemna.');
+        }
+        if ($iloscMin < 0) {
+            throw new \InvalidArgumentException('Ilość minimalna nie może być ujemna.');
+        }
         $this->id_ubrania = $id_ubrania;
         $this->id_rozmiaru = $id_rozmiaru;
         $this->ilosc = $ilosc;
         $this->iloscMin = $iloscMin;
     }
 
-    public function getId(): ?int
-    {
+    public static function fromDatabase(int $id, int $id_ubrania, int $id_rozmiaru, int $ilosc, int $iloscMin): self {
+        $entity = new self($id_ubrania, $id_rozmiaru, $ilosc, $iloscMin);
+        $entity->id = $id;
+        return $entity;
+    }
+
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getIdUbrania(): ?int
-    {
+    public function getIdUbrania(): int {
         return $this->id_ubrania;
     }
 
-    public function setIdUbrania(?int $id_ubrania): void
-    {
-        $this->id_ubrania = $id_ubrania;
-    }
-
-    public function getIdRozmiaru(): ?int
-    {
+    public function getIdRozmiaru(): int {
         return $this->id_rozmiaru;
     }
 
-    public function setIdRozmiaru(?int $id_rozmiaru): void
-    {
-        $this->id_rozmiaru = $id_rozmiaru;
-    }
-
-    public function getIlosc(): int
-    {
+    public function getIlosc(): int {
         return $this->ilosc;
     }
 
-    public function setIlosc(int $ilosc): void
-    {
-        $this->ilosc = $ilosc;
-    }
-
-    public function getIloscMin(): int
-    {
+    public function getIloscMin(): int {
         return $this->iloscMin;
-    }
-
-    public function setIloscMin(int $iloscMin): void
-    {
-        $this->iloscMin = $iloscMin;
     }
 }

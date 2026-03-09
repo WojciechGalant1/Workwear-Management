@@ -73,17 +73,17 @@ class IssueService {
         
         // Tworzenie wydania
         $dataWydania = new DateTime();
-        $wydanie = new Issue($userId, $pracownik['id_pracownik'], $dataWydania, $uwagi);
+        $wydanie = new Issue($userId, $pracownik->getIdPracownik(), $dataWydania, $uwagi);
         $idWydania = $this->issueRepo->create($wydanie);
         
-        if (!$idWydania) {
+        if ($idWydania === 0) {
             throw new Exception(LocalizationHelper::translate('issue_error_processing'));
         }
         
         // Dodawanie ubrań i aktualizacja magazynu
-        $this->addClothingToIssue((int)$idWydania, $ubrania);
+        $this->addClothingToIssue($idWydania, $ubrania);
         
-        return (int)$idWydania;
+        return $idWydania;
     }
     
     /**
