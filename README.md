@@ -61,7 +61,7 @@ A full-featured web platform designed to manage corporate workwear distribution 
 |Performance|Designed for low-resource deployment, Asset optimization|
 |Architecture|MVC with Controllers, Services layer, Repository pattern, Service Container (DI), BaseHandler/BaseController, middleware-based routing|
 > **Note:**
-> **Requires PHP 8.3+.** 
+> **Requires PHP 8.2+.** 
 
 ## Architecture Highlights
 
