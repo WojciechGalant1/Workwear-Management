@@ -49,7 +49,7 @@ class ClothingExpiryServiceTest extends TestCase
         $now = new \DateTime();
         $soon = (clone $now)->modify('+1 month'); 
         $exactlyTwoMonths = (clone $now)->modify('+2 months'); // Boundary
-        $notSoon = (clone $now)->modify('+61 days'); 
+        $notSoon = (clone $now)->modify('+2 months +1 day'); 
 
         $this->assertTrue($this->service->isExpiringSoon($soon), '1 miesiąc to "soon"');
         $this->assertTrue($this->service->isExpiringSoon($exactlyTwoMonths), 'Dokładnie 2 miesiące to granica "soon"');
