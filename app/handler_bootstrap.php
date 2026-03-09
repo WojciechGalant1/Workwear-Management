@@ -1,11 +1,7 @@
 <?php
 /**
  * Handler Bootstrap
- * 
  * Wspólny punkt wejścia dla wszystkich handlerów AJAX.
- * Każdy handler powinien mieć na początku:
- * require_once __DIR__ . '/../../../handler_bootstrap.php';
- * (dostosuj ścieżkę do lokalizacji handlera)
  */
 
 // Autoloader Composera

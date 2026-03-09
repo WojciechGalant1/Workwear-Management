@@ -7,8 +7,7 @@ use App\Auth\CsrfGuard;
 class SessionManager {
     public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
-            // Security hardening
-            // Use 'Strict' for SameSite to prevent CSRF, but 'Lax' is often more practical for navigation.
+            // Security hardening, Use 'Strict' for SameSite to prevent CSRF, but 'Lax' is often more practical for navigation.
             $cookieParams = [
                 'lifetime' => 0, // Session cookie
                 'path' => '/',

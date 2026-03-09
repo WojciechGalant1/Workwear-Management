@@ -34,10 +34,6 @@ class AccessGuard {
         return $user && (int)$user['status'] >= $requiredStatus;
     }
     
-    /**
-     * @throws AuthException
-     * @throws AccessDeniedException
-     */
     public function requireStatus(int $requiredStatus): void {
         if (!$this->isAuthenticated()) {
             throw new AuthException('User not authenticated');
