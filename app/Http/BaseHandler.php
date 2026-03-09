@@ -27,6 +27,8 @@ abstract class BaseHandler {
     protected ?int $requiredStatus = null;
    
     public function __construct() {
+        $this->serviceContainer = ServiceContainer::getInstance();
+        
         if ($this->requireSession) {
             $this->initSession();
         }
@@ -41,8 +43,6 @@ abstract class BaseHandler {
         
         // Enforce CSRF for state-changing requests
         $this->checkCsrf();
-        
-        $this->serviceContainer = ServiceContainer::getInstance();
     }
     
     private function checkCsrf(): void {
