@@ -175,7 +175,6 @@ project/
 - **Performance Optimizations**:
   - Database query caching for frequently accessed data
   - Asset minification and compression
-  - CDN integration for static resources
 - **Documentation** – API documentation for external integrations
 - **Enum Migration** – Consider migrating `AccessLevels` to PHP 8.1+ Enum for type safety (requires refactoring)
 
